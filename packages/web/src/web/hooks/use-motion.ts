@@ -45,18 +45,42 @@ const MAX_STAGGER_STEPS = 6;
 export function usePageMotion<T extends HTMLElement = HTMLDivElement>() {
 	const ref = useRef<T | null>(null);
 
-	// useLayoutEffect, not useEffect: the hidden class is applied before the
-	// browser paints, so content never flashes in and then hides itself.
+	// useLayoutEffect, not useEffect: the hidden class lands before React's own
+	// paint. That alone is not enough on a prerendered page, which is why
+	// anything already on screen is skipped outright below.
 	useLayoutEffect(() => {
 		const root = ref.current;
 		if (!root || prefersReduced()) return;
 
-		const items = Array.from(root.querySelectorAll<HTMLElement>("[data-reveal]"));
+		const all = Array.from(root.querySelectorAll<HTMLElement>("[data-reveal]"));
+		if (!all.length) return;
+
+		// Anything already inside the first viewport is left alone.
+		//
+		// The pages are prerendered, so the static HTML paints its final copy
+		// around 150ms, while hydration only reaches this hook around 580ms.
+		// Hiding an element that the reader can already see produced a measured
+		// 630ms blink on six routes. useLayoutEffect cannot prevent that: it is
+		// early relative to React, not relative to the prerendered paint.
+		//
+		// Skipping them is also the calmer reading of the brief. Motion belongs
+		// to the act of scrolling, so the first screen simply arrives.
+		const inFirstView = (el: HTMLElement) => {
+			const r = el.getBoundingClientRect();
+			return r.top < window.innerHeight && r.bottom > 0;
+		};
+		const items = all.filter((el) => !inFirstView(el));
 		if (!items.length) return;
 
-		// Stagger index is per group, so each group counts from zero.
+		// Stagger index is per group, so each group counts from zero. Only the
+		// elements that will actually animate get a delay, and the index counts
+		// within that subset, so a group straddling the fold still starts its
+		// stagger at zero instead of inheriting the offset of skipped siblings.
+		const animated = new Set(items);
 		for (const group of root.querySelectorAll<HTMLElement>("[data-reveal-group]")) {
-			const kids = Array.from(group.querySelectorAll<HTMLElement>("[data-reveal]"));
+			const kids = Array.from(group.querySelectorAll<HTMLElement>("[data-reveal]")).filter(
+				(el) => animated.has(el),
+			);
 			kids.forEach((el, i) => {
 				el.style.transitionDelay = `${Math.min(i, MAX_STAGGER_STEPS) * STAGGER_MS}ms`;
 			});
