@@ -1,0 +1,623 @@
+import { Link } from "wouter";
+import { SiteHeader, SiteFooter } from "../components/site-chrome";
+import { ContactForm } from "../components/contact-form";
+import { Faq, type FaqEntry } from "../components/faq";
+import { CONTACT } from "../components/brand";
+import { usePageMotion } from "../hooks/use-motion";
+
+/* Copy is ported verbatim from the original index.html. Structure and section
+   order are unchanged; only rhythm, motion, and the accordion/form mechanics
+   were touched. */
+
+const PILLARS = [
+	{ href: "#process", img: "tile-glove.jpg", alt: "White glove service", title: "White Glove Service" },
+	{
+		href: "#services",
+		img: "tile-custom.jpg",
+		alt: "Fully customized solutions",
+		title: "Fully Customized Solutions",
+	},
+	{ href: "/estimate.html", img: "tile-estimate.jpg", alt: "Quick estimate", title: "Quick Estimate" },
+	{
+		href: "#contact",
+		img: "tile-appt.jpg",
+		alt: "Schedule a private appointment",
+		title: "Schedule a Private Appointment",
+	},
+];
+
+const SERVICES = [
+	{
+		img: "art-drapery.jpg",
+		alt: "Floor-length custom drapery falling in soft folds beside a sunlit window",
+		title: "Custom Drapery",
+		body: "The softest thing you can add to a room. Made to measure in European fabrics, chosen for how they fall, age, and handle light, down to the header, lining, and stack-back.",
+		tags: "Softening · warmth · framing windows",
+	},
+	{
+		img: "art-roller.jpg",
+		alt: "A roller shade lowered part-way, holding back bright afternoon light",
+		title: "Roller Shades",
+		body: "Clean light control that knows when to disappear. A solar screen keeps your view while taming the Florida sun; a dimout gives rest and privacy; a blackout makes a bedroom truly dark.",
+		tags: "Glare · heat · views kept",
+	},
+	{
+		img: "art-roman.jpg",
+		alt: "A tailored Roman shade stacked in even folds above a window",
+		title: "Roman Shades",
+		body: "The softness of fabric in a tailored, space-saving form. A favorite for kitchens, baths, and windows where full curtains would be too much. Cordless and child-safe.",
+		tags: "Kitchens · baths · soft look",
+	},
+	{
+		img: "art-woven.jpg",
+		alt: "A natural woven shade in grasses and bamboo filtering warm light",
+		title: "Natural Woven Shades",
+		body: "Warmth and character woven from grasses, reeds, and bamboo. They filter light into something soft and golden, beautiful on their own and even better layered with drapery.",
+		tags: "Texture · organic · filtered light",
+	},
+	{
+		img: "art-motor.jpg",
+		alt: "Motorized shades lowered evenly across a wide wall of glass",
+		title: "Motorized Shading",
+		body: "The luxury of never touching a cord. Quiet, reliable motors for the windows you can't reach, whole walls of glass, and cord-free child safety, with the wiring handled by our licensed, insured electrical partner.",
+		tags: "Child-safe · smart-home · big glass",
+	},
+	{
+		img: "art-hardware.jpg",
+		alt: "A decorative metal drapery rod, bracket, and finial",
+		title: "Decorative Hardware",
+		body: "The jewelry of the window. The right rod, bracket, or finial pulls the whole look together, matched to the fabric, the room, and the way the drapery moves.",
+		tags: "Bronze · brass · matte black",
+	},
+];
+
+const STEPS = [
+	{
+		title: "We listen.",
+		body: "Tell us about your home and how you live in it. Which rooms matter most. What made you start this project now. We take notes, and we don't interrupt.",
+	},
+	{
+		title: "We learn the room.",
+		body: "How is it used, and when? Morning coffee or evening TV? Kids, pets, work-from-home? A room's daily rhythm decides everything that follows.",
+	},
+	{
+		title: "We find what's not working.",
+		body: "Glare on the screen. A room too hot to use in the afternoon. Fading on the floor. Light that wakes you too early. These are the problems good treatments quietly solve.",
+	},
+	{
+		title: "We observe and measure.",
+		body: "Sun exposure, ceiling height, window dimensions, furniture, electrical, safety. We measure carefully and photograph everything, so the solution fits the reality of the space.",
+	},
+	{
+		title: "We recommend.",
+		body: "Only now do we talk products, always in terms of your goals. The problem comes first. The product follows.",
+	},
+	{
+		title: "We tell you exactly what's next.",
+		body: "Timeline, proposal, production, installation. You should never wonder who's responsible or when you'll hear from us. That clarity is part of the work.",
+	},
+];
+
+const COLLECTIONS = [
+	{
+		title: "The Bed Collection",
+		body: "European linen and luxury cotton bedding, with the decorative pillows and throws that make a room feel considered.",
+	},
+	{
+		title: "The Bath Collection",
+		body: "Towels and textiles that turn a daily routine into something a little better.",
+	},
+	{
+		title: "The Outdoor Collection",
+		body: "Custom furniture covers and outdoor textiles built for the climate they live in.",
+	},
+	{ title: "The Living Collection", body: "The finishing pieces that pull a home together." },
+];
+
+const FAQS: FaqEntry[] = [
+	{
+		q: "Do you have a showroom, or do you come to us?",
+		a: "We come to you. Window treatments live in your rooms, in your light, so that's where every project should begin, and we bring the samples, fabric books, and measuring tools to you. We also offer virtual consultations and ship anywhere in the U.S. Just know that our remote projects still involve plenty of face-to-face time on video: we guide you through the measurements, walk you through fabric selection, and supervise the installation, every step of the way. We hold your hand from start to finish.",
+	},
+	{
+		q: "What does a project cost?",
+		a: "Custom work is priced by the project, because no two rooms are alike. After your consultation, you'll get a clear proposal with no surprises. We're not the cheapest option, and we're not trying to be. We're the option you don't have to redo.",
+	},
+	{
+		q: "How long does it take?",
+		a: "Because our work is custom and made to order, often in fabrics sourced from Europe, typical lead time runs about 6 to 8 weeks from order to installation. Some major holidays can add to that, and we'll always set a clear expectation at the time of order confirmation, then keep you updated the whole way.",
+	},
+	{
+		q: "For motorized shades, do I need to hire my own electrician?",
+		a: "No, and that's one of the best reasons to work with us. We coordinate it for you through our trusted, licensed and insured electrical partner, so your motorized shades are wired and working on the same schedule as the rest of your project. You never have to find or schedule an electrician yourself.",
+	},
+	{
+		q: "Do you work with my interior designer?",
+		a: "Gladly. Designers are some of our most valued partners. We coordinate directly with your designer, follow their specifications, and protect their vision at every step.",
+	},
+	{
+		q: "Is the consultation really free?",
+		a: "Yes, and there's no obligation. You'll come away understanding what's possible in your space whether or not you decide to work with us.",
+	},
+];
+
+export default function HomePage() {
+	const root = usePageMotion<HTMLDivElement>();
+
+	return (
+		<div className="page-home" ref={root}>
+			<a className="skip-link" href="#main">
+				Skip to content
+			</a>
+			<SiteHeader />
+
+			<main id="main">
+				{/* ---------------- HERO ---------------- */}
+				<section className="hero" id="home">
+					<div className="inner" data-hero>
+						<div className="kicker">Custom Window Treatments · South Florida</div>
+						<h1>
+							The light was always beautiful.
+							<br />
+							Now the room is, too.
+						</h1>
+						<p>
+							Custom drapery and shades, made to measure in European fabrics and fitted to how you
+							actually live. We start with a conversation about your home, never a catalog.
+						</p>
+						<div className="btn-row">
+							<a className="btn btn-dark" href="#contact">
+								Begin with a conversation
+							</a>
+							<Link className="btn btn-line" to="/estimate.html">
+								Get a quick estimate
+							</Link>
+						</div>
+						<div className="hero-art" data-hero-art>
+							<img
+								src="/assets/hero-1120.jpg"
+								/* The full 1800px file was going to phones too, which made a
+								   224 kB image the LCP element on a 390px viewport. */
+								srcSet="/assets/hero-780.jpg 780w, /assets/hero-1120.jpg 1120w, /assets/hero.jpg 1800w"
+								sizes="(max-width: 860px) 100vw, 1000px"
+								alt="Illustration of a South Florida living room with drapery, a boy using a shade remote, and a dog"
+								width={1120}
+								height={630}
+								/* The LCP element. Preloaded in index.html and flagged high
+								   priority so it is never queued behind the tiles below it. */
+								fetchPriority="high"
+								decoding="async"
+							/>
+						</div>
+					</div>
+				</section>
+
+				{/* ---------------- AT YOUR SERVICE ---------------- */}
+				<section className="block" style={{ paddingTop: 22 }} id="service">
+					<div className="wrap">
+						<div className="center narrow" style={{ marginBottom: 26 }} data-reveal>
+							<div className="kicker">At your service</div>
+							<h2 className="big center">A calm, hands-on way to work.</h2>
+						</div>
+						<div className="pillars" data-reveal-group>
+							{PILLARS.map((p) =>
+								p.href.startsWith("#") ? (
+									<a className="pillar" href={p.href} key={p.title} data-reveal>
+										<img className="pimg" src={`/assets/${p.img}`} alt={p.alt} />
+										<h3>{p.title}</h3>
+									</a>
+								) : (
+									<Link className="pillar" to={p.href} key={p.title} data-reveal>
+										<img className="pimg" src={`/assets/${p.img}`} alt={p.alt} />
+										<h3>{p.title}</h3>
+									</Link>
+								),
+							)}
+						</div>
+					</div>
+				</section>
+
+				{/* ---------------- PROMISE ---------------- */}
+				<section className="block">
+					<div className="wrap center narrow" data-reveal>
+						<div className="kicker">The promise</div>
+						<h2 className="big center">A beautiful home should also be a comfortable one.</h2>
+						<div className="body-text">
+							<p>
+								Window treatments do far more than dress a window. Done well, they soften the
+								afternoon glare, keep a room from overheating, protect your floors and furniture
+								from the sun, and let you sleep past sunrise. They make a space feel finished, and
+								easier to live in.
+							</p>
+							<p className="soft">
+								That's the whole point of what we do. Everything else is detail.
+							</p>
+						</div>
+					</div>
+				</section>
+
+				{/* ---------------- DIFFERENCE ---------------- */}
+				<section className="block band" id="about">
+					<div className="wrap two" data-reveal-group>
+						<div data-reveal>
+							<div className="kicker">Who we are</div>
+							<h2 className="big">We start with the room, not the catalog.</h2>
+						</div>
+						<div className="body-text" data-reveal>
+							<p>
+								Studio Elpa began with a simple frustration: too many beautiful rooms are undone by
+								the wrong window treatments. Glare on the television. A bedroom that fills with
+								light at 6 a.m. Furniture fading in the Florida sun.
+							</p>
+							<p>
+								So we work differently. We start by asking about the room, how you use it, when the
+								sun comes in, what's been quietly bothering you for years. Only then do we talk
+								about drapery, or shades, or motors. We are consultants first, product experts
+								second, salespeople never.
+							</p>
+							<p>
+								It's a slower way to work. It's also the reason our clients tell us,{" "}
+								<em>"You really listened,"</em> instead of <em>"You sold me something."</em>
+							</p>
+							<p>
+								<Link to="/founder.html">Read a note from our founder →</Link>
+							</p>
+						</div>
+					</div>
+				</section>
+
+				{/* ---------------- SERVICES ---------------- */}
+				<section className="block" id="services">
+					<div className="wrap">
+						<div className="center narrow" style={{ marginBottom: 44 }} data-reveal>
+							<div className="kicker">What we do</div>
+							<h2 className="big center">
+								Complete custom window treatments, made to measure.
+							</h2>
+							<p className="soft">
+								These are solutions, not a menu. The right choice for your room depends on how you
+								live in it, which is exactly where every project starts.
+							</p>
+						</div>
+						<div className="svc" data-reveal-group>
+							{SERVICES.map((s) => (
+								<div className="card" key={s.title} data-reveal>
+									<img
+										className="ph"
+										src={`/assets/${s.img}`}
+										alt={s.alt}
+										loading="lazy"
+										decoding="async"
+									/>
+									<div className="cb">
+										<h3>{s.title}</h3>
+										<p>{s.body}</p>
+										<div className="tags">{s.tags}</div>
+									</div>
+								</div>
+							))}
+						</div>
+						<div className="center" style={{ marginTop: 34 }} data-reveal>
+							<a className="btn btn-dark" href="#contact">
+								Not sure what you need? Let's talk it through.
+							</a>
+						</div>
+					</div>
+				</section>
+
+				{/* ---------------- ONE ROOF ---------------- */}
+				<section className="block band dark">
+					<div className="wrap two" data-reveal-group>
+						<div data-reveal>
+							<div className="kicker">One roof, no runaround</div>
+							<h2 className="big">One team, from the first question to the last screw.</h2>
+						</div>
+						<div className="body-text" data-reveal>
+							<p>
+								Custom window treatments usually mean juggling people: a salesperson, an installer
+								you've never met, and, for motorized shades, an electrician you have to find and
+								schedule yourself. Something always falls through the cracks.
+							</p>
+							<p>
+								We keep it all coordinated under one roof. Our own installers hang every treatment,
+								and the electrical that motorization needs is handled by our trusted, licensed and
+								insured electrical partner, scheduled and managed by us. No chasing a third party,
+								no <em>"that's not our department,"</em> and no gap between the person who designed
+								your project and the people who finish it. One point of contact, from the first
+								conversation to the last screw.
+							</p>
+						</div>
+					</div>
+				</section>
+
+				{/* ---------------- PROCESS ---------------- */}
+				<section className="block" id="process">
+					<div className="wrap narrow center" data-reveal>
+						<div className="kicker">How we work</div>
+						<h2 className="big center">The Discovery Consultation.</h2>
+						<div className="body-text">
+							<p>
+								You can't recommend a solution before you understand the problem, and every room
+								has its own. So we begin every project the same way: by listening. It's free, with
+								no obligation to go further.
+							</p>
+						</div>
+					</div>
+					<div className="wrap" style={{ marginTop: 20 }}>
+						<div className="steps" data-reveal-group>
+							{STEPS.map((s, i) => (
+								<div className="step-row" key={s.title} data-reveal>
+									<div className="n">{i + 1}</div>
+									<div>
+										<h3>{s.title}</h3>
+										<p>{s.body}</p>
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
+				</section>
+
+				{/* ---------------- DESIGNERS ---------------- */}
+				<section className="block band accent" id="designers">
+					<div className="wrap">
+						<div className="center narrow" style={{ marginBottom: 36 }} data-reveal>
+							<div className="kicker">For designers, architects &amp; builders</div>
+							<h2 className="big center">The execution behind your vision.</h2>
+							<p className="soft">
+								You've already designed the room. We bring the window treatments to life exactly as
+								you imagined, on time, on spec, and without ever getting between you and your
+								client. The creative vision is yours. Ours is to make it real.
+							</p>
+						</div>
+						<div className="trade-cols" data-reveal-group>
+							<div data-reveal>
+								<div className="kicker">What we bring</div>
+								<ul className="clean">
+									<li>
+										<b>Technical expertise.</b> Solar exposure, stack-back, light control, fabric
+										behavior, and the details that make or break a spec.
+									</li>
+									<li>
+										<b>Our own crews.</b> Precise measuring and installation by people who do this
+										every day, never subcontracted.
+									</li>
+									<li>
+										<b>A licensed, insured electrical partner.</b> Motorized projects don't stall
+										while a client hunts for an electrician; we coordinate it for you.
+									</li>
+									<li>
+										<b>Proactive communication.</b> You'll always know where things stand.
+									</li>
+								</ul>
+							</div>
+							<div data-reveal>
+								<div className="kicker">How we work with you</div>
+								<div className="body-text">
+									<p>
+										We can work from your specification package or help you build one. We
+										coordinate directly with you or through your client, whichever you prefer. We
+										never bypass you, never contradict you in front of a client, and if we ever
+										spot a concern, we raise it with you privately.
+									</p>
+									<p>
+										Your relationship with your client is yours. We're here to protect it. We
+										measure our success by one thing: whether working with us made your job
+										easier.
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				{/* ---------------- PROJECTS ---------------- */}
+				<section className="block" id="projects">
+					<div className="wrap">
+						<div className="center narrow" style={{ marginBottom: 36 }} data-reveal>
+							<div className="kicker">Selected projects</div>
+							<h2 className="big center">A few rooms we're proud of.</h2>
+							<p className="soft">
+								Every project starts as a conversation and ends as a room someone loves living in.
+								Here's one of them.
+							</p>
+						</div>
+						<div className="center narrow project-head" style={{ margin: "8px auto 0" }} data-reveal>
+							<div className="kicker">Before &amp; after</div>
+							<h3>A bare arched window, finally dressed.</h3>
+						</div>
+						<div className="ba" data-reveal-group>
+							<figure data-reveal>
+								<span className="ba-tag">Before</span>
+								<img
+									className="ba-img"
+									src="/assets/ba-before.jpg"
+									alt="The arched dining room window before, left almost bare"
+									loading="lazy"
+									decoding="async"
+								/>
+							</figure>
+							<figure data-reveal>
+								<span className="ba-tag">After</span>
+								<img
+									className="ba-img"
+									src="/assets/ba-after.jpg"
+									alt="The same window after, with full custom sheer drapery"
+									loading="lazy"
+									decoding="async"
+								/>
+							</figure>
+						</div>
+						<p className="ba-cap soft" data-reveal>
+							The same dining room. A tall arched window left almost bare, given full custom sheer
+							drapery that softens the afternoon light and finally frames the architecture, without
+							ever hiding the view.
+						</p>
+					</div>
+				</section>
+
+				{/* ---------------- WHAT'S NEXT ---------------- */}
+				<section className="block band dark" id="next">
+					<div className="wrap">
+						<div className="narrow" style={{ marginBottom: 36 }} data-reveal>
+							<div className="kicker">The bigger picture</div>
+							<h2 className="big">Window treatments are where we begin.</h2>
+							<p>
+								Studio Elpa started with windows because that's where beauty and comfort meet most
+								visibly. Our vision is bigger: a complete home textiles house, thoughtfully
+								assembled one collection at a time, each held to the same standard as our window
+								work.
+							</p>
+						</div>
+						<div className="collections" data-reveal-group>
+							{COLLECTIONS.map((c) => (
+								<div className="collection" key={c.title} data-reveal>
+									<h3>{c.title}</h3>
+									<p>{c.body}</p>
+								</div>
+							))}
+						</div>
+						<p style={{ marginTop: 26 }} data-reveal>
+							Want to know when a collection arrives? We'll only reach out when there's something
+							genuinely worth sharing.{" "}
+							<a href="#contact" style={{ color: "var(--dark-kick)" }}>
+								Keep me posted →
+							</a>
+						</p>
+					</div>
+				</section>
+
+				{/* ---------------- JOURNAL ---------------- */}
+				<section className="block" id="journal">
+					<div className="wrap">
+						<div className="center narrow" style={{ marginBottom: 36 }} data-reveal>
+							<div className="kicker">The Journal</div>
+							<h2 className="big center">Notes on light, fabric, and living well at home.</h2>
+							<p className="soft">
+								We spend our days thinking about how rooms work. This is where we share some of it.
+							</p>
+						</div>
+						<div className="journal" data-reveal-group>
+							<Link className="post" to="/journal-blackout.html" data-reveal>
+								<div className="tag">Light</div>
+								<h3>The case for real darkness</h3>
+								<p>
+									Why blackout matters for real, restful sleep, and how motorization quietly takes
+									the worry off your plate.
+								</p>
+								<span className="read">Read the story →</span>
+							</Link>
+							<div className="post" data-reveal>
+								<div className="tag">Comfort</div>
+								<h3>Why your beautiful room has a glare problem</h3>
+								<p>
+									The quiet fix that keeps the view and loses the squint, and protects your floors
+									and furniture while it's at it.
+								</p>
+							</div>
+							<div className="post" data-reveal>
+								<div className="tag">Drapery</div>
+								<h3>Ripple fold, pinch pleat, or grommet?</h3>
+								<p>
+									A plain-English guide to drapery headers, and how the one you choose changes the
+									whole feel of a room.
+								</p>
+							</div>
+						</div>
+						<div className="center soft" style={{ marginTop: 26, fontSize: 14 }} data-reveal>
+							More articles coming soon.
+						</div>
+					</div>
+				</section>
+
+				{/* ---------------- CONTACT ---------------- */}
+				<section className="block band" id="contact">
+					<div className="wrap">
+						<div className="center narrow" style={{ marginBottom: 44 }} data-reveal>
+							<div className="kicker">Let's begin</div>
+							<h2 className="big center">Tell us about the room.</h2>
+							<p className="soft">
+								Every project here starts the same way, with a conversation, not a commitment. Tell
+								us a little about your home and what you're hoping to improve, and we'll take it
+								from there.
+							</p>
+						</div>
+						<div className="contact-grid" data-reveal-group>
+							<div data-reveal>
+								<ContactForm sourcePage="/index.html" />
+							</div>
+							<div className="contact-side" data-reveal>
+								<h3>Prefer to talk?</h3>
+								<a
+									className="btn btn-dark"
+									href={CONTACT.booking}
+									target="_blank"
+									rel="noopener"
+									style={{
+										display: "block",
+										textAlign: "center",
+										width: "100%",
+										marginBottom: 18,
+									}}
+								>
+									Book a 30-minute call
+								</a>
+								<div className="row">
+									<span className="l">Call</span>
+									<a href={CONTACT.phoneHref}>{CONTACT.phone}</a>
+								</div>
+								<div className="row">
+									<span className="l">Email</span>
+									<a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+								</div>
+								<div className="row">
+									<span className="l">Serving</span>South Florida
+								</div>
+								<div className="row">
+									<span className="l">Response</span>Within one business day
+								</div>
+								<p className="soft" style={{ marginTop: 20, fontSize: 14 }}>
+									Here's what happens next: we'll get back to you within one business day, ask a
+									few things to understand your project, and set up a time to visit. No pressure,
+									no obligation, just the start of getting it right.
+								</p>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				{/* ---------------- FAQ ---------------- */}
+				<section className="block band accent">
+					<div className="wrap narrow">
+						<div className="center" data-reveal>
+							<div className="kicker">Good questions</div>
+							<h2 className="big center">The things people usually want to know.</h2>
+						</div>
+						<Faq entries={FAQS} />
+					</div>
+				</section>
+
+				{/* ---------------- FINAL CTA ---------------- */}
+				<section className="block">
+					<div className="wrap">
+						<div className="callout" data-reveal>
+							<div className="kicker">No pressure. Just a conversation.</div>
+							<h2>Tell us about the room.</h2>
+							<p>
+								We'll bring the questions, the samples, and the experience. You'll leave the first
+								meeting knowing exactly what's possible, whether or not you work with us.
+							</p>
+							<div style={{ marginTop: 26 }}>
+								<a className="btn btn-solid" href="#contact">
+									Begin a conversation
+								</a>
+							</div>
+						</div>
+					</div>
+				</section>
+			</main>
+
+			<SiteFooter />
+		</div>
+	);
+}
