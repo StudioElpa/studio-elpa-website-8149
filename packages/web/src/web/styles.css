@@ -383,9 +383,14 @@ ul.inline li {
 	font-family: var(--sans);
 	font-size: 13.5px;
 	font-weight: 600;
-	letter-spacing: 0.18em;
+	/* V1.2 section 3: tailored rather than heavy. 0.18em -> 0.13em and 15px ->
+	   12px of vertical padding, which takes the button from 55.6px to ~49.6px.
+	   Applied to .btn globally rather than only the hero so the contact submit
+	   and the estimate wizard do not end up visibly chunkier than the hero
+	   pair. Still well above the 44px minimum tap target. */
+	letter-spacing: 0.13em;
 	text-transform: uppercase;
-	padding: 15px 34px;
+	padding: 12px 32px;
 	cursor: pointer;
 	border: none;
 	transition:
@@ -1013,7 +1018,10 @@ footer.site .wordmark {
 
 .page-home .hero {
 	background: var(--bg);
-	padding: 46px 0 8px;
+	/* V1.2 section 3: total desktop hero height reduced ~16% (1217px -> ~1019px)
+	   so the next section begins sooner. Savings come from vertical rhythm and
+	   the illustration's max-width, never from the type scale, which is locked. */
+	padding: 30px 0 4px;
 	text-align: center;
 	border: none;
 }
@@ -1025,22 +1033,31 @@ footer.site .wordmark {
 
 .page-home .hero .kicker {
 	color: var(--accent);
-	margin-bottom: 20px;
+	margin-bottom: 14px;
 }
 
 .page-home .hero h1 {
 	font-size: clamp(43px, 6.78vw, 72.5px);
 	color: var(--ink);
 	max-width: 840px;
-	margin: 0 auto 16px;
+	margin: 0 auto 12px;
 	font-weight: 500;
+}
+
+/* Replaces the old <br />, so each line is an element the hero sequence can
+   settle independently (brief section 3). Block display reproduces the line
+   break exactly, and no opacity or transform is declared here: the headline is
+   the LCP element and must paint in its final state under no-JS, a failed
+   chunk, and reduced motion. GSAP applies the transform after paint. */
+.page-home .hero h1 .hline {
+	display: block;
 }
 
 .page-home .hero p {
 	color: var(--ink-soft);
 	font-size: 20.5px;
 	max-width: 610px;
-	margin: 0 auto 26px;
+	margin: 0 auto 20px;
 	font-weight: 400;
 }
 
@@ -1049,7 +1066,7 @@ footer.site .wordmark {
 }
 
 .hero-art {
-	margin-top: 36px;
+	margin-top: 20px;
 	/* deliberately NOT overflow:hidden — a clip would reintroduce the hard
 	   edge the mask below exists to remove, and it would fight the parallax
 	   drift. The feather keeps the illustration tidy on its own. */
@@ -1071,7 +1088,11 @@ footer.site .wordmark {
 	position: relative;
 	display: block;
 	width: 100%;
-	max-width: 1120px;
+	/* V1.2 section 3: 1120px -> 860px. The illustration was 630px tall and the
+	   single largest contributor to hero height; scaling it proportionally to
+	   ~484px is the bulk of the reduction. Cropping with object-fit was rejected
+	   because it would cut the boy and the dog out of the artwork. */
+	max-width: 860px;
 	margin: 0 auto;
 	animation: hero-breathe 24s ease-in-out infinite alternate;
 
@@ -1081,8 +1102,12 @@ footer.site .wordmark {
 	   (#F5F1EA), so the falloff resolves to the precise page colour with no
 	   seam. Corners get both gradients, which reads as a soft vignette.
 	   On the frame, not the <img>, so the light sweep inside is feathered by
-	   exactly the same falloff and cannot show a hard rectangle. */
-	--feather: 140px;
+	   exactly the same falloff and cannot show a hard rectangle.
+	   V1.2 section 3: scaled 140px -> 108px alongside the 1120px -> 860px
+	   max-width (860/1120 = 0.768) so the falloff keeps the ratios that were
+	   measured and approved in V1.1: 12.5% of the width, 22% of the height.
+	   Left at 140px it would have eaten 29% of the shorter image's height. */
+	--feather: 108px;
 	mask-image:
 		linear-gradient(
 			to bottom,
@@ -2493,10 +2518,15 @@ footer.lp .wordmark {
 		padding: 0 24px;
 	}
 
-	/* 140px of falloff would eat most of a phone-width illustration, so the
-	   feather scales down with the image. */
-	.hero-art img {
-		--feather: 56px;
+	/* A desktop-sized falloff would eat most of a phone-width illustration, so
+	   the feather scales down with the image. This override MUST sit on
+	   .hero-frame: the mask that consumes --feather moved to the frame during
+	   the V1.1 gap closure, and custom properties only inherit downward, so the
+	   previous `.hero-art img` version was silently dead and mobile was
+	   rendering the full desktop falloff. 44px is 12.5% of the ~342px frame at
+	   390px wide, the same ratio the desktop feather uses. */
+	.hero-frame {
+		--feather: 44px;
 	}
 
 	.two,

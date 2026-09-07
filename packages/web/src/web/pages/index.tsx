@@ -160,10 +160,14 @@ export default function HomePage() {
 				<section className="hero" id="home">
 					<div className="inner" data-hero>
 						<div className="kicker">Custom Window Treatments · South Florida</div>
+						{/* Two block spans rather than a <br />, so the GSAP sequence can settle
+						    the headline line by line (brief section 3). They are authored here
+						    rather than split from the DOM at runtime, so the prerendered HTML
+						    already contains them and hydration sees identical markup. The h1
+						    still holds the whole sentence for assistive tech. */}
 						<h1>
-							The light was always beautiful.
-							<br />
-							Now the room is, too.
+							<span className="hline">The light was always beautiful.</span>{" "}
+							<span className="hline">Now the room is, too.</span>
 						</h1>
 						<p>
 							Custom drapery and shades, made to measure in European fabrics and fitted to how you
@@ -189,7 +193,10 @@ export default function HomePage() {
 									/* The full 1800px file was going to phones too, which made a
 									   224 kB image the LCP element on a 390px viewport. */
 									srcSet="/assets/hero-780.jpg 780w, /assets/hero-1120.jpg 1120w, /assets/hero.jpg 1800w"
-									sizes="(max-width: 860px) 100vw, 1000px"
+									/* 860px, not 1000px: the frame's max-width came down to 860px in
+									   V1.2 section 3, and an overstated `sizes` lets the browser pick a
+									   larger candidate than it will ever render. */
+									sizes="(max-width: 860px) 100vw, 860px"
 									alt="Illustration of a South Florida living room with drapery, a boy using a shade remote, and a dog"
 									width={1120}
 									height={630}

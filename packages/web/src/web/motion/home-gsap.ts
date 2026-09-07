@@ -39,19 +39,52 @@ export async function startHomeMotion(root: HTMLElement): Promise<StopMotion> {
 		// Two separate targets on purpose: the reveal animates the <img> and the
 		// drift animates its wrapper, so the two transforms never fight over the
 		// same matrix.
+		// ---- headline settles line by line (brief section 3) ----
+		// The brief allows the headline to settle "once it is already rendered",
+		// and section 1 forbids delaying or concealing it. Both hold here because
+		// this is TRANSFORM ONLY: opacity is never touched, so the h1 is fully
+		// legible at every frame, including before this module has even loaded.
+		// 8px is deliberately tiny; anything larger stops reading as a settle.
+		const heroLines = root.querySelectorAll<HTMLElement>("[data-hero] h1 .hline");
+		if (heroLines.length > 0) {
+			gsap.from(heroLines, {
+				y: 8,
+				duration: 0.65,
+				ease: "power2.out",
+				stagger: 0.08,
+				// Hand the element back to CSS with no inline transform left behind.
+				clearProps: "transform",
+			});
+		}
+
 		if (heroImg) {
-			// Starts at 0.55, never 0. The illustration is a large painted area, so
-			// starting from fully transparent would both read as a flash and risk
-			// making the fade itself the LCP moment.
+			// "Resolves gently from a soft wash into final linework" (brief section
+			// 3). The wash is blur plus desaturation, so what resolves is the FOCUS
+			// of the drawing rather than a zoom: the pencil lines gather out of a
+			// soft bloom. Scale is deliberately not animated any more, so nothing
+			// here reads as a zoom and the only scale on the hero is the CSS
+			// breathing loop on .hero-frame.
+			//
+			// The end state repeats .hero-art img's CSS filter verbatim. GSAP
+			// animating `filter` replaces the whole property, so omitting the base
+			// filter would make the illustration snap to full saturation on the
+			// last frame. clearProps then returns ownership to the stylesheet.
+			const BASE_FILTER = "sepia(0.3) saturate(0.86) brightness(1.03) contrast(0.93)";
 			gsap.fromTo(
 				heroImg,
-				{ opacity: 0.55, scale: 1.035 },
+				{
+					// Starts at 0.6, never 0. The illustration is a large painted area,
+					// so starting fully transparent would read as a flash and risk
+					// making the fade itself the LCP moment.
+					opacity: 0.6,
+					filter: `blur(5px) sepia(0.42) saturate(0.6) brightness(1.08) contrast(0.72)`,
+				},
 				{
 					opacity: 1,
-					scale: 1,
-					duration: 1.1,
+					filter: BASE_FILTER,
+					duration: 1.2,
 					ease: "power2.out",
-					clearProps: "opacity,transform",
+					clearProps: "opacity,filter",
 				},
 			);
 		}
@@ -63,7 +96,9 @@ export async function startHomeMotion(root: HTMLElement): Promise<StopMotion> {
 				heroArt,
 				{ yPercent: 0 },
 				{
-					yPercent: 7,
+					// Brief section 3 caps the scroll drift at 5-7%. 6% sits inside the
+					// band rather than exactly on the ceiling.
+					yPercent: 6,
 					ease: "none",
 					scrollTrigger: {
 						trigger: heroArt,

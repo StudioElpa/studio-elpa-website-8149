@@ -488,3 +488,142 @@ motion), /tmp/feather.py (scroll, assert revealStripped, pixel-scan the mask),
 NEXT: V1.2 sections 3-16, starting with s3 hero height reduction. Note s9 needs
 [data-process]/[data-process-progress] markup added; the GSAP side is written
 and inert. s11 before/after is the third approved GSAP experience, not built.
+
+================================================================================
+V1.2 SECTION 3 - HERO (DONE, verified)
+================================================================================
+
+GOAL (brief s3): keep headline/copy/centered composition/pencil illustration/two
+CTAs/four-edge feather. Cut desktop hero height 15-20%. Bring part of the
+illustration into the mobile first viewport. Slightly reduce primary CTA height
+and letter-spacing. One restrained GSAP sequence: never delay/conceal the h1;
+headline may settle by line with very small upward movement once already
+rendered; illustration resolves from a soft wash into final linework; scroll
+drift 5-7% max; no dramatic zoom, rotation, bounce or elastic easing.
+
+--- height reduction: measured, not estimated (/tmp/herogeo.py) ---
+Desktop hero 1217px -> 1013px = -204px = -16.8%, inside the 15-20% band.
+Next section now starts at y=1098 (was y=1302).
+
+  .page-home .hero padding   46px 0 8px -> 30px 0 4px      -20
+  .hero .kicker margin-bot   20px -> 14px                   -6
+  .hero h1 margin-bot        16px -> 12px                   -4
+  .hero p margin-bot         26px -> 20px                   -6
+  .hero-art margin-top       36px -> 20px                  -16
+  .hero-frame max-width      1120px -> 860px (630->484 tall) -146
+
+Mobile 390: hero 851 -> 807px, illustration in first viewport 60% -> 83%. The
+s3 mobile requirement was already met at baseline and is now comfortably met.
+Laptop 1280: 39% of the illustration in the first viewport.
+
+REJECTED ON PURPOSE: shrinking the h1 (250px for two lines) would have been the
+fastest saving but the V1.1 type scale is user-approved and the preamble says
+preserve typography direction. Also rejected: object-fit:cover to shorten the
+illustration, which would crop the boy and the dog out of the artwork.
+
+UNPLANNED WIN: at 860px the illustration now nearly matches the h1's 840px
+measure, so it echoes the headline column instead of being wider than
+everything above it as the 1120px version was. Checked by eye, it does not
+float. NOTE: .wrap is 1240px wide, not the 1080px an earlier note claimed.
+
+--- CTA tightened (.btn, GLOBAL not hero-scoped) ---
+letter-spacing 0.18em -> 0.13em, padding 15px 34px -> 12px 32px.
+Measured: height 55.625px -> 49.625px, letter-spacing 2.43px -> 1.755px.
+Still above the 44px minimum tap target (47.6px at mobile font size).
+Applied globally so the contact submit and estimate wizard do not end up
+visibly chunkier than the hero pair. Inherited by .btn-line and .btn-ghost.
+
+--- BUG FOUND AND FIXED: the mobile feather override was dead ---
+The V1.1 gap closure moved the feather mask from .hero-art img to .hero-frame,
+but the mobile override still set `--feather: 56px` on `.hero-art img`, a CHILD
+of the frame. Custom properties only inherit DOWNWARD, so the override never
+reached the mask and mobile had been rendering the full desktop falloff.
+Fixed: override moved to `.hero-frame`.
+Also scaled the desktop feather 140px -> 108px alongside 1120px -> 860px
+(860/1120 = 0.768) to preserve the V1.1-approved ratios. Left at 140px it would
+have eaten 29% of the shorter image's height.
+Verified live (/tmp/featherlive.py), one mask owner only:
+  desktop frame 861x484, --feather 108px = 12.5% w / 22.3% h
+  mobile  frame 342x193, --feather  44px = 12.9% w / 22.8% h
+  maskOnFrame=True, maskOnImg=False at both breakpoints.
+
+--- the GSAP hero sequence (motion/home-gsap.ts) ---
+Reconciling s1 (never delay the h1/LCP) with s3 (headline may settle once
+already rendered): animate TRANSFORM ONLY, from opacity 1, after paint. Never
+an opacity hide. The standing motion contract is intact.
+
+1. Headline settles by line. h1's <br /> replaced with two block
+   <span className="hline">. Authored in JSX, NOT split from the DOM at
+   runtime, so the prerendered HTML already contains the spans and hydration
+   sees identical markup. `gsap.from(lines, {y: 8, duration: .65,
+   stagger: .08, clearProps: "transform"})`. Opacity is never touched.
+   .page-home .hero h1 .hline { display: block } reproduces the old line break
+   and declares NO opacity/transform, so no-JS/failed-chunk/reduced-motion all
+   paint the headline final.
+   HONEST LIMIT: the two spans are SENTENCES, not visual lines. At desktop the
+   h1 renders as three visual lines, so line 1's span covers two of them. True
+   per-visual-line splitting needs runtime measurement and breaks responsively
+   (four visual lines at 390px). Report as settle-by-sentence.
+   ACCESSIBILITY: {" "} between the spans, otherwise h1.textContent read
+   "beautiful.Now" with no separator. Zero layout effect (blocks ignore
+   inter-element whitespace); hero height still 1013px after adding it.
+
+2. Illustration resolves from a soft wash into final linework. Replaced the
+   old opacity .55 + scale 1.035 reveal with a BLUR + DESATURATION resolve, so
+   what resolves is the drawing's FOCUS rather than a zoom:
+     from blur(5px) sepia(.42) saturate(.6) brightness(1.08) contrast(.72), op .6
+     to   sepia(.3) saturate(.86) brightness(1.03) contrast(.93), op 1
+     1.2s power2.out, clearProps "opacity,filter"
+   Scale is deliberately no longer animated, so nothing reads as a zoom and the
+   only scale on the hero is the CSS breathing loop on .hero-frame.
+   CRITICAL: GSAP animating `filter` REPLACES the whole property, so the end
+   state repeats .hero-art img's CSS filter verbatim. Omit it and the
+   illustration snaps to full saturation on the last frame.
+
+3. Scroll drift yPercent 7 -> 6, inside the brief's 5-7% cap rather than
+   exactly on the ceiling. Measured 29.0px on a 484px element = 6.0%.
+
+REDUCED MOTION needs no new guard: useHomeMotion() bails on prefersReduced()
+BEFORE the dynamic import (use-motion.ts:145), so reduced motion loads zero
+GSAP and nothing in home-gsap.ts can run. Verified, not assumed.
+
+--- also fixed ---
+img `sizes` was "(max-width: 860px) 100vw, 1000px" while the frame now caps at
+860px. An overstated sizes lets the browser pick a larger candidate than it can
+ever render. Now "...100vw, 860px".
+
+--- verification ---
+bun run lint: 21 files, 0 warnings, 0 errors. bun run build clean, 8 routes
+prerendered. Main chunk 567.38 kB / 173.55 kB gzip (was 567.19/173.55, so s3
+cost ~0.2 kB raw and nothing measurable gzipped).
+
+/tmp/heroseq.py - 18/18 PASS: 2 animatable lines; min line opacity ever
+observed = 1 (sampled every frame from before hydration); both lines end op 1
+transform none, no inline transform; illustration ends op 1, not blurred, no
+inline filter, resolved to the stylesheet base filter not full saturation;
+drift 6.0%; reduced motion = lines visible with NO transform, no GSAP filter,
+not blurred, breathing loop off, no transform parked on the frame.
+
+/tmp/h1flash.py (NEW, against the PRERENDERED build on 4310) - 10/10 PASS.
+Written because flashprobe.py only samples [data-reveal] elements and the hero
+is not one, so it reports "no above-fold reveals sampled" for index.html and
+could say NOTHING about the h1. Samples the h1 and its spans every frame from
+an init script injected before hydration:
+  desktop: h1 first painted 19ms, min opacity ever 1, max |translateY| 8px
+  mobile:  h1 first painted 37ms, min opacity ever 1, max |translateY| 8px
+  both end op 1 / transform none, accessible text keeps the separator.
+
+/tmp/flashprobe.py widened from 4 routes to all 8. 0 routes with a flash or
+hidden content. index.html and estimate.html report "no above-fold reveals
+sampled" by design (their above-fold content is not in the reveal system).
+
+/tmp/motionqa.py - GSAP on index only; reveals 0 stuck / 0 initLeft on all 8
+routes; reduced motion gsapChunks=[]; GSAP chunk blocked -> h1 opacity 1,
+heroImg 1, 0 stuck.
+
+Screenshots viewed: /tmp/v12-hero-desktop.png, /tmp/v12-hero-mobile.png.
+
+NEXT: V1.2 sections 4-16. s9 needs [data-process]/[data-process-progress]
+markup added; the GSAP side is written and inert. s11 before/after is the third
+approved GSAP experience, not built. Outstanding from s2: confirm the thin
+active-section indicator still works.
