@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { Logo, Wordmark, CONTACT } from "./brand";
 import { useCondensedHeader, useScrollSpy } from "../hooks/use-motion";
@@ -79,21 +79,71 @@ export function SiteHeader() {
 	const [open, setOpen] = useState(false);
 	const condensed = useCondensedHeader();
 	const active = useScrollSpy(HOME_SECTIONS);
+	const btnRef = useRef<HTMLButtonElement | null>(null);
+	const navRef = useRef<HTMLElement | null>(null);
+	// Whether closing should hand focus back to the menu button. True when the
+	// drawer is dismissed (Escape, or the button itself), false when the reader
+	// picked a destination, because yanking focus back to the hamburger after
+	// choosing a section would undo the choice they just made.
+	const restoreRef = useRef(false);
 
-	// Escape closes the drawer — a menu you can only close with a mouse is a trap.
+	const closeMenu = (restoreFocus: boolean) => {
+		restoreRef.current = restoreFocus;
+		setOpen(false);
+	};
+
+	// Escape closes the drawer — a menu you can only close with a mouse is a
+	// trap — and Tab is kept inside it, so focus cannot wander onto the page
+	// content sitting behind a full-screen overlay.
 	useEffect(() => {
 		if (!open) return;
 		const onKey = (e: KeyboardEvent) => {
-			if (e.key === "Escape") setOpen(false);
+			if (e.key === "Escape") {
+				closeMenu(true);
+				return;
+			}
+			if (e.key !== "Tab") return;
+			const btn = btnRef.current;
+			const nav = navRef.current;
+			if (!btn || !nav) return;
+			// The button is part of the cycle: it is the drawer's own control and
+			// stays visible as the close affordance while the drawer is open.
+			const items = [
+				btn,
+				...Array.from(nav.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")),
+			];
+			const first = items[0];
+			const last = items[items.length - 1];
+			if (!first || !last) return;
+			const el = document.activeElement as HTMLElement | null;
+			if (!el || !items.includes(el)) {
+				// Focus is somewhere behind the overlay (logo, phone, page body).
+				e.preventDefault();
+				first.focus();
+			} else if (e.shiftKey && el === first) {
+				e.preventDefault();
+				last.focus();
+			} else if (!e.shiftKey && el === last) {
+				e.preventDefault();
+				first.focus();
+			}
 		};
 		window.addEventListener("keydown", onKey);
 		return () => window.removeEventListener("keydown", onKey);
 	}, [open]);
 
+	// Focus returns to the button that opened the drawer, so a keyboard reader
+	// resumes where they were instead of at the top of the document.
+	useEffect(() => {
+		if (open || !restoreRef.current) return;
+		restoreRef.current = false;
+		btnRef.current?.focus();
+	}, [open]);
+
 	return (
 		<header className={condensed ? "site condensed" : "site"}>
 			<div className="wrap bar">
-				<a className="logo" href="#home" onClick={() => setOpen(false)}>
+				<a className="logo" href="#home" onClick={() => closeMenu(false)}>
 					{/* No height prop: styles.css owns it so the media queries can
 					    shrink the logo. See Logo's height doc comment. */}
 					<Logo variant="header" />
@@ -102,28 +152,38 @@ export function SiteHeader() {
 				<button
 					type="button"
 					className="menu-btn"
+					ref={btnRef}
 					aria-expanded={open}
 					aria-controls="site-nav"
 					aria-label={open ? "Close menu" : "Open menu"}
-					onClick={() => setOpen((v) => !v)}
+					onClick={() => {
+						restoreRef.current = false;
+						setOpen((v) => !v);
+					}}
 				>
 					<MenuIcon open={open} />
 				</button>
-				<nav className={open ? "main open" : "main"} id="site-nav" aria-label="Main" data-nav>
+				<nav
+					className={open ? "main open" : "main"}
+					id="site-nav"
+					ref={navRef}
+					aria-label="Main"
+					data-nav
+				>
 					{NAV.map((item) => (
 						<a
 							key={item.hash}
 							href={`#${item.hash}`}
 							className={active === item.hash ? "active" : undefined}
-							onClick={() => setOpen(false)}
+							onClick={() => closeMenu(false)}
 						>
 							{item.label}
 						</a>
 					))}
-					<Link to="/estimate.html" onClick={() => setOpen(false)}>
+					<Link to="/estimate.html" onClick={() => closeMenu(false)}>
 						Estimate
 					</Link>
-					<a className="nav-cta" href="#contact" onClick={() => setOpen(false)}>
+					<a className="nav-cta" href="#contact" onClick={() => closeMenu(false)}>
 						Begin a conversation
 					</a>
 				</nav>

@@ -269,3 +269,96 @@ on disk per the user's instruction, for placements where the tagline can be
 read; it is currently referenced by no component.
 header.lp .logo img 48 -> 44px to match its inline height (inline wins, so a
 mismatched rule would be a silent lie).
+
+### V1.2 s1 — motion refactor (DONE, committed beb5a9d + fa22534)
+
+GSAP is now lazy and homepage-only. packages/web/src/web/motion/home-gsap.ts
+is the ONLY module that imports gsap/ScrollTrigger, and it is never imported
+statically: useHomeMotion reaches it through import() on requestIdleCallback
+(200ms setTimeout fallback for Safari). registerPlugin runs inside the
+function, so ScrollTrigger is never registered on routes that do not use it.
+Three approved experiences only: hero reveal+drift, discovery-process progress
+line (written, inert until s9 adds [data-process-progress] markup), project
+before/after (not built yet).
+
+use-motion.ts now imports NO animation library. usePageMotion drives
+[data-reveal] with an IntersectionObserver plus CSS transitions
+(rootMargin 0 0 -18% 0, threshold 0.01, play-once, 70ms per-group stagger
+capped at 6 steps), then strips reveal-init/reveal-in and the inline delay on
+transitionend so the element returns to plain markup.
+
+REMOVED deliberately (report these): GSAP hero text stagger (brief forbids
+delaying the hero heading/copy - it is the LCP element), GSAP nav stagger
+(s2 says use CSS for navigation), GSAP [data-parallax] photography drift on
+drapery/motorized/blackout (not one of the three approved experiences).
+data-hero and data-nav remain in markup but are now unused by JS.
+
+Bundle: main chunk 681.78 kB / 219.05 kB gzip -> 566.28 kB / 173.32 kB gzip.
+Initial JS down 45.7 kB gzip (-21%). New lazy chunks: gsap core 70.43 kB /
+27.68 gzip, ScrollTrigger 43.55 / 18.11, home-gsap 1.00 / 0.56.
+Lighthouse mobile (prerendered + gzip server): perf 64 -> 71, FCP 2.3 -> 2.2s,
+LCP 6.7 -> 6.0s, TBT 390 -> 250ms, SI 3.1 -> 2.4s, CLS 0.014, A11y 100,
+Best Practices 96 -> 100, SEO 100.
+
+### The reveal flash — found by measurement, fixed (fa22534)
+
+/tmp/flashprobe.py installs a rAF sampler via add_init_script (so it runs
+BEFORE hydration) and records opacity over the first 4s. It caught a real
+regression the prerender introduced: at 390x844 the static HTML painted final
+copy at ~150ms, hydration added reveal-init at ~575-606ms, and the copy faded
+back in ~632ms later. A visible blink on above-the-fold content on six routes.
+useLayoutEffect CANNOT fix this - it is early relative to React, not relative
+to the prerendered paint.
+
+Fix: usePageMotion skips every [data-reveal] intersecting the initial viewport
+(top < innerHeight && bottom > 0). Those render final immediately and are
+never observed. Stagger indices count within the animated subset only, so a
+group straddling the fold still starts at zero. Re-measured: hiddenAt null,
+finalOp 1 on privacy/founder/journal/drapery. Below-fold reveals unchanged.
+This is also the calmer reading of the brief - motion belongs to scrolling.
+
+### QA scripts added this session
+
+/tmp/motionqa.py  - 5 motion checks. NOTE: it MUST scroll; the first version
+                    reported 55/55 reveals "stuck" purely because it never
+                    scrolled and the first [data-reveal] on index sits at
+                    y=1345. All 5 checks now pass: GSAP absent on the 7
+                    non-home routes, present on index, 0 stuck reveals and 0
+                    leftover reveal-init on all 8 routes, reduced motion shows
+                    everything with zero GSAP requested, and force-aborting
+                    the GSAP chunks still leaves h1 + hero img at opacity 1.
+/tmp/flashprobe.py - pre-hydration rAF opacity sampler described above.
+/tmp/revealflash.py - lists [data-reveal] intersecting the first viewport per
+                    route at 1440x900 and 390x844.
+Caveat: motionqa's GSAP_HINT does not match the gsap core chunk's filename
+(index-*.js), so only ScrollTrigger + home-gsap show in its chunk list. The
+core chunk still loads; the split is proven by the build output sizes.
+
+### V1.2 s2 — mobile drawer accessibility (DONE)
+
+Escape was already wired in V1. Added a focus trap and focus return in
+SiteHeader (packages/web/src/web/components/site-chrome.tsx):
+- btnRef / navRef, plus restoreRef tracking WHY the drawer closed.
+- Tab and Shift+Tab cycle through [menu button, ...nav links]. The button is
+  part of the cycle because it is the drawer's own close affordance. If focus
+  is found outside that set (logo, phone, page body behind the overlay), Tab
+  pulls it back to the first item.
+- Escape and the button close with restore=true, so focus lands back on the
+  menu button. Nav links / logo close with restore=false, because yanking
+  focus back to the hamburger after the reader picked a section would undo
+  the choice they just made.
+
+Overlay-not-push needed no change: nav.main is position:absolute inside the
+sticky header. Verified rather than assumed.
+
+/tmp/menuqa.py, all 5 checks PASS at 390x844 against the production build:
+1. nav flex/absolute, top=72 (tracks the 72px mobile bar), 7 links,
+   aria-expanded=true; h1 top 169 -> 169 and scrollHeight 19051 -> 19051, so
+   the page does not move.
+2. Forward Tab: button -> 7 nav links -> wraps to button. Zero escapes.
+3. Shift+Tab from the button wraps to "Begin a conversation".
+4. Escape: closes, aria-expanded=false, focus back on the menu button.
+5. Nav link: closes, hash=#process, focus NOT yanked to the button.
+
+Still to confirm for s2: the thin active-section indicator after the motion
+refactor (useScrollSpy is untouched plain IntersectionObserver, but verify).
