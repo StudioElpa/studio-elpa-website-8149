@@ -3,7 +3,7 @@ import { SiteHeader, SiteFooter } from "../components/site-chrome";
 import { ContactForm } from "../components/contact-form";
 import { Faq, type FaqEntry } from "../components/faq";
 import { CONTACT } from "../components/brand";
-import { usePageMotion } from "../hooks/use-motion";
+import { usePageMotion, useHomeMotion } from "../hooks/use-motion";
 
 /* Copy is ported verbatim from the original index.html. Structure and section
    order are unchanged; only rhythm, motion, and the accordion/form mechanics
@@ -143,6 +143,10 @@ const FAQS: FaqEntry[] = [
 
 export default function HomePage() {
 	const root = usePageMotion<HTMLDivElement>();
+	// Homepage only. Lazily pulls in GSAP once the browser is idle, so it stays
+	// out of the initial chunk and ScrollTrigger is never registered on the
+	// seven routes that do not use it.
+	useHomeMotion(root);
 
 	return (
 		<div className="page-home" ref={root}>

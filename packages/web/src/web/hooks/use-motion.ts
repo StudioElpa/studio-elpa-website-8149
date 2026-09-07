@@ -1,18 +1,20 @@
-import { useLayoutEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 /**
- * Motion contract for this site (brief section 7):
+ * Motion contract for this site (V1 brief section 7, tightened by V1.2
+ * section 1):
  *
- * - Nothing is hidden by CSS. Every reveal animates *from* a hidden state
- *   inside useLayoutEffect, so if JS never runs, or reduced motion is on,
- *   the copy is already in its final, readable state. Hero text is never
- *   gated behind an animation.
- * - Calm values only: 0.5-0.8s, power2/power3 out, 0.06-0.1s stagger,
- *   travel under 24px, parallax a few percent.
+ * - This module imports NO animation library. It is loaded on every route, so
+ *   anything imported here lands in the initial JS chunk. GSAP lives in
+ *   motion/home-gsap.ts and is only ever reached through a dynamic import.
+ * - Nothing is hidden by CSS on its own. Every reveal is driven by a class
+ *   that JavaScript adds at runtime, so if JS never runs, or GSAP fails to
+ *   load, or reduced motion is on, the copy is already in its final readable
+ *   state. The prerender step depends on this: it snapshots with reduced
+ *   motion emulated, so no hidden state is ever baked into the static HTML.
+ * - The hero heading and hero copy are never animated. They are the LCP
+ *   candidates and the brief forbids delaying them.
+ * - Calm values only: 0.5-0.8s, ease-out, ~0.07s stagger, travel under 24px.
  * - play-once. No scrub-driven text, no reverse-on-scroll-up jitter.
  */
 
@@ -22,171 +24,132 @@ function prefersReduced() {
 	return typeof window !== "undefined" && window.matchMedia(REDUCED).matches;
 }
 
+/** Class names must match the reveal block in styles.css. */
+const HIDDEN = "reveal-init";
+const SHOWN = "reveal-in";
+
+/** Matches the 0.07s stagger in the old GSAP grouped reveal. */
+const STAGGER_MS = 70;
+/** Cap so a large grid never leaves the last item waiting. */
+const MAX_STAGGER_STEPS = 6;
+
 /**
- * Attach to a page root. Animates, in order:
- *   [data-hero]      children, on load, as one orchestrated intro
- *   [data-reveal]    on scroll, grouped by their [data-reveal-group] ancestor
- *   [data-parallax]  a few percent of drift while the section passes
+ * Attach to a page root. Reveals [data-reveal] elements on scroll using an
+ * Intersection Observer and CSS transitions. No animation library involved.
+ *
+ * Elements sharing a [data-reveal-group] ancestor arrive together as a
+ * staggered set, so a grid reads as a grid rather than item by item.
+ *
+ * Runs on every route. Anything heavier belongs in useHomeMotion.
  */
 export function usePageMotion<T extends HTMLElement = HTMLDivElement>() {
 	const ref = useRef<T | null>(null);
 
+	// useLayoutEffect, not useEffect: the hidden class is applied before the
+	// browser paints, so content never flashes in and then hides itself.
 	useLayoutEffect(() => {
 		const root = ref.current;
 		if (!root || prefersReduced()) return;
 
-		const ctx = gsap.context(() => {
-			// ---- hero intro: one timeline, staggered, runs immediately ----
-			// The illustration is excluded: it is the LCP element, so it gets its
-			// own reveal below that never starts from opacity 0.
-			const heroItems = gsap.utils.toArray<HTMLElement>(
-				"[data-hero] > *:not([data-hero-art])",
-			);
-			if (heroItems.length) {
-				gsap.from(heroItems, {
-					opacity: 0,
-					y: 16,
-					duration: 0.75,
-					ease: "power3.out",
-					stagger: 0.08,
-					clearProps: "opacity,transform",
-				});
-			}
+		const items = Array.from(root.querySelectorAll<HTMLElement>("[data-reveal]"));
+		if (!items.length) return;
 
-			// ---- header nav: staggered arrival, top-down ----
-			const navItems = gsap.utils.toArray<HTMLElement>("[data-nav] > *");
-			if (navItems.length) {
-				gsap.from(navItems, {
-					opacity: 0,
-					y: -6,
-					duration: 0.5,
-					ease: "power2.out",
-					stagger: 0.06,
-					delay: 0.1,
-					clearProps: "opacity,transform",
-				});
-			}
+		// Stagger index is per group, so each group counts from zero.
+		for (const group of root.querySelectorAll<HTMLElement>("[data-reveal-group]")) {
+			const kids = Array.from(group.querySelectorAll<HTMLElement>("[data-reveal]"));
+			kids.forEach((el, i) => {
+				el.style.transitionDelay = `${Math.min(i, MAX_STAGGER_STEPS) * STAGGER_MS}ms`;
+			});
+		}
 
-			// ---- hero illustration: soft scale-and-fade in, then slow drift ----
-			// Two separate targets on purpose. The load reveal animates the <img>,
-			// the scroll parallax animates its wrapper, so the two transforms never
-			// fight over the same matrix. The reveal starts at 0.55 opacity rather
-			// than 0 so the LCP element is substantially painted on frame one.
-			const heroArt = root.querySelector<HTMLElement>("[data-hero-art]");
-			const heroImg = heroArt?.querySelector<HTMLElement>("img");
+		for (const el of items) el.classList.add(HIDDEN);
 
-			if (heroImg) {
-				gsap.fromTo(
-					heroImg,
-					{ opacity: 0.55, scale: 1.035 },
-					{
-						opacity: 1,
-						scale: 1,
-						duration: 1.1,
-						ease: "power2.out",
-						clearProps: "opacity,transform",
-					},
-				);
-			}
+		const reveal = (el: HTMLElement) => {
+			el.classList.add(SHOWN);
+			// Once shown, drop the delay so a later resize or repaint cannot
+			// re-apply it, and let the element go back to being plain markup.
+			const done = () => {
+				el.style.transitionDelay = "";
+				el.classList.remove(HIDDEN, SHOWN);
+			};
+			el.addEventListener("transitionend", done, { once: true });
+		};
 
-			if (heroArt) {
-				// Drifts down as the page scrolls up, so it reads as travelling
-				// slower than the copy above it. Transform only, so it cannot
-				// affect paint timing.
-				gsap.fromTo(
-					heroArt,
-					{ yPercent: 0 },
-					{
-						yPercent: 7,
-						ease: "none",
-						scrollTrigger: {
-							trigger: heroArt,
-							start: "top 70%",
-							end: "bottom top",
-							scrub: 0.6,
-						},
-					},
-				);
-			}
+		const io = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					const el = entry.target as HTMLElement;
+					io.unobserve(el); // play once
+					reveal(el);
+				}
+			},
+			// Fires a little before the element's top edge arrives, matching the
+			// old "top 82%" trigger.
+			{ rootMargin: "0px 0px -18% 0px", threshold: 0.01 },
+		);
 
-			// ---- scroll reveals ----
-			// Elements sharing a [data-reveal-group] parent animate together as a
-			// staggered set, so a grid arrives as a grid instead of item by item.
-			const groups = gsap.utils.toArray<HTMLElement>("[data-reveal-group]");
-			const grouped = new Set<HTMLElement>();
-
-			for (const group of groups) {
-				const items = gsap.utils.toArray<HTMLElement>(group.querySelectorAll("[data-reveal]"));
-				if (!items.length) continue;
-				for (const item of items) grouped.add(item);
-
-				gsap.from(items, {
-					opacity: 0,
-					y: 20,
-					duration: 0.7,
-					ease: "power2.out",
-					stagger: 0.07,
-					clearProps: "opacity,transform",
-					scrollTrigger: {
-						trigger: group,
-						start: "top 82%",
-						toggleActions: "play none none none",
-					},
-				});
-			}
-
-			const singles = gsap.utils
-				.toArray<HTMLElement>("[data-reveal]")
-				.filter((el) => !grouped.has(el));
-
-			for (const el of singles) {
-				gsap.from(el, {
-					opacity: 0,
-					y: 20,
-					duration: 0.7,
-					ease: "power2.out",
-					clearProps: "opacity,transform",
-					scrollTrigger: {
-						trigger: el,
-						start: "top 85%",
-						toggleActions: "play none none none",
-					},
-				});
-			}
-
-			// ---- restrained parallax on photography ----
-			const parallax = gsap.utils.toArray<HTMLElement>("[data-parallax]");
-			for (const el of parallax) {
-				const amount = Number(el.dataset.parallax) || 4;
-				gsap.fromTo(
-					el,
-					{ yPercent: -amount / 2 },
-					{
-						yPercent: amount / 2,
-						ease: "none",
-						scrollTrigger: {
-							trigger: el,
-							start: "top bottom",
-							end: "bottom top",
-							scrub: true,
-						},
-					},
-				);
-			}
-		}, root);
-
-		// Fonts and lazy images change layout after first paint; recompute.
-		const refresh = () => ScrollTrigger.refresh();
-		window.addEventListener("resize", refresh);
-		if (document.fonts?.ready) void document.fonts.ready.then(refresh);
+		for (const el of items) io.observe(el);
 
 		return () => {
-			window.removeEventListener("resize", refresh);
-			ctx.revert();
+			io.disconnect();
+			// Leave the DOM in its final, visible state.
+			for (const el of items) {
+				el.style.transitionDelay = "";
+				el.classList.remove(HIDDEN, SHOWN);
+			}
 		};
 	}, []);
 
 	return ref;
+}
+
+/**
+ * Homepage-only GSAP. Loads motion/home-gsap.ts through a dynamic import once
+ * the browser is idle, i.e. after the critical hero content has painted, so
+ * GSAP and ScrollTrigger never sit in the initial chunk and never delay LCP.
+ *
+ * Failure is non-fatal by design: if the chunk 404s or the network drops, the
+ * page keeps its fully readable, un-animated state. Nothing is gated on this.
+ *
+ * Pass the same ref returned by usePageMotion.
+ */
+export function useHomeMotion(ref: React.RefObject<HTMLElement | null>) {
+	// useEffect, not useLayoutEffect: this must never block paint.
+	useEffect(() => {
+		const root = ref.current;
+		if (!root || prefersReduced()) return;
+
+		let stop: (() => void) | undefined;
+		let cancelled = false;
+
+		const start = () => {
+			void import("../motion/home-gsap")
+				.then(({ startHomeMotion }) => startHomeMotion(root))
+				.then((s) => {
+					// The effect may have torn down while the chunk was in flight.
+					if (cancelled) s();
+					else stop = s;
+				})
+				.catch(() => {
+					// Deliberately silent. Everything is already readable.
+				});
+		};
+
+		// requestIdleCallback keeps the fetch off the critical path. Safari has
+		// no rIC, hence the timeout fallback.
+		const ric = window.requestIdleCallback;
+		const handle = ric
+			? ric(start, { timeout: 2000 })
+			: window.setTimeout(start, 200);
+
+		return () => {
+			cancelled = true;
+			if (ric && window.cancelIdleCallback) window.cancelIdleCallback(handle as number);
+			else window.clearTimeout(handle as number);
+			stop?.();
+		};
+	}, [ref]);
 }
 
 /** True once the page has scrolled past `after` px — drives header.condensed. */

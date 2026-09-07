@@ -143,6 +143,45 @@ footer.lp a:focus-visible,
 }
 
 /* ============================================================================
+   SCROLL REVEAL (V1.2 section 1)
+   Replaces the GSAP scroll reveals. Driven by the Intersection Observer in
+   hooks/use-motion.ts, which is why the hidden state lives on .reveal-init
+   rather than on [data-reveal] itself.
+
+   READ BEFORE EDITING: [data-reveal] must NEVER be given opacity: 0 here.
+   The hidden state is applied by JavaScript at runtime, so markup with no JS,
+   a failed chunk, or reduced motion renders fully visible. The prerender step
+   relies on this to avoid baking opacity: 0 into the static HTML, and its
+   build-time guard will fail the build if that contract is broken.
+   ============================================================================ */
+[data-reveal].reveal-init {
+	opacity: 0;
+	/* Transform and opacity only, so the reveal stays on the compositor. */
+	transform: translateY(20px);
+	transition:
+		opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+		transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+	will-change: opacity, transform;
+}
+
+/* Extra class, so this beats the hidden state on specificity. */
+[data-reveal].reveal-init.reveal-in {
+	opacity: 1;
+	transform: none;
+	will-change: auto;
+}
+
+/* Safety net. The hook already bails out under reduced motion, so this only
+   matters if a reveal class is somehow left on the element. */
+@media (prefers-reduced-motion: reduce) {
+	[data-reveal].reveal-init {
+		opacity: 1 !important;
+		transform: none !important;
+		transition: none !important;
+	}
+}
+
+/* ============================================================================
    SHARED PRIMITIVES
    ============================================================================ */
 
