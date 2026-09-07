@@ -362,3 +362,129 @@ sticky header. Verified rather than assumed.
 
 Still to confirm for s2: the thin active-section indicator after the motion
 refactor (useScrollSpy is untouched plain IntersectionObserver, but verify).
+
+================================================================================
+V1.1 GAP CLOSURE (after the user re-pasted the V1.1 brief)
+================================================================================
+
+The user re-pasted the original V1.1 brief verbatim. Checked each of the ten
+items against the code rather than assuming. Result:
+
+  items 2, 4, 7, 9   genuinely done (hero four-edge feather, header phone,
+                     type scale, editorial footer)
+  item 10            done but target missed: pages prerender, but mobile
+                     Performance is 71 and FCP 2.2s vs the 90+/1.8s goal
+  items 1 and 5      conflict with decisions the user approved LATER, during
+                     V1.2 (header logo crop, accent #6D7204)
+  items 3, 6, 8      real gaps
+
+The user ruled: keep the V1.2 tagline-free crop, keep #6D7204, and "just close
+the real gaps (breathing zoom, light sweep, tile scale + feather, nav stagger)
+and carry on with V1.2 sections 3-16". Both conflicts are now doubly settled.
+DO NOT RELITIGATE EITHER.
+
+--- Provenance, established by evidence not memory ---
+
+Breathing zoom and light sweep were NEVER BUILT in V1.1. `rg "@keyframes"` and
+`rg "^\s*animation:"` returned zero matches in styles.css, and git grep against
+baseline 1c292be confirms they never existed. They were NOT removed by the V1.2
+motion refactor. They are being ADDED now, not restored. Say so honestly.
+
+Tiles: the class is .pillar (not .svc-tile/.tile). Hover did translateY(-3px) +
+background:var(--surface) + heading tint, at 0.2s. No scale. .pillar .pimg had
+a colour filter but NO mask: the four-edge feather existed only on the hero.
+
+Nav stagger was removed by the V1.2 motion refactor because V1.2 s2 says to use
+CSS, not GSAP, in the navigation. Restored as pure CSS.
+
+--- Hero: three motions, three elements ---
+
+Markup in pages/index.tsx now nests: .hero-art > .hero-frame > (img +
+.hero-sweep). This separation is LOAD-BEARING, one transform owner each:
+  .hero-art    GSAP parallax drift (yPercent), inline transform
+  .hero-frame  CSS breathing scale + the four-edge feather mask
+  img          GSAP one-time reveal (opacity + scale)
+A CSS animation outranks inline style, so putting the breathing loop on the
+<img> would silently eat GSAP's reveal. Verified: img opacity 1 / transform
+none after load, .hero-art carries inline translate(0px,0px). No fight.
+
+The feather mask MOVED from .hero-art img to .hero-frame, verbatim, so the
+sweep inside is feathered by the identical falloff and cannot show a hard
+rectangle.
+
+--- The light sweep blend mode was chosen by measurement ---
+
+soft-light (the first attempt) is INVISIBLE on this ground. Diffed against a
+no-sweep baseline: at opacity .55 it moved 99% of pixels by <=4/255. overlay
+and normal blending measured p99 9-10 and were indistinguishable from no sweep
+by eye in a 4-up montage. plus-lighter is the only mode that reads on a
+near-white cream ground.
+  soft-light .55  p99  4   invisible
+  overlay .70     p99  9   indistinguishable
+  normal .60      p99 10   indistinguishable
+  plus-lighter    p99 14-24 reads
+Opacity then held at 0.20: from .30 up the band washes the mullions out of the
+right-hand window. Final: mix-blend-mode: plus-lighter, opacity .20, 34s.
+
+The sweep crosses the WHOLE illustration, not one pane, because the artwork has
+glass down both flanks with a corridor between. Report that honestly.
+
+--- Reduced motion needed explicit no-ops, three times ---
+
+The global reduced-motion block only zeroes animation-DURATION and
+iteration-count and transition-duration. That is not enough three times over:
+  .hero-frame / .hero-sweep  duration 0.01ms + iteration 1 SNAPS a loop to its
+                             final keyframe, parking the hero at scale(1.04)
+                             with the sweep frozen mid-frame. A transform under
+                             reduced motion, which the brief forbids.
+  .pillar:hover              only transition-duration is zeroed, so the hover
+                             transform would still apply INSTANTLY.
+  nav.main a                 animation-DELAY is not zeroed, so with fill-mode
+                             both the links would sit invisible up to 420ms.
+All three now switch the animation off outright. Verified under
+reduced_motion="reduce": frame animation none + transform none, sweep display
+none, nav animation none + opacity 1, .pillar:hover transform none.
+
+--- .pillar hover background fill deliberately removed ---
+
+A panel appearing behind a feathered image reinstates exactly the box the
+feather exists to dissolve. Hover is now scale(1.04) translateY(-4px) at 0.3s,
+plus the existing heading tint. Report as an intentional removal.
+
+--- Measurement traps hit this session (both cost real calls) ---
+
+1. locator.screenshot() TIMES OUT on .hero-frame: the breathing loop means
+   Playwright never sees the element "stable". Use page.screenshot(clip=box)
+   from bounding_box(), which has no stability wait.
+2. A pixel scan of the tiles read EXACTLY page-background for every column.
+   Cause: the tile still had .reveal-init (opacity 0) because the script never
+   scrolled. Same trap as the old false "55/55 reveals stuck". ALWAYS scroll,
+   then assert revealStripped before sampling pixels.
+3. A viewport screenshot after page.hover(".pillar") is a shot of the PILLARS,
+   not the hero: hover scrolled the page. Use a fresh context per shot and
+   assert window.scrollY === 0.
+
+--- Verified after the gap closure ---
+
+lint 21 files 0 errors. build clean, 8 routes prerendered.
+Tile feather measured: delta from page bg is 0-2 at both side edges and 0-1 at
+top and bottom, 5 in the core. All four edges dissolve. The "hard panel" I
+first thought I saw was a 5/255 difference (the JPEG's paper ground being ~2%
+warmer than the page) misjudged from a downscaled screenshot. Confirmed by eye
+at 2x on the magnified crop.
+.pillar transition reads "transform / 0.3s" once revealed. The earlier "0.7s"
+reading was an un-revealed tile inheriting .reveal-init's transition, not a
+specificity bug.
+/tmp/flashprobe.py: hiddenAt null, finalOp 1, no flash on any route.
+/tmp/motionqa.py: GSAP on index only; reveals 0 stuck and initLeft 0 on all 8
+routes; reduced motion zero GSAP chunks; chunk-blocked content still visible.
+
+New QA scripts: /tmp/heroqa.py (hero+pillar computed state, normal and reduced
+motion), /tmp/feather.py (scroll, assert revealStripped, pixel-scan the mask),
+/tmp/heroshot.py (fresh-context hero shots at 4 sweep phases),
+/tmp/sweepab.py + /tmp/sweepab2.py (blend-mode A/B against a no-sweep baseline),
+/tmp/pillarprobe.py (background chain above .pimg).
+
+NEXT: V1.2 sections 3-16, starting with s3 hero height reduction. Note s9 needs
+[data-process]/[data-process-progress] markup added; the GSAP side is written
+and inert. s11 before/after is the third approved GSAP experience, not built.

@@ -723,6 +723,63 @@ nav.main a {
 	cursor: pointer;
 	white-space: nowrap;
 	transition: color 0.2s;
+
+	/* Load stagger (V1.1 item 6), pure CSS because V1.2 section 2 asks for CSS
+	   rather than GSAP in the navigation. Two things this buys over the old
+	   GSAP version: it runs from first paint, so it cannot reintroduce the
+	   hydration flash the scripted reveals caused, and it restarts whenever the
+	   mobile drawer flips from display:none to flex, which gives the drawer the
+	   same staggered open for free. */
+	animation: nav-in 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+nav.main a:nth-child(1) {
+	animation-delay: 0.06s;
+}
+
+nav.main a:nth-child(2) {
+	animation-delay: 0.12s;
+}
+
+nav.main a:nth-child(3) {
+	animation-delay: 0.18s;
+}
+
+nav.main a:nth-child(4) {
+	animation-delay: 0.24s;
+}
+
+nav.main a:nth-child(5) {
+	animation-delay: 0.3s;
+}
+
+nav.main a:nth-child(6) {
+	animation-delay: 0.36s;
+}
+
+nav.main a:nth-child(n + 7) {
+	animation-delay: 0.42s;
+}
+
+@keyframes nav-in {
+	from {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* The global reduced-motion block zeroes animation-duration but not
+   animation-delay, so with fill-mode both the links would sit invisible for up
+   to 420ms before appearing. Switched off outright instead. */
+@media (prefers-reduced-motion: reduce) {
+	nav.main a {
+		animation: none !important;
+	}
 }
 
 nav.main a:hover,
@@ -730,8 +787,8 @@ nav.main a.active {
 	color: var(--ink);
 }
 
-/* Underline wipes in from the left. Hover stays in CSS so it is smooth
-   without a JS listener on every link; GSAP only does the load stagger. */
+/* Underline wipes in from the left. Hover and the load stagger are both pure
+   CSS now, so the navigation carries no JavaScript animation at all. */
 nav.main a:not(.nav-cta)::after {
 	content: "";
 	position: absolute;
@@ -1002,15 +1059,29 @@ footer.site .wordmark {
 .hero-art img {
 	display: block;
 	width: 100%;
+	filter: sepia(0.3) saturate(0.86) brightness(1.03) contrast(0.93);
+}
+
+/* Breathing zoom (V1.1 item 3). 24s, 1.0 -> 1.04 and back on a smooth loop.
+   Transform only, so it stays on the compositor and cannot trigger layout.
+   It lives here rather than on the <img> because the <img> is GSAP's reveal
+   target: a CSS animation outranks inline style, so sharing one element would
+   let this rule silently eat the reveal. */
+.hero-frame {
+	position: relative;
+	display: block;
+	width: 100%;
 	max-width: 1120px;
 	margin: 0 auto;
-	filter: sepia(0.3) saturate(0.86) brightness(1.03) contrast(0.93);
+	animation: hero-breathe 24s ease-in-out infinite alternate;
 
 	/* Feather all four edges so the illustration melts into the page instead
 	   of sitting in a box. Two gradients intersected: masked-out pixels go
 	   fully transparent and the hero ground behind is exactly var(--bg)
 	   (#F5F1EA), so the falloff resolves to the precise page colour with no
-	   seam. Corners get both gradients, which reads as a soft vignette. */
+	   seam. Corners get both gradients, which reads as a soft vignette.
+	   On the frame, not the <img>, so the light sweep inside is feathered by
+	   exactly the same falloff and cannot show a hard rectangle. */
 	--feather: 140px;
 	mask-image:
 		linear-gradient(
@@ -1046,6 +1117,75 @@ footer.site .wordmark {
 	-webkit-mask-composite: source-in;
 }
 
+@keyframes hero-breathe {
+	from {
+		transform: scale(1);
+	}
+	to {
+		transform: scale(1.04);
+	}
+}
+
+/* Warm light sweep (V1.1 item 3): sunlight drifting through the glass walls.
+   A wide, skewed, low opacity band that crosses the illustration once every
+   34s. The frame's mask feathers its leading and trailing edges.
+
+   The sweep crosses the whole illustration rather than one window because the
+   artwork has glass down BOTH flanks with a corridor between them, so there is
+   no single pane to pin light to.
+
+   On plus-lighter rather than soft-light, chosen by measurement, not taste:
+   over a near-white cream ground soft-light barely shifts anything. At 0.55 it
+   moved 99% of pixels by 4/255 or less, which is invisible. overlay and normal
+   blending were also tested and were indistinguishable from no sweep at all.
+   plus-lighter is the only mode that reads on this ground. Opacity is then
+   held at 0.20: from 0.30 up the band starts washing the mullions out of the
+   right-hand window, and the pencil detail has to survive the light. */
+.hero-sweep {
+	position: absolute;
+	top: -8%;
+	left: 0;
+	width: 46%;
+	height: 116%;
+	pointer-events: none;
+	transform: translateX(-60%) skewX(-12deg);
+	background: linear-gradient(
+		to right,
+		rgba(255, 244, 214, 0) 0%,
+		rgba(255, 241, 203, 0.5) 42%,
+		rgba(255, 246, 222, 0.72) 55%,
+		rgba(255, 244, 214, 0) 100%
+	);
+	mix-blend-mode: plus-lighter;
+	opacity: 0.2;
+	animation: hero-sweep 34s linear infinite;
+}
+
+@keyframes hero-sweep {
+	from {
+		transform: translateX(-60%) skewX(-12deg);
+	}
+	to {
+		transform: translateX(280%) skewX(-12deg);
+	}
+}
+
+/* The global reduced-motion block sets animation-duration to 0.01ms and
+   iteration-count to 1, which would SNAP both loops above to their final
+   keyframe and leave the hero permanently at scale(1.04) with the sweep parked
+   mid-frame. The brief asks for final states and no transforms, so both are
+   switched off outright and the sweep is removed from the page entirely. */
+@media (prefers-reduced-motion: reduce) {
+	.hero-frame {
+		animation: none !important;
+		transform: none !important;
+	}
+
+	.hero-sweep {
+		display: none !important;
+	}
+}
+
 /* at your service */
 .pillars {
 	display: grid;
@@ -1058,18 +1198,18 @@ footer.site .wordmark {
 	text-align: center;
 	border-right: 1px solid var(--hairline);
 	color: var(--ink);
-	transition:
-		transform 0.2s,
-		background 0.2s;
+	transition: transform 0.3s ease;
 }
 
 .pillar:last-child {
 	border-right: none;
 }
 
+/* Brings the tile forward on hover (V1.1 item 8). No background fill here on
+   purpose: a panel appearing behind a feathered image would reinstate exactly
+   the box the feather exists to dissolve. Scale plus lift, nothing else. */
 .pillar:hover {
-	background: var(--surface);
-	transform: translateY(-3px);
+	transform: scale(1.04) translateY(-4px);
 }
 
 .pillar .pimg {
@@ -1077,6 +1217,44 @@ footer.site .wordmark {
 	height: auto;
 	display: block;
 	filter: sepia(0.3) saturate(0.86) brightness(1.03) contrast(0.93);
+
+	/* Same four-edge feather as the hero, in percentages because a tile is
+	   about a fifth of the hero's width and a fixed 140px would swallow it.
+	   These land close to the hero's own ratios (12.5% wide, 22% tall). */
+	--feather-x: 14%;
+	--feather-y: 20%;
+	mask-image:
+		linear-gradient(
+			to bottom,
+			transparent 0,
+			#000 var(--feather-y),
+			#000 calc(100% - var(--feather-y)),
+			transparent 100%
+		),
+		linear-gradient(
+			to right,
+			transparent 0,
+			#000 var(--feather-x),
+			#000 calc(100% - var(--feather-x)),
+			transparent 100%
+		);
+	mask-composite: intersect;
+	-webkit-mask-image:
+		linear-gradient(
+			to bottom,
+			transparent 0,
+			#000 var(--feather-y),
+			#000 calc(100% - var(--feather-y)),
+			transparent 100%
+		),
+		linear-gradient(
+			to right,
+			transparent 0,
+			#000 var(--feather-x),
+			#000 calc(100% - var(--feather-x)),
+			transparent 100%
+		);
+	-webkit-mask-composite: source-in;
 }
 
 .pillar h3 {
@@ -1089,6 +1267,20 @@ footer.site .wordmark {
 
 .pillar:hover h3 {
 	color: var(--accent);
+}
+
+/* The global reduced-motion block only zeroes transition-duration, so the
+   hover transform would still apply instantly. V1.1 item 8 asks for a static
+   no-op, so the transform is switched off entirely and only the heading tint
+   remains as the hover affordance. */
+@media (prefers-reduced-motion: reduce) {
+	.pillar {
+		transition: none !important;
+	}
+
+	.pillar:hover {
+		transform: none !important;
+	}
 }
 
 /* services */

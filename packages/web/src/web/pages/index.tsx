@@ -178,20 +178,30 @@ export default function HomePage() {
 							</Link>
 						</div>
 						<div className="hero-art" data-hero-art>
-							<img
-								src="/assets/hero-1120.jpg"
-								/* The full 1800px file was going to phones too, which made a
-								   224 kB image the LCP element on a 390px viewport. */
-								srcSet="/assets/hero-780.jpg 780w, /assets/hero-1120.jpg 1120w, /assets/hero.jpg 1800w"
-								sizes="(max-width: 860px) 100vw, 1000px"
-								alt="Illustration of a South Florida living room with drapery, a boy using a shade remote, and a dog"
-								width={1120}
-								height={630}
-								/* The LCP element. Preloaded in index.html and flagged high
-								   priority so it is never queued behind the tiles below it. */
-								fetchPriority="high"
-								decoding="async"
-							/>
+							{/* Three separate elements so three motions never fight over one
+							    transform matrix: .hero-art drifts (GSAP parallax),
+							    .hero-frame breathes (CSS, 24s loop) and carries the edge
+							    feather, and the <img> itself does the one-time reveal (GSAP,
+							    opacity only once it has cleared its props). */}
+							<div className="hero-frame">
+								<img
+									src="/assets/hero-1120.jpg"
+									/* The full 1800px file was going to phones too, which made a
+									   224 kB image the LCP element on a 390px viewport. */
+									srcSet="/assets/hero-780.jpg 780w, /assets/hero-1120.jpg 1120w, /assets/hero.jpg 1800w"
+									sizes="(max-width: 860px) 100vw, 1000px"
+									alt="Illustration of a South Florida living room with drapery, a boy using a shade remote, and a dog"
+									width={1120}
+									height={630}
+									/* The LCP element. Preloaded in index.html and flagged high
+									   priority so it is never queued behind the tiles below it. */
+									fetchPriority="high"
+									decoding="async"
+								/>
+								{/* Sunlight drifting through the glass. Decorative only, so it is
+								    hidden from assistive tech and cannot take pointer events. */}
+								<span className="hero-sweep" aria-hidden="true" />
+							</div>
 						</div>
 					</div>
 				</section>
