@@ -94,7 +94,9 @@ export function SiteHeader() {
 		<header className={condensed ? "site condensed" : "site"}>
 			<div className="wrap bar">
 				<a className="logo" href="#home" onClick={() => setOpen(false)}>
-					<Logo />
+					{/* No height prop: styles.css owns it so the media queries can
+					    shrink the logo. See Logo's height doc comment. */}
+					<Logo variant="header" />
 				</a>
 				<HeaderPhone />
 				<button
@@ -189,7 +191,7 @@ export function LandingHeader() {
 		<header className={condensed ? "lp condensed" : "lp"}>
 			<div className="bar">
 				<Link to="/index.html" className="logo" aria-label="Studio Elpa home">
-					<Logo height={48} className="" />
+					<Logo variant="header" height={44} className="" />
 				</Link>
 				<a className="nav-cta" href={CONTACT.booking} target="_blank" rel="noopener">
 					Book a 30-minute call
@@ -225,7 +227,7 @@ export function BackHeader({ href, label }: { href: string; label: string }) {
 		<header>
 			<div className="bar">
 				<Link to="/index.html" className="logo" aria-label="Studio Elpa home">
-					<Logo height={48} className="" />
+					<Logo variant="header" height={44} className="" />
 				</Link>
 				<a className="back" href={href}>
 					{label}

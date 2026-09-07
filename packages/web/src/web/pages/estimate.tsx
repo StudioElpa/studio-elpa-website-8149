@@ -220,7 +220,7 @@ export default function EstimatePage() {
 
 			<header className="est-head" data-hero>
 				<Link href="/index.html" aria-label="Studio Elpa home">
-					<Logo height={48} className="est-logo" />
+					<Logo variant="header" height={44} className="est-logo" />
 				</Link>
 				<div className="k">Studio Elpa · Complimentary Estimate</div>
 				<h1>

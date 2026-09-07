@@ -229,3 +229,43 @@ TEXTILES" tagline, whose cap height is ~13px of the 337px artwork. At a 56px
 lockup that is ~2px tall, i.e. present but not readable. Reading it needs
 either a taller logo (breaks the 48-56 band) or a tagline-free crop (user said
 do not crop). Flagged, not silently resolved.
+
+### V1.2 — tagline-free header logo (RESOLVED, user approved the crop)
+User approved a non-destructive tagline-free crop. Neither original file was
+modified or overwritten.
+Band analysis of logo.png (900x337) by per-row alpha ink counts:
+  y=21..162  sheer-wave mark
+  y=172..227 "STUDIO ELPA" wordmark
+  y=242..244 3px decorative rule (x 416..483)
+  y=264..278 "WINDOW TREATMENTS"
+  y=294..308 "& HOME TEXTILES"
+Ink extents: mark+wordmark x=25..874, tagline x=256..662.
+Built losslessly (pure crop + transparent border, no resampling/recolor/
+redraw/stretch):
+  convert logo.png -crop 850x207+25+21 +repage \
+    -bordercolor none -border 24 PNG32:logo-header.png
+-> packages/web/public/assets/logo-header.png, 898x255, ratio 3.522.
+INTEGRITY VERIFIED: `convert logo-header.png -trim info:` returns exactly
+850x207 at +24+24, proving nothing was clipped and 24px clear space survives
+on all four sides.
+DECIDED WITH EYES, not assumed: a second variant keeping the 3px decorative
+rule was built and compared side by side on the #F5F1EA ground. Rejected -
+with the tagline gone the rule reads as a stray dash orphaned under "IO", an
+artifact rather than a design mark. Variant deleted.
+Sizing consequence: dropping the tagline raises the wordmark's share of the
+asset, so the SAME rendered height yields larger letterforms. That let the
+header get SMALLER while reading BIGGER (also serves V1.2 s2, tighter mobile
+header):
+  old full lockup 56px -> wordmark cap ~9.3px, width 149.5px
+  crop at 46px          -> cap ~10.1px,        width 162px
+  crop at 40px (mobile) -> cap ~8.8px  (vs 7.6px for the old 46px full lockup)
+No @2x needed: 898px native shown at ~162px is >5x density.
+Wiring: Logo gained a `variant` prop ("full" | "header") with a per-variant
+intrinsic width/height pair, so the no-CLS/no-stretch protection applies to
+both. All four chrome instances use variant="header" (site header, and
+LandingHeader / BackHeader / est-logo at height 44) because at any height that
+fits the chrome the full tagline renders ~2px tall. logo.png is retained
+on disk per the user's instruction, for placements where the tagline can be
+read; it is currently referenced by no component.
+header.lp .logo img 48 -> 44px to match its inline height (inline wins, so a
+mismatched rule would be a silent lie).

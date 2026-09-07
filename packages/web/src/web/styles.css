@@ -185,7 +185,10 @@ footer.lp a:focus-visible,
 }
 
 section {
-	scroll-margin-top: 76px;
+	/* Must clear the sticky 84px bar, plus a little breathing room. At the old
+	   76px an anchored section landed 8px UNDER the header. Keep this in step
+	   with header.site .bar height, including the mobile override. */
+	scroll-margin-top: 92px;
 }
 
 .block {
@@ -622,7 +625,13 @@ header.site .bar {
 }
 
 .logo-img {
-	height: 56px;
+	/* 46, not the old 56. The header art is the tagline-free crop, whose
+	   wordmark occupies a much larger share of the asset, so 46px here renders
+	   LARGER letterforms than 56px did with the full lockup (cap ~10.1px vs
+	   ~9.3px) while giving the bar back ~10px of horizontal room. Raising this
+	   eats the bar's remaining slack at 1200 wide: re-run the header fit sweep
+	   before you change it. */
+	height: 46px;
 	flex-shrink: 0;
 	/* Never set a width here. auto derives it from the intrinsic ratio carried by
 	   the img's width/height attributes, which is what keeps the lockup from
@@ -1375,7 +1384,10 @@ header.lp .bar {
 }
 
 header.lp .logo img {
-	height: 48px;
+	/* Matches the inline height on <Logo variant="header" height={44}> in
+	   LandingHeader. The inline value actually wins (inline beats a selector), so
+	   keep these two in step or this rule silently becomes a lie. */
+	height: 44px;
 	width: auto;
 	display: block;
 }
@@ -2217,6 +2229,23 @@ footer.lp .wordmark {
 }
 
 @media (max-width: 860px) {
+	/* V1.2: tighten the mobile header. The tagline-free crop renders at 40px
+	   here, which left the 84px bar carrying 22px of dead clear space above and
+	   below. 72px keeps 16px of CSS clear space (plus ~4px of transparent
+	   margin baked into the asset) and gives 12px of viewport back to the hero.
+	   nav.main top and section scroll-margin-top below MUST track this number. */
+	header.site .bar {
+		height: 72px;
+	}
+
+	nav.main {
+		top: 72px;
+	}
+
+	section {
+		scroll-margin-top: 80px;
+	}
+
 	footer.site .f-top,
 	footer.site .f-mid {
 		grid-template-columns: 1fr;
@@ -2276,7 +2305,10 @@ footer.lp .wordmark {
 	}
 
 	.logo-img {
-		height: 46px;
+		/* The crop's wordmark is proportionally larger, so 40px here still reads
+		   bigger than the old full lockup did at 46px (cap ~8.8px vs ~7.6px) and
+		   buys back 6px of mobile header height. */
+		height: 40px;
 	}
 
 	.pillars {
@@ -2335,4 +2367,25 @@ footer.lp .wordmark {
 .route-fallback {
 	min-height: 100vh;
 	background: var(--bg);
+}
+
+/* ============================================================================
+   NARROW PHONES (<=420px)
+   The homepage is the only route whose bar carries logo + phone + menu button
+   at once, and at 360px those needed 357px inside a 312px measure, pushing the
+   menu button 20px off screen. Reclaimed in the HEADER ONLY: the gutter rule
+   here is header.site .bar, which outranks .page-home .wrap, so page content
+   keeps its 24px gutters and only the chrome tightens. The phone stays visible
+   and tappable at every width, per V1.1.
+   ============================================================================ */
+@media (max-width: 420px) {
+	header.site .bar {
+		gap: 8px;
+		padding: 0 16px;
+	}
+
+	.header-phone {
+		font-size: 13.5px;
+		gap: 5px;
+	}
 }
