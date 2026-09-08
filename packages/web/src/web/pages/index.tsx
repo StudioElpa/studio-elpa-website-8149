@@ -9,34 +9,31 @@ import { usePageMotion, useHomeMotion } from "../hooks/use-motion";
    order are unchanged; only rhythm, motion, and the accordion/form mechanics
    were touched. */
 
-/* V1.2 section 4. Same four items, same destinations, same illustrations. The
-   only change is rank: the first two are what we promise, the last two are
-   things you can do right now, so they read as actions rather than as two more
-   interchangeable feature cards. */
+/* "At your service". Same four items, same destinations, same illustrations.
+   The V1.2 section 4 pass had ranked the first two as promises and the last
+   two as actions, with wider columns, larger labels and a chevron. The client
+   asked for one uniform set instead, so there is no per-tile variant any more:
+   every entry renders identically and the order is the only ordering signal. */
 const PILLARS = [
 	{
-		kind: "promise" as const,
 		href: "#process",
 		img: "tile-glove.jpg",
 		alt: "White glove service",
 		title: "White Glove Service",
 	},
 	{
-		kind: "promise" as const,
 		href: "#services",
 		img: "tile-custom.jpg",
 		alt: "Fully customized solutions",
 		title: "Fully Customized Solutions",
 	},
 	{
-		kind: "action" as const,
 		href: "/estimate.html",
 		img: "tile-estimate.jpg",
 		alt: "Quick estimate",
 		title: "Quick Estimate",
 	},
 	{
-		kind: "action" as const,
 		href: "#contact",
 		img: "tile-appt.jpg",
 		alt: "Schedule a private appointment",
@@ -44,7 +41,18 @@ const PILLARS = [
 	},
 ];
 
-const SERVICES = [
+/* The signature treatment. Featured on its own, above the rest. */
+const SERVICE_SIGNATURE = {
+	img: "art-motor.jpg",
+	alt: "Motorized shades lowered evenly across a wide wall of glass",
+	title: "Motorized Shading",
+	sig: "Our signature is motorized custom drapery: European fabric that moves on a schedule, on quiet, reliable motors, ready for smart-home integration.",
+	body: "The luxury of never touching a cord. Quiet, reliable motors for the windows you can't reach, whole walls of glass, and cord-free child safety, with the wiring handled by our licensed, insured electrical partner.",
+	tags: "Child-safe · smart-home · big glass",
+};
+
+/* The two other primary categories, given full editorial cards. */
+const SERVICES_PRIMARY = [
 	{
 		img: "art-drapery.jpg",
 		alt: "Floor-length custom drapery falling in soft folds beside a sunlit window",
@@ -59,6 +67,10 @@ const SERVICES = [
 		body: "Clean light control that knows when to disappear. A solar screen keeps your view while taming the Florida sun; a dimout gives rest and privacy; a blackout makes a bedroom truly dark.",
 		tags: "Glare · heat · views kept",
 	},
+];
+
+/* Quieter continuation. Same copy, same photographs, lighter weight. */
+const SERVICES_MORE = [
 	{
 		img: "art-roman.jpg",
 		alt: "A tailored Roman shade stacked in even folds above a window",
@@ -72,13 +84,6 @@ const SERVICES = [
 		title: "Natural Woven Shades",
 		body: "Warmth and character woven from grasses, reeds, and bamboo. They filter light into something soft and golden, beautiful on their own and even better layered with drapery.",
 		tags: "Texture · organic · filtered light",
-	},
-	{
-		img: "art-motor.jpg",
-		alt: "Motorized shades lowered evenly across a wide wall of glass",
-		title: "Motorized Shading",
-		body: "The luxury of never touching a cord. Quiet, reliable motors for the windows you can't reach, whole walls of glass, and cord-free child safety, with the wiring handled by our licensed, insured electrical partner.",
-		tags: "Child-safe · smart-home · big glass",
 	},
 	{
 		img: "art-hardware.jpg",
@@ -238,28 +243,23 @@ export default function HomePage() {
 							<div className="kicker">At your service</div>
 							<h2 className="big center">A calm, hands-on way to work.</h2>
 						</div>
+						{/* All four tiles are one uniform set: same image size and aspect
+						    ratio, same alignment, same centred label, same feather, same
+						    hover lift, and no chevron on any of them. */}
 						<div className="pillars" data-reveal-group>
 							{PILLARS.map((p) => {
-								const cls = `pillar pillar-${p.kind}`;
 								const inner = (
 									<>
 										<img className="pimg" src={`/assets/${p.img}`} alt={p.alt} />
-										<h3>
-											{p.title}
-											{/* Decorative affordance on the two action items only, so a
-											    reader is not told about a chevron that carries no meaning. */}
-											{p.kind === "action" ? (
-												<span className="pillar-go" aria-hidden="true" />
-											) : null}
-										</h3>
+										<h3>{p.title}</h3>
 									</>
 								);
 								return p.href.startsWith("#") ? (
-									<a className={cls} href={p.href} key={p.title} data-reveal>
+									<a className="pillar" href={p.href} key={p.title} data-reveal>
 										{inner}
 									</a>
 								) : (
-									<Link className={cls} to={p.href} key={p.title} data-reveal>
+									<Link className="pillar" to={p.href} key={p.title} data-reveal>
 										{inner}
 									</Link>
 								);
@@ -350,8 +350,29 @@ export default function HomePage() {
 								live in it, which is exactly where every project starts.
 							</p>
 						</div>
+						{/* Signature treatment, featured editorially. */}
+						<div className="svc-feature" data-reveal>
+							<div className="svc-feature-art">
+								<img
+									className="ph"
+									src={`/assets/${SERVICE_SIGNATURE.img}`}
+									alt={SERVICE_SIGNATURE.alt}
+									loading="lazy"
+									decoding="async"
+								/>
+							</div>
+							<div className="svc-feature-text">
+								<div className="kicker">Our signature</div>
+								<h3>{SERVICE_SIGNATURE.title}</h3>
+								<p className="svc-sig">{SERVICE_SIGNATURE.sig}</p>
+								<p>{SERVICE_SIGNATURE.body}</p>
+								<div className="tags">{SERVICE_SIGNATURE.tags}</div>
+							</div>
+						</div>
+
+						{/* The other two primary categories. */}
 						<div className="svc" data-reveal-group>
-							{SERVICES.map((s) => (
+							{SERVICES_PRIMARY.map((s) => (
 								<div className="card" key={s.title} data-reveal>
 									<img
 										className="ph"
@@ -368,11 +389,36 @@ export default function HomePage() {
 								</div>
 							))}
 						</div>
-						<div className="center" style={{ marginTop: 34 }} data-reveal>
-							<a className="btn btn-dark" href="#contact">
-								Not sure what you need? Let's talk it through.
-							</a>
+
+						{/* Quieter continuation. Every treatment stays one scroll away. */}
+						<div className="svc-more-head">
+							<h3>Explore all treatments</h3>
+							<span className="svc-more-rule" aria-hidden="true" />
 						</div>
+						<div className="svc-more" data-reveal-group>
+							{SERVICES_MORE.map((s) => (
+								<div className="svc-item" key={s.title} data-reveal>
+									<img
+										className="ph"
+										src={`/assets/${s.img}`}
+										alt={s.alt}
+										loading="lazy"
+										decoding="async"
+									/>
+									<h4>{s.title}</h4>
+									<p>{s.body}</p>
+									<div className="tags">{s.tags}</div>
+								</div>
+							))}
+						</div>
+
+						<p className="svc-close" data-reveal>
+							Not sure what you need?{" "}
+							<a href="#contact">
+								Let's talk it through
+								<span className="svc-go" aria-hidden="true" />
+							</a>
+						</p>
 					</div>
 				</section>
 
