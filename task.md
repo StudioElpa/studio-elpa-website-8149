@@ -1598,3 +1598,106 @@ manifesto"` rather than from the `<div`, so the container tag was never counted
 and the depth walk closed after the first item. Fixed by starting at
 `rindex('<div', 0, k)`. The real answer was 0. Seventh instance of lesson 9 —
 a failing assertion is a claim about the script first, the code second.
+
+---
+
+## V1.2 SECTION 13 — JOURNAL CONTENT STATE (commit e3c2136)
+
+### The brief
+
+Keep the editorial heading, existing story titles, descriptions and the working
+article link. Only one article is published, so make the content state
+unambiguous: keep the published story clearly actionable, mark unpublished
+stories "Coming soon" or reduce their link-like styling, do not let unavailable
+articles appear clickable, avoid unnecessary entrance animation.
+
+### The actual defect
+
+The two unpublished stories were already plain `<div className="post">`, not
+links, so they were never *functionally* clickable. But `.post` sets the
+background fill, the 1px solid hairline and the padding for all three, so all
+three rendered as identical cards. The only difference was that the published
+one carried an accent "Read the story ->" line and a hover lift. A visitor had
+no way to tell two of the three cards were dead until clicking did nothing.
+The brief's target was the appearance, and the appearance was wrong.
+
+### What was built
+
+`pages/index.tsx`: the two unpublished posts gain `post-soon` and a real
+`<span className="soon">Coming soon</span>`, mirroring the slot where the
+published card puts its read line. `data-reveal-group` and the three per-item
+`data-reveal`s collapse to a single `data-reveal` on the container.
+
+`styles.css`: a `.post-soon` block placed AFTER the `.post` rules (they are
+equal weight, (0,1,0)/(0,2,0), so source order is what decides - lesson 6).
+
+- `.post-soon` - `background: none`, `border-style: dashed`,
+  `transition: none`, `cursor: default`.
+- `.post-soon h3` - drops to `--ink-soft`.
+- `.post-soon .tag` - drops the `--accent` colour to `--ink-soft` at 0.75.
+- `.post-soon .soon` - the marker, `--ink-soft` at 0.8, same metrics as `.read`.
+
+### The design decision
+
+The published story is deliberately left completely untouched rather than
+emphasised further. It already has the only filled surface, the only solid
+border, the only accent text and the only hover response; making the other two
+quieter is what creates the contrast, so no new emphasis was needed and no copy
+was added to it.
+
+The accent colour is the site's signal for "actionable", so removing it from
+the unavailable tags matters more than the border change. `cursor: default` and
+`transition: none` were added so a pointer landing on those cards gets no
+response at all - verified, not assumed (see below).
+
+### Contrast verified, because muted text at reduced opacity is an AA risk
+
+Composited against the real section background `rgb(245,241,234)`:
+
+| element | colour | opacity | size | ratio | need | verdict |
+|---------|--------|--------:|-----:|------:|-----:|---------|
+| title        | `rgb(74,54,38)` | 1.0  | 23.5px | 10.10:1 | 4.5 | PASS |
+| tag          | `rgb(74,54,38)` | 0.75 | 12.5px | 4.98:1  | 4.5 | PASS |
+| "Coming soon"| `rgb(74,54,38)` | 0.8  | 13.5px | 5.73:1  | 4.5 | PASS |
+| body         | `rgb(74,54,38)` | 1.0  | 16px   | 10.10:1 | 4.5 | PASS |
+
+The tag at 4.98:1 is the tightest margin on the section. Do not lower that
+0.75 opacity without re-running the check.
+
+### Verification
+
+`/tmp/journalqa.py` OVERALL PASS, 258/258 across six modes (1440, 1180, 390,
+360, 1440-reduced, 390-reduced): three stories; all titles, tags and
+descriptions intact; editorial heading intact; exactly one `data-reveal`, on the
+container, zero on children; no `data-reveal-group`; published story still an
+`<a>` with `/journal-blackout.html` and the read line, still filled and
+solid-bordered; both unpublished are `DIV` with no `href`, `tabIndex -1`,
+`post-soon`, a real "Coming soon" marker, no read line, transparent
+background, dashed border, `cursor: default`, no transition, muted title and
+non-accent tag, fully opaque after reveal; zero overflow; zero page errors.
+
+Hover proved rather than assumed: a dispatched `mouseover` on each unavailable
+card leaves `transform: none`, moves it 0px and changes its border colour not
+at all, in every mode.
+
+Built file check on `dist/index.html` with `<style>` stripped: the working href
+appears once, "Read the story" once, "Coming soon" twice, `post-soon` twice,
+`data-reveal` inside the list zero times, all three titles verbatim, no inline
+`opacity:0`.
+
+lint 21 files 0/0 · page loads · build clean, 8 routes prerendered · fastscroll
+TOTAL BROKEN 0 · overflow360 0 on all 8 · flashprobe no flash · motionqa 0
+stuck / 0 initLeft on all 8, reduced motion 0 GSAP chunks, GSAP blocked leaves
+h1 and hero visible · brand audit dist 0 hits · `.env` identical to backup ·
+screenshot viewed at 1440.
+
+Reveal count moved 51 -> 49 under normal motion and 53 -> 51 under reduced,
+exactly as predicted (three per-item removed, one container added).
+
+### Open item to raise with the user
+
+The trailing line "More articles coming soon." still sits below the grid, and
+is now duplicative of the two "Coming soon" markers. It is copy, and section 13
+does not list it as removable, so it was deliberately LEFT IN rather than
+silently deleted. Worth folding into the section 16 de-duplication pass if the
+user agrees.
