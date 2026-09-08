@@ -696,3 +696,175 @@ my DELETED `.pull` block still matching. Both were the dev server serving stale
 modules, not real bugs. `/tmp/pullprobe.py` (new) dumps every CSS rule that
 matches an element plus its computed values - use it whenever a style looks
 wrong, before editing anything.
+
+---
+
+## V1.2 SECTION 7 - WHAT WE DO (DONE, verified, commit 2bdc920)
+
+Direction supplied by the user and used verbatim: primary three = Custom
+Drapery, Motorized Drapery & Shades, Roller / Solar Shades; secondary three =
+Roman Shades, Natural Woven Shades, Decorative Hardware; signature emphasis on
+"motorized custom drapery".
+
+### Data
+The single `SERVICES` array in `pages/index.tsx` became three exports:
+- `SERVICE_SIGNATURE` - Motorized Shading (`art-motor.jpg`), plus a new `sig`.
+- `SERVICES_PRIMARY` - Custom Drapery (`art-drapery.jpg`), Roller Shades
+  (`art-roller.jpg`).
+- `SERVICES_MORE` - Roman Shades, Natural Woven Shades, Decorative Hardware.
+
+All titles and descriptions are the client's existing copy. The ONLY new copy
+is the sanctioned signature line: "Our signature is motorized custom drapery:
+European fabric that moves on a schedule, on quiet, reliable motors, ready for
+smart-home integration." It deliberately does not repeat the wiring /
+licensed-partner clause, because the Motorized Shading body already carries it
+once. Generic motor language only, no brand.
+
+### Three visual weights instead of six identical boxes
+1. `.svc-feature` - two-column editorial row, measured 485.5 / 466.5 at 1440.
+   Unframed photo (no surface panel, no border) at `aspect-ratio: 5/4`; text
+   side has an "Our signature" kicker, `h3` 38px, `.svc-sig` in Cormorant 22px
+   ink, then the existing body at 16px ink-soft, then the tags.
+2. `.svc` - the two primary cards, `repeat(2, 1fr)` (was 3), measured 487/487.
+   Card `h3` raised 26 -> 30px since only two sit across now. Panel + hairline
+   retained.
+3. `.svc-more-head` (13px letter-spaced "Explore all treatments" + a
+   `.svc-more-rule` hairline filling the row) and `.svc-more` - three compact
+   entries, measured 316/316/316, no panel, no border, `aspect-ratio: 16/9`,
+   `h4` 19px, body 15px.
+
+### Two traps worth remembering
+- The `.tags` rule had to be widened to `.svc .card .tags, .svc-feature-text
+  .tags, .svc-item .tags`. Scoped as it was, the olive uppercase use-case
+  labels would have silently reverted to body text in the two new tiers. All
+  six verified at `rgb(109, 114, 4)`, uppercase, 12.5px.
+- `.svc-feature-text p` (0,1,1) beats a bare `.svc-sig` (0,1,0), which is why
+  the rule is written `.svc-feature-text .svc-sig`.
+
+### CTA
+The oversized full-width olive CTA is gone (`oldBtn: 0`). Replaced by
+`.svc-close`: a centred 17px line, "Not sure what you need? Let's talk it
+through", link in accent with a soft underline and a small CSS `.svc-go`
+chevron (`aria-hidden`) that nudges on hover, with an explicit reduced-motion
+no-op. Still points at `#contact`.
+
+Mobile (860px): `.svc-feature`, `.svc-more`, `.svc` all collapse to one column;
+feature `h3` 31px, `.svc-sig` 20px, card `h3` 26px.
+
+Motion: no per-card GSAP. `data-reveal` / `data-reveal-group` only - 8 reveals,
+2 groups in the section.
+
+Verified with `/tmp/svcqa.py` (new): all six titles present exactly once, all
+six photographs load at 1600x1000 with the `--elpa-grade` filter, 0 stuck, 0
+`reveal-init` left, no em dash, no brand leak. Screenshots viewed:
+`/tmp/v12-s7-desktop.png`, `/tmp/v12-s7-mobile.png`.
+
+HONEST NON-COMPLETION: §7 keeps the existing service titles ("Motorized
+Shading", "Roller Shades") rather than the user's descriptive phrasings
+("Motorized Drapery & Shades", "Roller / Solar Shades"), because the brief says
+keep the six services' descriptions and labels. Judged the user was describing
+WHICH three to feature, not renaming client copy. Flagged for overrule.
+
+---
+
+## A REAL SITEWIDE BUG: FAST SCROLL LEFT COPY PERMANENTLY INVISIBLE
+(DONE, verified, commit ba5ffbc)
+
+Not a §7 regression. Found while QA-ing §7 when a section heading was stuck at
+`opacity: 0`. A new probe, `/tmp/fastscroll.py`, showed a defect across the
+whole homepage in every build shipped up to this session.
+
+CAUSE: an IntersectionObserver only calls back when the intersection ratio
+CROSSES a threshold. On a hard wheel flick an element can go from below the
+viewport to above it between two animation frames, never once measured as
+intersecting, so no callback is ever delivered and the element stays at
+`opacity: 0` forever.
+
+MEASURED BEFORE: desktop fast flick left 15 blocks of copy permanently
+invisible, mobile 17 - including whole section headings ("At your service",
+"Who we are", "One roof, no runaround", "For designers, architects &", "The
+Journal", "Let's begin"). Anchor navigation and instant jump-to-bottom were
+already fine (0 broken). TOTAL BROKEN: 32.
+
+FIX in `hooks/use-motion.ts` inside `usePageMotion`: a `pending` Set of
+not-yet-revealed elements, a `finalize(el)` that drops the transition delay and
+strips `reveal-init` / `reveal-in` with no animation, and a passive,
+rAF-throttled `scroll` listener that sweeps anything still pending whose
+`getBoundingClientRect().bottom < 0` and finalizes it instantly. The listener
+REMOVES ITSELF once `pending` is empty, so it costs nothing for the rest of the
+session. The IO callback also deletes from `pending`; cleanup removes the
+listener. Elements scrolled past are finalized WITHOUT a transition on purpose:
+animating something nobody is looking at is pointless, and leaving it hidden
+means the copy never appears at all.
+
+VERIFIED AFTER: 32 -> 0 across all six scenarios (desktop and mobile x anchor
+jump / instant jump / fast flick). Run `/tmp/fastscroll.py` after any
+`use-motion.ts` change. This also serves §8's demand to test normal scrolling,
+fast scrolling, anchor navigation and reduced motion, and that important text
+be visible by default.
+
+---
+
+## "AT YOUR SERVICE" MADE UNIFORM - THIS DELIBERATELY REVERTS BRIEF §4
+(DONE, verified, commit 2bdc920)
+
+The user's explicit instruction overrides V1.2 brief §4 (lines 75-87), which
+asked to rank the two promises above the two actions. The client asked for all
+four tiles to read as one consistent set: same image size and aspect ratio,
+same vertical alignment, same label treatment centred below, same four-edge
+feather, same hover lift, and "either all four show a chevron or none do".
+
+DECISION: no chevron on any of the four. All four PILLARS entries are links, so
+a chevron on all four would also have been defensible, but "centred below"
+matches the promise style and no chevron is the calmer choice. Flagged so the
+user can overrule.
+
+### What changed
+- `pages/index.tsx`: the `kind: "promise" | "action"` field is gone from
+  `PILLARS`; the render map no longer emits `pillar pillar-${kind}` and no
+  longer emits the `.pillar-go` span. Every tile is `className="pillar"` with
+  `<img className="pimg">` + `<h3>`. Destinations unchanged (`#process`,
+  `#services`, `/estimate.html`, `#contact`). The stale ranking comment above
+  `PILLARS` was rewritten to record the reversal.
+- `styles.css`: deleted `.pillar-promise h3`, `.pillar-action`,
+  `.pillar-action .pimg`, `.pillar-action h3`, `.pillar-action:hover h3`,
+  `.pillar-go`, `.pillar-action:hover .pillar-go` and the `.pillar-go`
+  reduced-motion block. `.pillar h3` is one rule at 22.5px again (the original
+  uniform V1/V1.1 value). `.pillars` is back to `repeat(4, 1fr)`.
+- `align-items: stretch` KEPT, not `start`: it keeps every hairline divider the
+  same length when a label wraps to a second line.
+- `.pillar .pimg` gained `aspect-ratio: 4 / 3` and `object-fit: cover`. All four
+  source files are already 1000x750, so equal heights followed from width
+  alone; pinning the ratio makes the uniformity guaranteed rather than
+  incidental if an asset is ever swapped for a different crop. The four-edge
+  feather mask was not touched.
+- The 860px block lost its per-variant overrides (`.pillar-action`,
+  `.pillar-action .pimg`, `.pillar-promise h3`, `.pillar-action h3`). Mobile is
+  now a plain uniform 2x2 with one label size (19px).
+- The `.svc-close` reduced-motion comment no longer refers to the deleted
+  `.pillar-go`.
+
+`rg -n "pillar-go|pillar-promise|pillar-action" packages/web/src` returns
+nothing.
+
+### Verification
+`/tmp/pillarqa.py` was REWRITTEN: it used to dump the ranked design, it now
+ASSERTS uniformity - four equal grid columns, one label size / colour /
+alignment, equal cell widths, equal image widths AND heights, equal image top
+offsets within the tile, equal label gap below the image, tile tops level per
+row (1px subpixel tolerance), chevron count 0, feather mask present on all
+four, and no surviving `pillar-` variant class. Desktop 1440x900 PASS, mobile
+390x844 PASS, OVERALL PASS. Both screenshots viewed
+(`/tmp/v12-s4-desktop.png`, `/tmp/v12-s4-mobile.png`) - they do read as one set.
+
+lint 21 files 0/0; build clean, 8 routes prerendered; flashprobe zero numeric
+`hiddenAt` across all 8 routes; motionqa GSAP on index only, 0 stuck / 0
+initLeft on all 8, reduced motion `gsapChunks=[]`, GSAP blocked -> h1 opacity 1.
+
+### Commit split
+The fast-scroll fix is its own commit (`ba5ffbc`) because it is genuinely
+independent. §7 and the tile-uniformity change landed together in `2bdc920`:
+their hunks are interleaved in the same `styles.css` region (deleting the
+`.pillar-action` / `.pillar-go` rules sits inside the same hunk as the §7
+additions), so hunk-splitting them risked a broken intermediate commit for no
+real gain.
