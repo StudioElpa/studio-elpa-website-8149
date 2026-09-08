@@ -1358,3 +1358,113 @@ Verification: lint 21 files 0/0 · build clean, 8 routes prerendered · tradeqa
 flashprobe no flash · motionqa reveals 56, 0 stuck / 0 initLeft on all 8,
 reduced motion 0 GSAP chunks, GSAP blocked leaves h1 and hero visible · brand
 audit clean (dist 0 hits) · screenshots viewed at 1440 and 390.
+
+---
+
+## V1.2 SECTION 11 — THE BEFORE/AFTER COMPARISON (commit 4cd15cb)
+
+New component `packages/web/src/web/components/before-after.tsx`, a `.cmp`
+block in styles.css, and a two-line change in `pages/index.tsx` (import, and
+`<BeforeAfter />` replacing the 22-line static `.ba` block). The
+`.project-head` copy above and the `.ba-cap` caption below were left untouched,
+as the brief requires.
+
+### The design, and why
+
+First render is the EXISTING static two-figure pair (`StaticPair()`, reusing
+`.ba` / `.ba-tag` / `.ba-img` verbatim). `interactive` flips true only in a
+`useEffect` after mount, and only when `prefers-reduced-motion` is not set.
+One mechanism therefore satisfies three separate requirements: no-JS, a failed
+chunk, and reduced motion all get two fully captioned photographs.
+
+The control is a native `<input type="range">` stretched transparently over the
+whole frame (`opacity: 0`, `inset: 0`, `z-index: 4`). That buys pointer drag,
+touch drag, keyboard (arrows/Home/End/Page) and screen-reader semantics for
+free; a hand-rolled pointer handler would have reimplemented all of it, worse.
+Near-zero-width thumb (1px) on purpose: a wide thumb insets the track at both
+ends and the seam then visibly lags the cursor. Focus is shown on `.cmp-grip`
+via `.cmp-frame:focus-within`, because the real input is invisible and its own
+ring would be too. Both labels are permanent and never move. `touch-action:
+pan-y` keeps vertical page scrolling working over the frame.
+
+`.ba-img` and `.ba-tag` are scoped UNDER `.ba` in the existing CSS, so their
+treatment (the `--elpa-grade` filter, background, border, label styling) had to
+be RESTATED in the `.cmp` rules rather than inherited. Commented in place.
+
+No `data-reveal` on `.cmp`: the subtree mounts after `usePageMotion`'s layout
+effect has already queried the DOM, so it could never be observed. Leaving the
+attribute on would have implied motion that never runs.
+
+### The optional scroll-linked reveal was built WITHOUT GSAP
+
+An IntersectionObserver (threshold 0.35) fires once, waits 260ms for the reveal
+to settle, then runs a 900ms ease-out-cubic rAF tween moving the divider from
+64 to 48. Runs once, never on scroll up, not scroll-linked, pins nothing,
+hijacks no scroll. Section 11 was nominally the third approved GSAP experience,
+but the divider position is React state and driving it from GSAP would add a
+library round-trip and a conflict with the range input's value for no benefit.
+CONSEQUENCE FOR THE FINAL REPORT: only two of the three approved GSAP
+experiences actually use GSAP.
+
+### A real bug, found because a QA assertion was wrong (lesson 9, again)
+
+`/tmp/cmpqa.py` reported "ArrowRight does nothing" at 390 and 360 only, while
+ArrowLeft moved exactly the expected 6%. Asymmetric and mobile-only, so I
+instrumented (`/tmp/cmp390.py`) instead of editing code. The keyboard was fine:
+`input.value 48 -> 51` at BOTH widths, `activeElement='cmp-range'`. My script
+waited a fixed 2200ms, but the hint tween starts ~1386ms after the frame enters
+view on mobile vs ~1248ms on desktop, so the presses raced the tail of the
+tween. Fixed by polling for stillness (`settle()`) instead of sleeping.
+
+BUT the false failure exposed a GENUINE defect: a keypress or drag DURING the
+900ms tween was overwritten on the next animation frame. `hinted.current = true`
+in `onChange` only blocked FUTURE tweens, it never cancelled a RUNNING one.
+Fixed with a `stopHint` ref that cancels the timer and the rAF, wired to
+`onPointerDown`, `onKeyDown` and `onChange`. The reader always wins. Regression
+test added: catch the tween mid-flight at 1500ms, press End, assert >97.
+
+### The height claim I wrote was false, and I measured it instead
+
+My own CSS comment claimed the 3/4 frame meant "swapping presentations does not
+change the section's height". Untrue: the static pair is two 3/4 images side by
+side, one 3/4 frame is a different box. MEASURED `#projects` height, static vs
+interactive: 1202 -> 1295px at 1440 (+7.8%), and 1571 -> 1095px at 390
+(-30.3%, because the static pair stacks on mobile).
+
+That reflow is real but free: `#projects` sits 7461px (desktop) / 11013px
+(mobile) below the fold at load, so measured CLS is 0.00000 at 390 and 0.00456
+at 1440 — and that single desktop entry is `main`/`#text` at t=626ms, i.e.
+hydration text reflow, not this swap. Comment rewritten with the real numbers.
+
+### Lesson: `bun run lint` is NOT a parse check
+
+An edit of mine left a JSX comment and a `<div>` as two sibling expressions
+inside `return (...)`, an outright syntax error. `bun run lint` reported
+"21 files, 0 violations" anyway. Only loading the page caught it (`#root` had
+0 children, Vite 500 in the console). Always load the page or run the build
+after editing a component; lint alone proves nothing about validity.
+
+### Verification
+
+`/tmp/cmpqa.py` OVERALL PASS, 80/80 across six modes (1440, 1180, 390, 360,
+1440-reduced, 390-reduced): static pair under reduced motion with both photos
+and both labels; interactive frame mounted otherwise; 3/4 ratio at every width;
+arrows, Home/End; focus ring on the grip; clip-path tracks the divider; pointer
+drag max lag 0.16%; labels never move; touch drag; page still scrolls over the
+frame; reader input beats the tween; copy intact; 0 overflow.
+
+NO-JS GUARANTEE PROVED ON THE BUILT FILES: in `dist/index.html`, `cmp-frame`
+appears 0 times OUTSIDE `<style>` (the 2 raw hits are the inlined stylesheet),
+while the static markup is present with both `<img>`, both labels and real alt
+text. Same for `drapery.html`, whose own static `.ba` pair is untouched.
+
+lint 21 files 0/0 · build clean, 8 routes prerendered · fastscroll TOTAL BROKEN
+0 · overflow360 0 on all 8 · flashprobe no flash · motionqa 0 stuck / 0
+initLeft on all 8, reduced motion 0 GSAP chunks, GSAP blocked leaves h1 and
+hero visible · brand audit dist 0 hits · .env identical to backup ·
+screenshot viewed at 1440.
+
+NOTE on the reveal count: index reads 54 under normal motion but 56 under
+reduced motion. Expected — the two static `<figure data-reveal>` elements
+unmount when the interactive frame (deliberately no `data-reveal`) replaces
+them. Not a regression.
