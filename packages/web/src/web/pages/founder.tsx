@@ -1,5 +1,6 @@
 import { BackHeader, ThinFooter } from "../components/site-chrome";
 import { BalticLink } from "../components/partner";
+import { PageSeo } from "../components/page-seo";
 import { usePageMotion } from "../hooks/use-motion";
 
 /* Copy ported verbatim from the original founder.html. */
@@ -9,6 +10,7 @@ export default function FounderPage() {
 
 	return (
 		<div className="page-article founder" ref={root}>
+			<PageSeo path="/founder.html" />
 			<a className="skip-link" href="#main">
 				Skip to content
 			</a>

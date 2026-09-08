@@ -6,6 +6,7 @@ import { BeforeAfter } from "../components/before-after";
 import { CONTACT } from "../components/brand";
 import { BalticLink } from "../components/partner";
 import { HeroMotion } from "../components/hero-motion";
+import { PageSeo } from "../components/page-seo";
 import { usePageMotion, useHomeMotion } from "../hooks/use-motion";
 
 /* Copy is ported verbatim from the original index.html. Structure and section
@@ -188,6 +189,7 @@ export default function HomePage() {
 
 	return (
 		<div className="page-home" ref={root}>
+			<PageSeo path="/index.html" />
 			<a className="skip-link" href="#main">
 				Skip to content
 			</a>

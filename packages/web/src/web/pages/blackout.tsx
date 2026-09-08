@@ -3,6 +3,7 @@ import { LandingHeader, LandingFooter } from "../components/site-chrome";
 import { Faq, type FaqEntry } from "../components/faq";
 import { CONTACT } from "../components/brand";
 import { BalticLink } from "../components/partner";
+import { PageSeo } from "../components/page-seo";
 import { usePageMotion } from "../hooks/use-motion";
 
 /* Copy ported verbatim from the original blackout.html. The dark-band list used
@@ -53,6 +54,7 @@ export default function BlackoutPage() {
 
 	return (
 		<div className="page-lp" ref={root}>
+			<PageSeo path="/blackout.html" />
 			<a className="skip-link" href="#main">
 				Skip to content
 			</a>

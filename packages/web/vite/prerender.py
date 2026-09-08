@@ -29,6 +29,7 @@ Run automatically from prerender-plugin.ts at the end of `vite build`.
 
 import functools
 import http.server
+import json
 import os
 import re
 import socketserver
@@ -39,16 +40,19 @@ import threading
 # mobile port) or 4310 (kept free for serving dist while measuring).
 PORT = 4311
 
-ROUTES = [
-    "/index.html",
-    "/drapery.html",
-    "/motorized.html",
-    "/blackout.html",
-    "/estimate.html",
-    "/founder.html",
-    "/journal-blackout.html",
-    "/privacy.html",
-]
+# The route list is NOT maintained here. It comes from the same registry the
+# router and the per-page <PageSeo> tags read, so a new V2 page cannot ship
+# un-prerendered or missing from the sitemap: adding it in one place adds it
+# everywhere. If the registry ever fails to load, that is a build failure
+# rather than a silently shorter run.
+REGISTRY = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src", "web", "lib", "site-routes.json")
+
+with open(os.path.abspath(REGISTRY), encoding="utf-8") as _fh:
+    _REGISTRY = json.load(_fh)
+
+ORIGIN = _REGISTRY["origin"]
+ROUTE_META = _REGISTRY["routes"]
+ROUTES = [r["path"] for r in ROUTE_META]
 
 CHROME = "/opt/google/chrome/chrome"
 
@@ -136,6 +140,70 @@ def open_disclosures(html: str) -> str:
     return FAQ_BUTTON_RE.sub(button, FAQ_PANEL_RE.sub(panel, html))
 
 
+def write_sitemap(dist: str) -> int:
+    """Generate sitemap.xml from the registry, overwriting whatever public/ had.
+
+    Hand-maintaining a sitemap alongside a growing set of V2 geography pages is
+    a guarantee that the two drift, so the file is derived instead. robots.txt
+    points at it.
+    """
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+    written = 0
+    for meta in ROUTE_META:
+        if meta.get("noindex"):
+            continue
+        lines.append("\t<url>")
+        lines.append(f"\t\t<loc>{ORIGIN}{meta['path']}</loc>")
+        lines.append(f"\t\t<changefreq>{meta['changefreq']}</changefreq>")
+        lines.append(f"\t\t<priority>{meta['priority']}</priority>")
+        lines.append("\t</url>")
+        written += 1
+    lines.append("</urlset>")
+    with open(os.path.join(dist, "sitemap.xml"), "w", encoding="utf-8") as fh:
+        fh.write("\n".join(lines) + "\n")
+    return written
+
+
+TITLE_RE = re.compile(r"<title>(.*?)</title>", re.S)
+CANONICAL_RE = re.compile(r'<link[^>]+rel="canonical"[^>]*>')
+HREF_RE = re.compile(r'href="([^"]+)"')
+
+
+def head_defects(route: str, html: str) -> list[str]:
+    """Check the AEO head tags actually made it into the static HTML.
+
+    <PageSeo> writes the title, description, canonical and JSON-LD from a mount
+    effect. That is invisible in the source, so without this guard a page could
+    ship with the homepage's title and nobody would notice until a crawler did.
+    """
+    meta = next((m for m in ROUTE_META if m["path"] == route), None)
+    if meta is None:
+        return [f"{route}: not in the route registry"]
+
+    problems: list[str] = []
+    title = TITLE_RE.search(html)
+    if not title or title.group(1).strip() != meta["title"]:
+        got = title.group(1).strip() if title else "(none)"
+        problems.append(f"{route}: title is {got!r}, expected {meta['title']!r}")
+
+    if f'content="{meta["description"]}"' not in html:
+        problems.append(f"{route}: meta description does not match the registry")
+
+    link = CANONICAL_RE.search(html)
+    href = HREF_RE.search(link.group(0)) if link else None
+    want = f"{ORIGIN}{meta['path']}"
+    if not href or href.group(1) != want:
+        problems.append(f"{route}: canonical is {href.group(1) if href else '(none)'}, expected {want}")
+
+    if 'type="application/ld+json"' not in html:
+        problems.append(f"{route}: no JSON-LD in the static HTML")
+
+    return problems
+
+
 def collapsed_panels(html: str) -> int:
     """Count FAQ panels that would ship collapsed. Must always be zero."""
     return sum(
@@ -211,6 +279,7 @@ def main() -> int:
         collapsed = collapsed_panels(snapshots[route])
         if collapsed:
             failures.append(f"{route}: {collapsed} collapsed FAQ panels in static HTML")
+        failures.extend(head_defects(route, snapshots[route]))
 
     if failures:
         # Bail out rather than ship invisible text or a half-rendered page.
@@ -226,6 +295,7 @@ def main() -> int:
         print(f"prerender: {route} ({len(html) // 1024} kB)")
 
     print(f"prerender: {len(snapshots)} routes written")
+    print(f"prerender: sitemap.xml with {write_sitemap(dist)} urls")
     return 0
 
 

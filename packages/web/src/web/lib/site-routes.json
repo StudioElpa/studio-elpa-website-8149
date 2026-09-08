@@ -1,0 +1,91 @@
+{
+	"$comment": "THE single source of truth for every route on the site. The router (app.tsx), the per-page <PageSeo> head tags, the build-time sitemap and prerender.py's route list all read this file, so a page cannot ship un-prerendered or missing from the sitemap. prerender.py reads it as plain JSON, which is why the registry is JSON and not TypeScript. Add a route here FIRST, then add its <Route> and its page component.",
+	"origin": "https://studioelpa.com",
+	"routes": [
+		{
+			"path": "/index.html",
+			"aliases": ["/"],
+			"title": "Studio Elpa · Custom Window Treatments · South Florida",
+			"description": "Custom drapery, shades and motorized window treatments, made to measure in European fabrics and fitted to how you live. One team from consultation to install, serving South Florida.",
+			"schema": "home",
+			"changefreq": "monthly",
+			"priority": "1.0"
+		},
+		{
+			"path": "/drapery.html",
+			"aliases": [],
+			"title": "Custom Drapery, Made to Measure · Studio Elpa",
+			"description": "Drapery cut and hung for your rooms: European fabrics, hand-finished headers, hardware that suits the architecture, and one team from the first measurement to the last hem.",
+			"schema": "service",
+			"serviceType": "Custom drapery design, fabrication and installation",
+			"breadcrumb": "Custom Drapery",
+			"changefreq": "monthly",
+			"priority": "0.9"
+		},
+		{
+			"path": "/motorized.html",
+			"aliases": [],
+			"title": "Motorized Shades and Drapery · Studio Elpa",
+			"description": "Quiet, reliable motorized shades and drapery, wired and programmed properly. Our licensed, insured electrical partner handles the power so you never have to find an electrician.",
+			"schema": "service",
+			"serviceType": "Motorized window treatment design, wiring and installation",
+			"breadcrumb": "Motorized Window Treatments",
+			"changefreq": "monthly",
+			"priority": "0.9"
+		},
+		{
+			"path": "/blackout.html",
+			"aliases": [],
+			"title": "Blackout Shades and Drapery for Bedrooms · Studio Elpa",
+			"description": "Real darkness in a bedroom takes more than a blackout fabric. Side channels, returns and overlap, measured and built so light does not find its way around the edges.",
+			"schema": "service",
+			"serviceType": "Blackout shade and drapery design and installation",
+			"breadcrumb": "Blackout Window Treatments",
+			"changefreq": "monthly",
+			"priority": "0.9"
+		},
+		{
+			"path": "/estimate.html",
+			"aliases": [],
+			"title": "Estimate Your Window Treatments · Studio Elpa",
+			"description": "Answer a few questions about your windows and how you use the room, and see an honest range before you talk to anyone. No obligation and no pressure to book.",
+			"schema": "page",
+			"breadcrumb": "Estimate",
+			"changefreq": "monthly",
+			"priority": "0.8"
+		},
+		{
+			"path": "/founder.html",
+			"aliases": [],
+			"title": "Aviva, on Making a Home You Can Breathe In · Studio Elpa",
+			"description": "Why Studio Elpa exists, in the founder's own words: the light, the fabrics, and the belief that a finished room should feel calm rather than decorated.",
+			"schema": "page",
+			"breadcrumb": "Our Story",
+			"changefreq": "yearly",
+			"priority": "0.6"
+		},
+		{
+			"path": "/journal-blackout.html",
+			"aliases": [],
+			"title": "The Case for Real Darkness · Studio Elpa Journal",
+			"description": "What makes a bedroom genuinely dark, why most blackout shades leak light at the edges, and the details we specify to stop it. From the Studio Elpa Journal.",
+			"schema": "article",
+			"breadcrumb": "The Case for Real Darkness",
+			"headline": "The case for real darkness",
+			"datePublished": "2026-07-01",
+			"changefreq": "yearly",
+			"priority": "0.5"
+		},
+		{
+			"path": "/privacy.html",
+			"aliases": [],
+			"title": "Privacy Policy · Studio Elpa",
+			"description": "What Studio Elpa collects when you enquire, how it is used, how long it is kept, and how to ask for it to be deleted.",
+			"schema": "page",
+			"breadcrumb": "Privacy Policy",
+			"noindex": false,
+			"changefreq": "yearly",
+			"priority": "0.2"
+		}
+	]
+}

@@ -1,4 +1,5 @@
 import { BackHeader, ThinFooter } from "../components/site-chrome";
+import { PageSeo } from "../components/page-seo";
 import { usePageMotion } from "../hooks/use-motion";
 
 /* Copy ported verbatim from the original journal-blackout.html, with one edit:
@@ -10,6 +11,7 @@ export default function JournalBlackoutPage() {
 
 	return (
 		<div className="page-article" ref={root}>
+			<PageSeo path="/journal-blackout.html" />
 			<a className="skip-link" href="#main">
 				Skip to content
 			</a>

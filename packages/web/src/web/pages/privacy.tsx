@@ -1,5 +1,6 @@
 import { BackHeader, ThinFooter } from "../components/site-chrome";
 import { CONTACT } from "../components/brand";
+import { PageSeo } from "../components/page-seo";
 import { usePageMotion } from "../hooks/use-motion";
 
 /* Copy ported verbatim from the original privacy.html, with two changes:
@@ -23,6 +24,7 @@ export default function PrivacyPage() {
 
 	return (
 		<div className="page-privacy" ref={root}>
+			<PageSeo path="/privacy.html" />
 			<a className="skip-link" href="#main">
 				Skip to content
 			</a>

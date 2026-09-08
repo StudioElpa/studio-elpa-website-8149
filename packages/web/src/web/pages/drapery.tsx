@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { LandingHeader, LandingFooter } from "../components/site-chrome";
 import { Faq, type FaqEntry } from "../components/faq";
 import { CONTACT } from "../components/brand";
+import { PageSeo } from "../components/page-seo";
 import { usePageMotion } from "../hooks/use-motion";
 
 /* Copy ported verbatim from the original drapery.html, with one edit: the hero
@@ -47,6 +48,7 @@ export default function DraperyPage() {
 
 	return (
 		<div className="page-lp" ref={root}>
+			<PageSeo path="/drapery.html" />
 			<a className="skip-link" href="#main">
 				Skip to content
 			</a>

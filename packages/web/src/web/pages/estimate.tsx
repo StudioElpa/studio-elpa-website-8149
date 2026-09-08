@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { CONTACT, Logo } from "../components/brand";
+import { PageSeo } from "../components/page-seo";
 import { usePageMotion } from "../hooks/use-motion";
 import { readUtm, useSubmitLead } from "../queries/leads";
 import {
@@ -214,6 +215,7 @@ export default function EstimatePage() {
 
 	return (
 		<div className="page-estimate" ref={root}>
+			<PageSeo path="/estimate.html" />
 			<a className="skip-link" href="#main">
 				Skip to content
 			</a>

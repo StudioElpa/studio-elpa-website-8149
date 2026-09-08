@@ -1,4 +1,53 @@
+# Studio Elpa. Everything here is meant to be read, by people and by machines.
+#
+# The blanket rule below already allows every crawler. The named groups exist
+# because some hosts and bot-protection layers only pass traffic they can match
+# to an explicit rule, and because the AI search crawlers are the point of this
+# site's structured data. Naming them makes the intent unmistakable.
+
 User-agent: *
 Allow: /
 
+# Google and Bing, including their AI surfaces.
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# OpenAI. OAI-SearchBot serves ChatGPT search results, ChatGPT-User fetches a
+# page a user asked about, and GPTBot crawls for training. All welcome.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+# Anthropic, Perplexity and Apple.
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Generated at build time from the route registry in
+# packages/web/src/web/lib/site-routes.json.
 Sitemap: https://studioelpa.com/sitemap.xml

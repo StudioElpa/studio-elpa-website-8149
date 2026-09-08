@@ -671,6 +671,43 @@ has not started, so no performance claim should be made for Phase 1 yet.
 
 ---
 
+## §11 V2 AEO foundation
+
+New script: **`/tmp/aeoqa.py`, 438 checks, 438/438.** It reads `packages/web/dist`, not the
+dev server, because the AEO surface only exists in the prerendered build.
+
+Per route it asserts: title and meta description match the route registry exactly; one
+self-referencing canonical; `og:url` / `og:title` / `og:description`; exactly one JSON-LD
+block that parses; the `Organization`, `LocalBusiness` / `HomeAndConstructionBusiness` and
+`WebSite` nodes with stable `@id`s; the phone `(561) 836-0026` and `aviva@studioelpa.com`;
+`areaServed` of at least 25 cities with named cities and real ZIPs and every entry
+`addressRegion: "FL"`; **no street address claimed**; the schema-specific fields for
+`Service`, `Article` and `WebPage`; breadcrumb positions, labels and URLs, and that the
+homepage has none; **no `aggregateRating`, `reviewCount`, `ratingValue`, `award`,
+`foundingDate` or `numberOfEmployees`** anywhere; no em dash; no Lutron / Somfy /
+Blindspace; **no dollar figures** (the target-areas market research is prioritisation only
+and must never reach public copy or structured data); exactly one `<h1>`.
+
+Sitewide it asserts: all eight titles unique, all eight descriptions unique, `robots.txt`
+allows all eight named crawler groups with no blanket `Disallow`, and the generated
+`sitemap.xml` `<loc>` list equals the registry order exactly, with no duplicates and all
+absolute https URLs.
+
+**A second guard now lives in the build itself.** `prerender.py` gained
+`head_defects(route, html)`, which fails `bun run build` if any route's title, description,
+canonical or JSON-LD is wrong or missing. It sits alongside the existing hidden-text and
+collapsed-FAQ guards, so a regression cannot ship silently.
+
+**Honest caveat:** `packages/web/public/sitemap.xml` was deleted and the sitemap is now
+generated into `dist/` from the route registry at build time. The dev server on port 4200
+therefore serves no `/sitemap.xml`; only the production build has one. Verify it in `dist`,
+not in dev.
+
+Whether the host or CDN blocks any of these crawlers at the firewall or bot-protection
+layer is outside the codebase and has **not** been verified.
+
+---
+
 ## Open items before go-live
 
 1. **`estimate.html` shows unconfirmed pricing to real prospects.** The original's

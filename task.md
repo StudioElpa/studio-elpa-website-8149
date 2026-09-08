@@ -2789,3 +2789,113 @@ Main chunk 578.21 kB / gzip 175.22 kB — code-splitting is the next workstream,
 ### Still blocked on the user
 
 The 5.5 missing drapery-header card texts (guide parked), Elvira's real bio, `hero-clean-final.png`.
+
+---
+
+## §10 V2 AEO FOUNDATION (route registry, per-page head, JSON-LD graph, robots, sitemap)
+
+V2 brief §3. Built after the Phase 1 slice, verified, and committed separately so the
+content work and the machine-readability work stay reviewable apart from each other.
+
+### The route registry is now the single source of truth
+
+`packages/web/src/web/lib/site-routes.json` holds `origin` plus a `routes[]` array. Each
+route carries `path`, `aliases`, `title`, `description`, `schema` (`home` | `service` |
+`article` | `page`), optional `serviceType`, `breadcrumb`, `headline`, `datePublished`,
+`noindex`, and `changefreq` / `priority`. `lib/routes.ts` wraps it with `ORIGIN`, `ROUTES`,
+`canonical(path)` and `routeFor(path)` (returns `undefined` rather than throwing).
+
+Importing JSON from `src/` is allowed — the lint rule that bans asset imports does not
+cover `.json`, and `bun run lint` is clean with it.
+
+**This closed a real gap:** before this, every one of the eight routes served the
+homepage's `<title>` and meta description. All eight now have unique, hand-written ones.
+
+### Per-page head and structured data
+
+`components/page-seo.tsx` exports `<PageSeo path="/x.html" />`, mounted as the first child
+of each of the eight page roots. In a `useEffect` it removes any `[data-seo="page"]`
+leftovers, sets `document.title`, updates-or-creates `description`, `og:title`,
+`og:description`, `og:url` and `og:type`, sets `<link rel="canonical">`, honours `noindex`,
+and appends one `<script type="application/ld+json" data-seo="page">`. It returns `null`.
+
+It mutates the DOM **on purpose**: the prerender step snapshots
+`document.documentElement.outerHTML`, so everything it writes lands in the static HTML that
+crawlers fetch.
+
+`lib/seo-data.ts` holds `AREA_SERVED` (30 South Florida cities with real ZIPs, ordered by
+the target-areas priority) and `graphFor(route)`, which returns one `@graph`:
+`Organization` (`#organization`), `["HomeAndConstructionBusiness","LocalBusiness"]`
+(`#localbusiness`, with `areaServed` City nodes carrying postal codes, an eight-service
+`hasOfferCatalog`, `priceRange: "$$$"`), `WebSite` (`#website`), then the page node
+(`Service` with `serviceType` + `provider` ref, `Article` with headline and publisher ref,
+or `WebPage`), then a `BreadcrumbList` where a breadcrumb label exists.
+
+Two hard rules are stated in the file header and asserted by QA: **no market figures**
+(the target-areas research is prioritisation only, never public copy and never JSON-LD)
+and **nothing invented** — no ratings, reviews, awards, `foundingDate`, employee counts,
+and no `sameAs` until real profiles exist.
+
+### Prerender: registry-driven, with a head guard and a generated sitemap
+
+`packages/web/vite/prerender.py` no longer hardcodes its route list; it reads the registry.
+It gained `write_sitemap(dist)` (skips `noindex`) and `head_defects(route, html)`, which
+**fails the build** if a route's title or description does not match the registry, or its
+canonical or JSON-LD is missing. Guard order: `open_disclosures()` → `unblock_paint()` →
+collapsed-panel guard → `head_defects()`.
+
+`packages/web/public/sitemap.xml` was **deleted**. The sitemap is generated into `dist/` at
+build time. **Consequence, stated plainly: the dev server on 4200 has no `/sitemap.xml`;
+only the production build has one.**
+
+### robots.txt
+
+Rewritten with a blanket `User-agent: * / Allow: /` plus explicit groups for Googlebot,
+Googlebot-Image, Google-Extended, Bingbot, OAI-SearchBot, ChatGPT-User, GPTBot, ClaudeBot,
+Claude-SearchBot, PerplexityBot, Applebot and Applebot-Extended, then the `Sitemap:` line.
+Named groups exist because bot-protection layers commonly pass only matched rules.
+
+Allowing GPTBot, Google-Extended and Applebot-Extended lets models train on the site as
+well as search it. That is a deliberate reading of "be the answer AI assistants give", and
+it is a business decision the user can reverse in one file.
+
+### QA
+
+New `/tmp/aeoqa.py`, **438 checks, 438/438**, read against `packages/web/dist` rather than
+the dev server. Per route: title and description match the registry, exactly one
+self-referencing canonical, one `og:url` / `og:title`, exactly one JSON-LD block that
+parses, the expected nodes and stable `@id`s, the phone `(561) 836-0026` and the email,
+`areaServed` ≥ 25 with named cities and ZIPs present and every area `addressRegion: "FL"`,
+**no street address claimed**, schema-specific fields, breadcrumb positions and URLs (and
+none on the homepage), **no `aggregateRating` / `reviewCount` / `ratingValue` / `award` /
+`foundingDate` / `numberOfEmployees`**, no em dash, no embargoed brands, **no dollar
+figures**, exactly one `<h1>`. Then sitewide: all titles unique, all descriptions unique,
+robots allows all eight named agents with no blanket `Disallow`, and the sitemap `<loc>`
+list equals the registry order exactly with no duplicates and all absolute https.
+
+Full battery re-run after the AEO edits, all unchanged: `footerqa` 125/125 · `respqa` 833/0
+· `faqqa` 642/642 · `journalqa` 258/0 · `contactqa` 171/171 · `balticqa` 43/0 (sitewide 8) ·
+`balticcontrast` 8 links, 0 below AA · `tradeqa` PASS · `heroviewqa` 15/0 · `fastscroll` 0
+broken · `overflow360` 0 · `motionqa` 0 stuck · `h1flash` ALL PASS · `qa_a11y` clean · `qa2`
+0 broken images · `qa_copy` clean · `qa_booking` 10/0 · `lint` 0 violations · `probe11`
+body text **10476**, unchanged.
+
+### Honest non-completions from this slice
+
+1. `/sitemap.xml` exists only in the production build, not on the dev server.
+2. The eight titles and meta descriptions are **my wording, written to the voice rules but
+   not reviewed by Aviva**.
+3. `sameAs` is empty — no social profiles were supplied and none were invented.
+4. No `address` is claimed in `LocalBusiness`. A Google Business Profile match will need a
+   real address or an explicit service-area configuration.
+5. `datePublished: "2026-07-01"` on the blackout Journal article is an assumption from the
+   project timeline, not a date the user gave. Confirm it.
+6. V2 §3 also asks that the host/CDN not block these crawlers via firewall or bot
+   protection. That lives in hosting settings, not the codebase, and is **not done**.
+
+### Why this comes before Phase 2
+
+Every V2 page added from here gets its title, description, canonical, JSON-LD, prerender
+pass, head guard and sitemap entry **for free** by adding one object to
+`site-routes.json` and mounting `<PageSeo>`. Add the route to the registry first, then
+`app.tsx`, then the page component.
