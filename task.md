@@ -2137,3 +2137,133 @@ and the `@font-face` blocks now ride along inside that inlined CSS.
 
 `"ID Grotesk Trial"` shows up once per route in the family census. That is the
 template's "Made with Runable" badge, not site copy. Left alone.
+
+---
+
+## WARM EDITORIAL TYPOGRAPHY, STAGE B: TYPE ASSIGNMENTS
+
+Brief sections 2, 3 and 4, plus the two remaining approved consequences (FAQ
+questions to the sans, CTA letter-spacing reduced). Two files touched:
+`styles.css` and `pages/estimate.tsx`. 88 insertions, 11 deletions.
+
+### The weight ranking was inverted, and that was the main event
+
+The global `h1, h2, h3, h4` rule set `font-weight: 500`. The brief asks for
+Regular 400 on the hero and on major headings, with 500 reserved for "smaller
+headings only where Regular lacks sufficient clarity". The old global made every
+heading medium by default, which is the opposite ranking, so the global flipped
+to 400.
+
+This is what justifies keeping Newsreader's live 400-500 weight range from stage
+A rather than shipping 400 alone. 500 is now restated deliberately in five
+places, every one of them a real "clarity" case rather than a default:
+
+| rule | why 500 |
+|---|---|
+| `.page-lp .hero h1` | reversed on a dark ground |
+| `.callout h2` | reversed on a dark ground |
+| `.collection h3` | small serif, dark band; inherited by `.manifesto .collection h3` at 21px |
+| `.svc-item h4` | 19px, the smallest serif heading on the site |
+| `.wordmark`, `.step-row .n`, `.project-head h3`, estimate h1/h2, `.reco h4` | already restated 500 before stage B, unchanged |
+
+Everything else that previously rode the global now renders Regular 400:
+`h2.big`, `.svc-feature-text h3`, `.svc .card h3`, `.step-row h3`, `.post h3`,
+`.contact-side h3`, `.page-article` h1/h2/h4, `.page-privacy` h1/h2, and the
+home hero.
+
+### Line-height bands and headline tracking
+
+The inherited 1.15 was applied to everything. It is correct only for the
+brief's "smaller serif headings" band (1.15-1.25), so it stays as the default
+and the larger tiers restate their own:
+
+| tier | brief band | applied |
+|---|---|---|
+| home hero `h1` | 0.98-1.04 | **1.0**, tracking **-0.02em** |
+| `.page-lp .hero h1` | 0.98-1.04 | **1.02**, tracking -0.02em |
+| `.page-article h1` | - | kept 1.1, added tracking -0.02em |
+| `h2.big`, `.callout h2` | 1.05-1.12 | **1.08**, tracking -0.015em |
+| `.svc-feature-text h3` (38px) | 1.05-1.12 | **1.1**, tracking -0.015em |
+| everything smaller | 1.15-1.25 | inherited 1.15 |
+| body | 1.65-1.75 | unchanged at 1.75 |
+
+Tracking starts at the brief's suggested -0.02em on the hero and eases to
+-0.015em on the section tier, which runs at roughly two thirds the size and
+does not need the same correction.
+
+**The tighter hero leading pulled the hero shorter, not taller.** Desktop
+1440: **1013px -> 980px, down 3.3%.** Section 6 only requires that it must not
+become substantially taller, so this is the right direction.
+
+### FAQ questions moved to Instrument Sans
+
+`.faq-q` was `var(--serif)` 500 at 22.5px. It is now `var(--sans)` 500 at
+**19.5px**, line-height 1.4, tracking -0.005em. Two reasons for the size drop:
+Instrument Sans reads appreciably larger than Newsreader at the same nominal
+size, so 19.5px holds the previous optical weight; and 22.5px of sans in a
+button would have out-shouted the serif headings around it. This is the second
+deliberate size change of the overhaul, after stage A's `.footnote`.
+
+The family census confirms the swap was surgical: index went from 138 sans / 61
+serif to **144 sans / 55 serif**. Six elements crossed, which is exactly the six
+FAQ questions, and nothing else moved.
+
+### CTA letter-spacing reduced
+
+The brief calls the current CTA tracking too heavy. Instrument Sans also
+carries wider sidebearings than Jost did, so the same nominal value reads looser
+than it used to.
+
+| rule | before | after |
+|---|---|---|
+| `.btn` | 0.13em | **0.10em** |
+| `.nav-cta` | 0.14em | **0.11em** |
+| `.page-estimate .btn` | 0.2em, the heaviest control on the site | **0.13em** |
+
+Only tracking moved. All padding is untouched, so V1.2 section 3's button
+height is preserved and only the button width narrows. Measured `.btn` height
+is now 47.625px, not the 49.625px recorded in V1.2 - that 2px came from
+stage A's font metrics change, not from this tracking edit. Still well above
+the 44px tap target.
+
+Eyebrows were left alone. `.kicker` at 0.3em and `.svc-more-head h3` at 0.24em
+are wide, but the brief only calls out CTA tracking as excessive, and wide
+eyebrows are part of the editorial voice.
+
+### One utility-text fix
+
+`estimate.tsx` had a bare `<i>` with an inline `fontSize: 13` for the drapery
+assumption note. Stage A's `em, i, cite` rule correctly pulled it out of the
+sans, which has no italic face and was slanting it synthetically, but that left
+it as 13px Newsreader Italic. The brief puts utility text in Instrument Sans
+and keeps Newsreader away from small interface text, so it is now
+`.assume-note`: sans, upright, 14px, `--ink-soft`. The inline font size is gone
+with it.
+
+The remaining inline type styles are four `fontWeight: 500` spans in
+`estimate.tsx` (sans, a real instance) and one `fontSize: 14` utility line in
+`index.tsx`. Both fine.
+
+### Verification
+
+- `bun run lint` 0 violations. `bun run build` passes, 8 routes prerendered,
+  both prerender guards still pass.
+- `/tmp/probe11.py` body text **10308, byte-identical to baseline** - no copy
+  moved.
+- `/tmp/fontqa.py` **85 PASS 0 FAIL**. The weight changes introduced no
+  synthetic faces; every computed weight is inside what the hosted files supply.
+- `/tmp/faqqa.py` **642/642** after the family swap.
+- `/tmp/footerqa.py` **97/97**, wordmark unaffected.
+- `/tmp/glyphqa.py` Instrument Sans covers all 80 rendered characters.
+- `/tmp/navwrap.py` no navigation label wraps; all 1 line at 1200px and above,
+  drawer collapses below 1025px as before.
+- `/tmp/overflow360.py` zero horizontal overflow on all 8 routes at 360px.
+- `/tmp/h1flash.py` ALL PASS - the hero heading never dips below opacity 1 on
+  desktop or mobile, so self-hosted font loading does not delay it.
+- `/tmp/flashprobe.py` no reveal flashes, every final opacity 1.
+- `/tmp/motionqa.py` no stuck reveals on any route, reduced motion and
+  GSAP-blocked fallbacks both still render everything.
+- `/tmp/fastscroll.py` **TOTAL BROKEN: 0** across all six scenarios.
+- Journal card rules verified untouched by grep, so the 4.98:1 tag contrast and
+  10.10:1 title contrast are unchanged. `.post h3` now inherits 400, which
+  changes perceived weight but not the measured ratio.

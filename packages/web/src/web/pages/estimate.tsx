@@ -741,10 +741,10 @@ function Results({ result, name, goals, pending, failed, headingRef }: ResultsPr
 					<>
 						<br />
 						<br />
-						<i style={{ color: "var(--ink-soft)", fontSize: 13 }}>
+						<span className="assume-note">
 							Drapery figures are preliminary ranges, your fabric selection at consultation sets
 							the exact number.
-						</i>
+						</span>
 					</>
 				)}
 			</div>

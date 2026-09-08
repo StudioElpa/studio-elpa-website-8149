@@ -116,12 +116,19 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
+/* Warm Editorial stage B: the brief sets Newsreader Regular 400 as the default
+   for headings, with 500 reserved for the places where Regular genuinely loses
+   clarity (small sizes, and serif on the dark bands). The old global 500 made
+   every heading medium by default, which is the opposite ranking. Line-height
+   1.15 stays as the default because it sits at the bottom of the brief's
+   1.15-1.25 band for smaller serif headings; the hero and the major section
+   headings restate tighter values of their own. */
 h1,
 h2,
 h3,
 h4 {
 	font-family: var(--serif);
-	font-weight: 500;
+	font-weight: 400;
 	line-height: 1.15;
 }
 
@@ -328,6 +335,11 @@ section {
 h2.big {
 	font-size: clamp(31.5px, 4.07vw, 47.5px);
 	margin-bottom: 22px;
+	/* Stage B: major section headings sit in the brief's 1.05-1.12 band. The
+	   inherited 1.15 was for smaller headings. Tracking is lighter than the
+	   hero's -0.02em because these run at roughly two thirds the size. */
+	line-height: 1.08;
+	letter-spacing: -0.015em;
 }
 
 h2.big.center {
@@ -574,8 +586,14 @@ ul.inline li {
 	   12px of vertical padding, which takes the button from 55.6px to ~49.6px.
 	   Applied to .btn globally rather than only the hero so the contact submit
 	   and the estimate wizard do not end up visibly chunkier than the hero
-	   pair. Still well above the 44px minimum tap target. */
-	letter-spacing: 0.13em;
+	   pair. Still well above the 44px minimum tap target.
+
+	   Stage B: reduced again, 0.13em -> 0.10em. The brief calls the CTA
+	   tracking too heavy, and Instrument Sans carries wider sidebearings than
+	   Jost did, so the same nominal value reads looser than it used to. Only
+	   the tracking moved; the padding is untouched, so the ~49.6px height from
+	   V1.2 section 3 is preserved and only the button width narrows. */
+	letter-spacing: 0.1em;
 	text-transform: uppercase;
 	padding: 12px 32px;
 	cursor: pointer;
@@ -670,6 +688,12 @@ ul.inline li {
 	font-size: clamp(29.5px, 3.84vw, 43px);
 	max-width: 620px;
 	margin: 0 auto 16px;
+	/* Same section-heading band as h2.big. 500 rather than the new global 400
+	   because this one sits reversed on a dark ground, where Newsreader
+	   Regular loses perceived weight. */
+	font-weight: 500;
+	line-height: 1.08;
+	letter-spacing: -0.015em;
 }
 
 .callout p {
@@ -913,10 +937,18 @@ ul.inline li {
 	cursor: pointer;
 	text-align: left;
 	padding: 24px 0;
-	font-family: var(--serif);
+	/* Stage B, approved: FAQ questions move from Newsreader to Instrument Sans.
+	   The brief puts both questions and answers in the sans, and this is a
+	   <button> - an interface control, not editorial copy. 19.5px rather than
+	   the old 22.5px because Instrument Sans reads appreciably larger than
+	   Newsreader at the same nominal size, so this holds the previous optical
+	   weight. 500 is the brief's weight for interface labels and is a real
+	   instance of the hosted 400-600 range. */
+	font-family: var(--sans);
 	font-weight: 500;
-	font-size: 22.5px;
-	line-height: 1.25;
+	font-size: 19.5px;
+	line-height: 1.4;
+	letter-spacing: -0.005em;
 	color: var(--ink);
 	transition: color 0.2s;
 }
@@ -1188,7 +1220,8 @@ nav.main a:not(.nav-cta).active::after {
 
 .nav-cta {
 	font-size: 12.5px !important;
-	letter-spacing: 0.14em !important;
+	/* Stage B: 0.14em -> 0.11em, matching the .btn reduction. */
+	letter-spacing: 0.11em !important;
 	text-transform: uppercase;
 	/* Instrument Sans is self-hosted at wght 400-600. 700 here asked for a
 	   weight the face cannot supply, so the browser synthesised the bold. 600
@@ -1428,7 +1461,13 @@ footer.site .wordmark {
 	color: var(--ink);
 	max-width: 840px;
 	margin: 0 auto 12px;
-	font-weight: 500;
+	/* Stage B: the brief asks for the hero in Newsreader Regular 400, a line
+	   height of 0.98-1.04, and tracking starting near -0.02em. 1.0 and -0.02em
+	   measured well here; the tighter leading also pulls the hero slightly
+	   shorter rather than taller, which section 6 requires. */
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: -0.02em;
 }
 
 /* Replaces the old <br />, so each line is an element the hero sequence can
@@ -1740,6 +1779,10 @@ footer.site .wordmark {
 .svc-feature-text h3 {
 	font-size: 38px;
 	margin-bottom: 14px;
+	/* Stage B: at 38px this is a major heading, so it takes the 1.05-1.12 band
+	   rather than the smaller-heading default. */
+	line-height: 1.1;
+	letter-spacing: -0.015em;
 }
 
 .svc-feature-text p {
@@ -1857,6 +1900,9 @@ footer.site .wordmark {
 .svc-item h4 {
 	font-size: 19px;
 	margin-bottom: 7px;
+	/* Stage B: the smallest serif heading on the site. Regular 400 goes weedy
+	   at this size, so this is a legitimate "500 for clarity" case. */
+	font-weight: 500;
 }
 
 .svc-item p {
@@ -2104,6 +2150,11 @@ footer.site .wordmark {
 	font-size: 25px;
 	color: var(--dark-head);
 	margin-bottom: 6px;
+	/* Stage B: one of the "500 only where Regular lacks clarity" cases. These
+	   are small serif headings reversed on the dark band, the least forgiving
+	   combination for Newsreader Regular. Inherited by .manifesto .collection
+	   h3, which is smaller again at 21px. */
+	font-weight: 500;
 }
 
 .collection p {
@@ -2529,6 +2580,11 @@ header.lp .logo img {
 	font-size: clamp(40.5px, 5.88vw, 68px);
 	color: #fdfbf7;
 	margin-bottom: 18px;
+	/* Stage B hero band. 500 because this hero is reversed on a dark ground,
+	   where Newsreader Regular thins out. */
+	font-weight: 500;
+	line-height: 1.02;
+	letter-spacing: -0.02em;
 }
 
 .page-lp .hero p {
@@ -2616,6 +2672,10 @@ footer.lp .wordmark {
 	font-size: clamp(38.5px, 6.1vw, 59px);
 	line-height: 1.1;
 	margin-bottom: 20px;
+	/* Stage B: article titles run at hero scale, so they take the same optical
+	   tracking correction. The existing 1.1 already sits in the brief's
+	   1.05-1.12 section-heading band. */
+	letter-spacing: -0.02em;
 }
 
 .page-article .dek {
@@ -3110,7 +3170,9 @@ footer.lp .wordmark {
 
 .page-estimate .btn {
 	font-size: 13px;
-	letter-spacing: 0.2em;
+	/* Stage B: 0.2em was the heaviest tracking on any control on the site.
+	   0.13em brings it into line with the sitewide .btn treatment. */
+	letter-spacing: 0.13em;
 	padding: 15px 34px;
 	background: var(--accent);
 	color: #fff;
@@ -3247,6 +3309,21 @@ footer.lp .wordmark {
 	font-weight: 500;
 	font-size: 20.5px;
 	margin-bottom: 8px;
+}
+
+/* Stage B: the drapery-assumption note used to be a bare <i> with an inline
+   font size. The stage A em/i/cite rule correctly pulled it out of the sans
+   (which has no italic face and was slanting it synthetically), but that left
+   13px Newsreader Italic - and the brief puts utility text in Instrument Sans
+   and keeps Newsreader away from small interface text. So it is sans, upright,
+   and one step larger for legibility. */
+.assume-note {
+	display: inline-block;
+	font-family: var(--sans);
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.6;
+	color: var(--ink-soft);
 }
 
 .fine {
