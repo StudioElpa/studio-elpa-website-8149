@@ -150,13 +150,23 @@ file **and** the codepoint inside the declared range.
 
 ## Team block
 
-- One person, presented as an editorial two-column split (`172px 1fr`), not a card grid and
-  not a circular avatar — both are Section 5b tells.
-- Portrait is a real photograph, `object-fit: cover` with `object-position: 50% 26%` so the
-  crop favours the face. Separated from the "who we are" copy above it by a `--hairline`
-  rule, and stacks to one column below 700px.
-- Titles are real. **No invented background, tenure, credentials or awards** — the card
-  carries one approved placeholder line until real bio copy arrives.
+- Two people, in a `.team-grid` of two `1fr` columns, each card an editorial split
+  (`132px 1fr`) — not a card grid look, not circular avatars, both Section 5b tells.
+  Separated from the "who we are" copy above by a `--hairline` rule.
+- Both portraits are real supplied photographs, deliberately at **different framings**:
+  Elvira's is a close face portrait (900x1200, 3:4), Aviva's a wider seated lifestyle
+  portrait (720x900, 4:5). One rule sizes both into an identical **132x176 (3:4)** box and
+  `object-fit: cover` absorbs the difference, so they read as one consistent set without
+  either being forced into an awkward tight crop.
+- Each source is cropped **face-centred at the image level**, so `object-position: 50% 50%`
+  is the correct focal point and no per-image override is needed. Measured: Elvira's 3:4
+  source trims nothing; Aviva's 4:5 source fits by height and trims **6.25% horizontally**,
+  symmetric about her face. A wider-than-box source trims horizontally, never vertically.
+- The photo carries `max-width: none` and the track width is stated explicitly, so the
+  global `img { max-width: 100% }` cannot re-enter and distort it.
+- Grid drops to one column at **980px**; each card stacks photo-above-text at **560px**.
+  The box stays 132x176 at every breakpoint, so the crop maths holds throughout.
+- Titles are real. **No invented background, tenure, credentials or awards.**
 
 ## Motion (brief Section 7, as revised by the V1.2 §1 refactor)
 

@@ -3011,3 +3011,79 @@ stuck · `h1flash` ALL PASS · `qa_a11y` clean on all 9 · `qa2` 0 broken images
 4. `datePublished: "2026-09-08"` for the guide is my assumption, like the blackout article's.
 5. Performance work is still not started; the guide adds a tenth lazy chunk but does not touch
    the homepage critical path.
+
+---
+
+## §12 V2 TEAM: TWO REAL PEOPLE, TWO REAL PHOTOGRAPHS, AND `/meet-elvira.html`
+
+Elvira's bio and Aviva's headshot both arrived in the same stretch, which closed the last
+V2 content blockers. The team block stopped being a placeholder.
+
+### What shipped
+
+- `.wrap.team` is now a two-card block: `.team-grid` (two `1fr` columns, 44px gap), each
+  `.team-card` an editorial `132px 1fr` split. One `data-reveal` on the outer container.
+  Kicker "Who you'll work with" (my wording). `.team-slot`, the placeholder that existed
+  only while Aviva's photo was pending, is gone from markup and CSS.
+- `/meet-elvira.html`, the tenth route, modelled on `founder.tsx`. Elvira's bio is
+  **verbatim**, lead through "Not for much longer." Its kicker, dek and closing CTA are
+  my words. `schema: "page"`, deliberately: an `article` schema needs a `datePublished`
+  and I was not going to invent one. Zero booking links, which is right for an article
+  page; it ends on a soft CTA to `/index.html#contact`.
+- Both portraits are real supplied photographs. No stock, no stand-ins.
+
+### The framing decision, and the reversal
+
+First pass, I tight-cropped Aviva to head-and-shoulders (900x1200) so her card would match
+Elvira's close portrait. The client rejected it: fit both to the same card size with
+`object-fit: cover`, focal point on the face, so they read as one set of warm lifestyle
+portraits, and do not force either into an awkward tight crop.
+
+Shipped instead: Elvira untouched at 900x1200 (3:4, close face portrait); Aviva re-cropped
+from the higher-resolution resend at 720x900 (4:5), a generous seated framing that keeps the
+headband, the striped shirt and the setting. Both fit an identical **132x176** 3:4 box.
+Chosen by generating three candidate crops, montaging them beside Elvira, and looking at the
+sheet — then simulating the actual `cover` render at card scale and looking at that too.
+
+### The correction I had to make mid-task
+
+I had assumed a 4:5 source in a 3:4 box trims **vertically**, so `object-position` Y would
+be the focal control. That is backwards. A source **wider** than its box fits by height and
+trims **horizontally**. Consequences:
+
+1. Aviva's vertical framing is decided entirely by the image crop, not by CSS. Picking the
+   right candidate crop *was* the whole decision.
+2. Only ~6.25% comes off her sides, symmetric about her face.
+3. Both crops are already face-centred, so `object-position: 50% 50%` is correct for both.
+   Per-image modifier classes would have been two identical rules, so I did not add them —
+   noise, not clarity. Flagged rather than manufactured.
+4. The previous `object-position: 50% 26%` was a no-op dressed up as a focal point. Gone,
+   and the CSS comment now states the measured behaviour instead of an assumption.
+
+Lesson 7 again: do not trust arithmetic or an inherited assumption over measurement.
+
+### Verification
+
+`lint` 0 across 74 files. `build` clean, **10 routes, sitemap 10 urls**, all three prerender
+guards passed. New **`teamqa` 99/0**, run against the built dist on 4310 rather than the dev
+server, asserting the core invariant that **both portraits occupy identical boxes** plus the
+measured cover geometry. `aeoqa` 493 → **545/545** (+52 for the tenth route). Full battery
+green; `probe11` body text 10481 → **10724**, expected from the second card and its teaser.
+Six QA scripts with hardcoded route lists gained the tenth route.
+
+Two QA-script defects found and fixed, both script-side, not site-side: a screenshot `clip`
+mixing page-relative and viewport-relative coordinates, whose exception was swallowing the
+entire assertion summary; and a `header a` selector grabbing the logo instead of the back
+link.
+
+### Honest non-completions
+
+1. The portrait box is **132x176**, small for "warm lifestyle portraits". The client asked
+   for the same card size so I kept it and raised the tension rather than growing it
+   unilaterally.
+2. `.wrap.two` still has "Read a note from our founder →" directly above Aviva's "Read
+   more →", both pointing at `/founder.html`. Flagged, **not removed silently**.
+3. Main chunk 587.50 → **590.48 kB** (gzip 178.26 kB). The team markup lands in the eagerly
+   imported homepage. Code-splitting now starts from a slightly worse number.
+4. The team kicker, and the new page's kicker, dek, CTA, title and meta description, are all
+   my wording. Only Elvira's bio is the client's, and it is untouched.

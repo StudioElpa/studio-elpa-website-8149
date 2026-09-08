@@ -89,6 +89,16 @@
 			"priority": "0.6"
 		},
 		{
+			"path": "/meet-elvira.html",
+			"aliases": [],
+			"title": "Meet Elvira Vasiljeva, Creative Director of Home Textiles · Studio Elpa",
+			"description": "The Baltic eye behind Studio Elpa's textiles: twenty years between France and Switzerland, and a habit of finding the mill, the weaver and the workshop nobody else has found yet.",
+			"schema": "page",
+			"breadcrumb": "Meet Elvira",
+			"changefreq": "yearly",
+			"priority": "0.6"
+		},
+		{
 			"path": "/privacy.html",
 			"aliases": [],
 			"title": "Privacy Policy · Studio Elpa",

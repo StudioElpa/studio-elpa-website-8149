@@ -355,23 +355,57 @@ export default function HomePage() {
 							</p>
 						</div>
 					</div>
-					{/* V2 section 8. A real designer with a real face, kept to a name, a
-					    title and one line. The bio Aviva is writing expands the last
-					    paragraph; nothing here is invented in the meantime. */}
+					{/* V2 section 8. Two real people with real faces, each kept to a name,
+					    a title, one line and a link to the full page. Both portraits are
+					    real photographs the users supplied, at deliberately different
+					    framings: Elvira's is a close face portrait, Aviva's a wider seated
+					    one. object-fit: cover fits both to one box so they read as a set.
+					    No stock, no stand-ins. */}
 					<div className="wrap team" data-reveal>
-						<img
-							className="team-photo"
-							src="/assets/team-elvira.jpg"
-							alt="Elvira Vasiljeva, Creative Director of Home Textiles at Studio Elpa"
-							width={900}
-							height={1200}
-							loading="lazy"
-						/>
-						<div className="team-text">
-							<div className="kicker">Design</div>
-							<h3>Elvira Vasiljeva</h3>
-							<p className="team-role">Creative Director, Home Textiles</p>
-							<p>Elvira Vasiljeva leads home textile design at Studio Elpa.</p>
+						<div className="kicker">Who you'll work with</div>
+						<div className="team-grid">
+							<div className="team-card">
+								<img
+									className="team-photo"
+									src="/assets/team-aviva.jpg"
+									alt="Aviva Druyan, Founder and Creative Director of Studio Elpa"
+									width={720}
+									height={900}
+									loading="lazy"
+								/>
+								<div className="team-text">
+									<h3>Aviva Druyan</h3>
+									<p className="team-role">Founder &amp; Creative Director</p>
+									<p className="team-teaser">
+										The vision, client experience, design direction, and the point of view behind
+										Studio Elpa.
+									</p>
+									<p className="team-link">
+										<Link to="/founder.html">Read more →</Link>
+									</p>
+								</div>
+							</div>
+							<div className="team-card">
+								<img
+									className="team-photo"
+									src="/assets/team-elvira.jpg"
+									alt="Elvira Vasiljeva, Creative Director of Home Textiles at Studio Elpa"
+									width={900}
+									height={1200}
+									loading="lazy"
+								/>
+								<div className="team-text">
+									<h3>Elvira Vasiljeva</h3>
+									<p className="team-role">Creative Director, Home Textiles</p>
+									<p className="team-teaser">
+										The sourcing eye, textile relationships, European artisan network, and the
+										person constantly finding what nobody else has yet.
+									</p>
+									<p className="team-link">
+										<Link to="/meet-elvira.html">Read more →</Link>
+									</p>
+								</div>
+							</div>
 						</div>
 					</div>
 				</section>

@@ -737,6 +737,51 @@ PASS · `fastscroll` 0 · `overflow360` 0 · `motionqa` 0 stuck · `h1flash` ALL
 **`probe11` body text 10476 → 10481**, expected: the Journal card swapped "Coming soon"
 for "Read the guide →".
 
+## §13 The two-person team block and `/meet-elvira.html`
+
+Elvira's bio and Aviva's headshot both arrived, so the team block became real: two cards,
+two real photographs, no placeholder line, plus a new `/meet-elvira.html` carrying the bio
+**verbatim**. Tenth route in the registry, `schema: "page"` (an `article` schema needs a
+`datePublished` I would have had to invent, so I did not).
+
+**The portrait framing was redone on the client's revised instruction.** The first pass
+tight-cropped Aviva to head-and-shoulders to match Elvira's close portrait; the client
+rejected that and asked for both fitted to one box with `object-fit: cover`, focal point on
+the face, neither forced into an awkward crop. Shipped: Elvira untouched at 900x1200 (3:4,
+close), Aviva re-cropped generously at 720x900 (4:5, seated, keeping headband, striped shirt
+and setting), both into an identical 132x176 3:4 box.
+
+**A correction worth recording.** I had assumed a 4:5 source in a 3:4 box would trim
+*vertically*, making `object-position` Y the focal control. Measured, it is the opposite: a
+source **wider** than the box fits by height and trims **horizontally**. So Aviva's vertical
+framing is decided entirely by the image crop, and only ~6.25% is trimmed off her sides,
+symmetric about her face. Since both crops are already face-centred, `object-position:
+50% 50%` is correct for both and per-image modifier classes would have been two identical
+rules — so I did not add them. The old `50% 26%` was a no-op dressed up as a focal point and
+is gone. Crop choice was made by generating three candidates, montaging them beside Elvira,
+and looking; the middle one shipped.
+
+Battery: `lint` 0, 74 files · `build` clean, **10 routes, sitemap 10 urls** · `aeoqa`
+**545/545** (493 → 545, +52 for the tenth route) · **`teamqa` 99/0 (new)** · `heroviewqa`
+23/0 · `journalqa` 264/0 · `footerqa` 125/125 · `respqa` 840/0 · `faqqa` 642/642 ·
+`contactqa` 171/171 · `balticqa` 43/0, sitewide 8 · `balticcontrast` 8 links, 0 below AA ·
+`tradeqa` PASS · `fastscroll` 0 broken · `overflow360` 0 across 10 routes · `motionqa` 0
+stuck · `h1flash` ALL PASS · `qa_a11y` clean, 10 routes · `qa2` 0 broken, 0 errors ·
+`qa_copy` 0 em dashes / banned / missing alt / emoji · `qa_booking` 10 CTAs, 0
+misconfigured, **`/meet-elvira.html` correctly 0** · `guideshot` clean · `menuqa` PASS.
+**`probe11` body text 10481 → 10724**, expected: the second card plus its teaser.
+
+Two QA-script defects fixed (script wrong, site right): a screenshot `clip` mixed
+page-relative and viewport-relative coordinates and the exception was swallowing the whole
+assertion summary; and a `header a` selector was grabbing the logo instead of the back link.
+`teamqa` asserts the core invariant — **both portraits occupy identical boxes** — plus the
+measured cover geometry, rather than the old aspect-parity check that only held while both
+sources happened to share a ratio.
+
+Main chunk 587.50 → **590.48 kB** (gzip 178.26 kB); the team markup lands in the eagerly
+imported homepage. Expected, not a defect, but code-splitting now starts from a slightly
+worse number.
+
 ## Open items before go-live
 
 1. **`estimate.html` shows unconfirmed pricing to real prospects.** The original's
@@ -755,12 +800,17 @@ for "Read the guide →".
    (see §8). The remaining gap is the ~575 kB main JS chunk's parse cost, which
    gates LCP at 5.3 s. Closing it needs real code-splitting work, not tuning.
 5. Confirm you're happy with the privacy-link repoint and the Attio deal-name hyphen.
-6. **One V2 content blocker left: Elvira's bio.** Her card still carries the single
-   approved placeholder line, "Elvira Vasiljeva leads home textile design at Studio
-   Elpa." Real bio copy is needed; none will be invented.
-   The other two blockers are now **resolved**: the nine drapery-header card texts
-   arrived in full and the guide ships at `/drapery-headers.html`, and the hero video
-   poster is now the supplied clean final artwork at `/assets/hero-poster.jpg`.
+6. **All four V2 content blockers are now RESOLVED.** The nine drapery-header card
+   texts arrived and the guide ships at `/drapery-headers.html`; the hero video poster
+   is the supplied clean final artwork; Elvira's full bio arrived and ships **verbatim**
+   at `/meet-elvira.html`, replacing the placeholder line; and Aviva's headshot arrived,
+   so the team block carries two real photographs and no placeholder.
+   Two smaller team questions are open in its place, neither blocking:
+   **(a)** the portrait box is 132x176, which is small for "warm lifestyle portraits" —
+   the client asked for the same card size, so it was kept, but it can grow on request.
+   **(b)** `.wrap.two` still carries "Read a note from our founder →" directly above
+   Aviva's "Read more →", and both target `/founder.html`. Two links to one page within
+   a few hundred pixels. **Left in place pending the client's call, not removed silently.**
 7. **The hero still was not swapped to the clean final art.** The clip now plays once and
    dissolves to the static illustration, but that still is `hero.jpg`, which carries the
    stray pencil marks the clean art removes. The supplied `hero-clean-final.png` is only

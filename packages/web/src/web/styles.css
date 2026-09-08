@@ -452,30 +452,55 @@ h2.big.center {
 	margin-bottom: 0;
 }
 
-/* V2 section 8: the design lead. Deliberately not a card grid, and not a
-   circular avatar. A hairline rule, one portrait and three lines, so it reads
-   as part of "who we are" rather than a team page bolted on. */
+/* V2 section 8: the two people you actually work with. Two cards, still no
+   circular avatars, sitting under a hairline rule so the block reads as part of
+   "who we are" rather than a team page bolted on. The photo track is a fixed
+   width and the portrait carries max-width: none, so the global
+   img { max-width: 100% } cannot re-enter and distort it. The two sources are
+   deliberately NOT the same framing: Elvira's is a close face portrait (900x1200,
+   3:4) and Aviva's is a wider seated portrait (720x900, 4:5). One rule sizes the
+   pair into an identical 3:4 box and object-fit: cover absorbs the difference, so
+   they read as one set of warm lifestyle portraits without either being forced
+   into an awkward tight crop. */
 .team {
-	display: grid;
-	grid-template-columns: 172px 1fr;
-	gap: 28px;
-	align-items: center;
 	margin-top: 52px;
 	padding-top: 32px;
 	border-top: 1px solid var(--hairline);
 }
 
+.team-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 44px;
+	margin-top: 18px;
+}
+
+.team-card {
+	display: grid;
+	grid-template-columns: 132px 1fr;
+	gap: 22px;
+	align-items: start;
+}
+
 .team-photo {
-	width: 172px;
-	height: 229px;
-	object-fit: cover;
-	object-position: 50% 26%;
+	width: 132px;
+	height: 176px;
+	max-width: none;
+	align-self: start;
 	display: block;
+	object-fit: cover;
+	/* Each source is cropped face-centred at the image level, so the centre IS the
+	   focal point and no per-image override is needed. Measured behaviour in this
+	   3:4 box: Elvira's 3:4 source trims nothing in either axis; Aviva's 4:5 source
+	   fits by height and trims 6.25% horizontally, symmetric about her face. The Y
+	   value is therefore a no-op for both today, kept explicit so a future portrait
+	   at another ratio starts from a sane default. */
+	object-position: 50% 50%;
 }
 
 .team-text h3 {
 	font-size: 25px;
-	margin: 8px 0 2px;
+	margin: 0 0 2px;
 }
 
 .team-role {
@@ -485,20 +510,27 @@ h2.big.center {
 	margin-bottom: 12px;
 }
 
-.team-text p:last-child {
-	max-width: 52ch;
+.team-teaser {
+	max-width: 44ch;
+	margin-bottom: 12px;
+}
+
+.team-link {
+	font-size: 16px;
 	margin-bottom: 0;
 }
 
-@media (max-width: 700px) {
-	.team {
+@media (max-width: 980px) {
+	.team-grid {
 		grid-template-columns: 1fr;
-		gap: 20px;
+		gap: 32px;
 	}
+}
 
-	.team-photo {
-		width: 150px;
-		height: 200px;
+@media (max-width: 560px) {
+	.team-card {
+		grid-template-columns: 1fr;
+		gap: 16px;
 	}
 }
 
@@ -3986,6 +4018,22 @@ footer.lp .wordmark {
 	.header-close {
 		padding: 36px 22px;
 	}
+}
+
+/* ============================================================================
+   MEET ELVIRA: the portrait on her own page
+   Same discipline as the team photo: an explicit box plus max-width: none, so
+   the global img { max-width: 100% } cannot re-enter and squash it. 208x277 is
+   well under the 900x1200 source, so it never upscales.
+   ============================================================================ */
+.page-article .bio-portrait {
+	width: 208px;
+	height: 277px;
+	max-width: none;
+	object-fit: cover;
+	object-position: 50% 26%;
+	display: block;
+	margin: 0 0 34px;
 }
 
 /* ============================================================================
