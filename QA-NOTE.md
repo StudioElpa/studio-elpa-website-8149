@@ -782,6 +782,60 @@ Main chunk 587.50 → **590.48 kB** (gzip 178.26 kB); the team markup lands in t
 imported homepage. Expected, not a defect, but code-splitting now starts from a slightly
 worse number.
 
+## §14 Blindspace: the partnership, compliantly
+
+Blindspace is cleared via WindowModes. This reversed an embargo that had covered
+Blindspace, Lutron and Somfy as one group; the reversal is **Blindspace only** and
+Lutron/Somfy remain banned sitewide.
+
+**The supplied files are not what the brief described.** Measured with `identify` plus
+corner-pixel sampling: `-black.png` (709x297) is a black mark on an **opaque white**
+plate, and `-blue.png` (714x305) is the **same black mark on an opaque sage plate**
+(`#adc9c6`), not a light or reversed logo. Neither has an alpha channel, so **neither
+can be placed on the dark ink band**, and our light ground is cream (`--bg` #f5f1ea),
+not white.
+
+Resolution: the lockup sits on a deliberate **white (#fff) plate** with 30/34px padding
+and a hairline. The plate matches the artwork's own baked-in white exactly, so the seam
+is invisible and the padding reads as the required clear space. Nothing is recoloured,
+cropped, obstructed or distorted, and the lockup never touches a dark ground.
+
+Shipped: `BlindspaceLockup` in `components/partner.tsx` (single source of the path, href,
+target, rel and alt, exactly like `BalticLink`); a `.bs-lockup` block in `styles.css`
+placed **before** the `NAMED PARTNER LINK` block so that block stays last in source
+order; a **new concealment section** on `motorized.tsx` carrying the one lockup; and a
+text-only Blindspace mention in the `drapery.tsx` difference list.
+
+**The build does not alter the artwork.** The asset optimizer reported the PNG 58%
+smaller, which on flat-colour logo art is exactly what a silent recolour would look
+like. Measured instead: `compare -metric AE` = **0**, `RMSE` = **0 (0)**, dimensions
+unchanged. Lossless.
+
+**Three suites asserted Blindspace was absent** and would have failed as script
+staleness, not site defects. `balticqa` and `qa_copy` were narrowed to Lutron/Somfy.
+`aeoqa` was **deliberately left banning Blindspace**, with a comment: it inspects only
+JSON-LD, and naming a partner inside our own Organization/LocalBusiness graph would
+imply an affiliation we must not claim.
+
+New `/tmp/blindspaceqa.py`: **220 passed, 0 failed** against the built dist on 4310.
+It asserts the official file, exact href/`_blank`/`noopener`/alt, rendered ratio matched
+to both the intrinsic and the official 2.3872 (measured 2.3874), no upscale, no
+`filter`/blend/opacity/crop, clear space on all four sides, the white plate, nothing else
+inside the link, no second logo, no tagline in the container, no obstruction via
+`elementFromPoint`, correct spelling against five misspelling variants, eleven
+endorsement phrases absent, and Lutron/Somfy absent on all nine routes.
+
+Rest of the battery re-run green. `probe11` body text **10724, unchanged** (the new copy
+is on motorized and drapery, not the homepage). `motionqa` motorized reveals 10 → 12, the
+two new blocks. Main chunk 590.48 → **591.19 kB** (gzip 178.36 kB): `partner.tsx` is
+reached from the homepage, so the component lands in the eager chunk.
+
+Carried as honest non-completions: **neither lockup works on dark** (a transparent or
+reversed file would have to be supplied); the section's kicker, heading and both
+paragraphs are **my words**, with only the sentence "For a fully concealed look, we
+install Blindspace recess systems" verbatim from the client; and the drapery mention is
+text-only **on my judgement**, since the client said "and/or".
+
 ## Open items before go-live
 
 1. **`estimate.html` shows unconfirmed pricing to real prospects.** The original's
@@ -818,3 +872,11 @@ worse number.
    high-DPI screens. **A full-resolution export would let us complete the swap.**
 8. **Confirm both article publication dates** — `2026-07-01` for the blackout story and
    `2026-09-08` for the headers guide are assumptions, and they appear in JSON-LD.
+9. **Two Blindspace questions.** **(a)** Neither supplied lockup works on a dark
+   background: both are opaque with a black mark, and the `-blue.png` is that same black
+   mark on a sage plate rather than a reversed logo. If you ever want the lockup in the
+   dark ink band, we need a **transparent-background or genuinely reversed export**.
+   **(b)** You said "Motorized and/or Custom Drapery". I put the single lockup on
+   `motorized.html` and made the drapery reference **text-only**, on the reading that one
+   lockup sitewide is the more conservative interpretation of "standalone with clear
+   space". Say the word and I will add a second lockup to `drapery.html`.

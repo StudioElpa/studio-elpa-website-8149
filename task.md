@@ -3087,3 +3087,119 @@ link.
    imported homepage. Code-splitting now starts from a slightly worse number.
 4. The team kicker, and the new page's kicker, dek, CTA, title and meta description, are all
    my wording. Only Elvira's bio is the client's, and it is untouched.
+
+## §13 V2 BLINDSPACE: THE PARTNERSHIP, COMPLIANTLY, AND A CONCEALMENT STORY THAT DID NOT EXIST
+
+### The instruction, and the guardrail it reverses
+
+Blindspace is approved via WindowModes. This **reverses a long-standing embargo** that
+covered Blindspace, Lutron and Somfy together. The reversal is **Blindspace only**. Lutron
+and Somfy stay banned everywhere, and three QA suites that asserted the old three-brand
+embargo had to be corrected rather than worked around.
+
+### What I found before building, which contradicted the brief's own description
+
+The brief called `-black.png` the light-background file and `-blue.png` "the sage version
+where a lighter logo is needed". Measured, with `identify` and corner-pixel sampling:
+
+| File | Size | Actual artwork | Alpha |
+|---|---|---|---|
+| `-black.png` | 709x297, 40,745 B | black mark on OPAQUE **white** | none |
+| `-blue.png` | 714x305, 41,268 B | black mark on OPAQUE **sage** `#adc9c6` | none |
+
+So **neither file is a light or reversed logo** — the mark is black in both — and **both are
+fully opaque**. There is no supplied asset that works on a dark ground. That matters because
+the site has a dark ink band (`--ink` rgb(57,41,27)).
+
+It also matters that our light ground is **cream** (`--bg` #f5f1ea), not white. Dropping the
+white-plate artwork straight onto the page shows a visible white rectangle edge.
+
+Lesson recorded: **check for an alpha channel before placing an image on a coloured
+background**, and **never trust an asset's filename over its pixels** (`-blue.png` contains no
+blue).
+
+### The resolution
+
+The lockup sits on a deliberate **white (#fff) plate** with generous padding and a hairline.
+The plate colour matches the artwork's own baked-in white **exactly**, so the seam is
+invisible and the padding reads as the required clear space rather than as a container bolted
+on. This recolours nothing, crops nothing, obstructs nothing, distorts nothing. And it stays
+**off the dark band entirely**, which sidesteps needing a reversed logo we do not have.
+
+Chosen after rendering both files on cream and reading the contact sheet (`/tmp/bs_sheet.png`),
+then reading the real rendered section at 1440 and 390.
+
+### What shipped
+
+- `components/partner.tsx` — header comment now carries the Blindspace usage rules in full,
+  the GUARDRAIL paragraph names **only Lutron and Somfy**, plus `BLINDSPACE_URL` and a new
+  **`BlindspaceLockup`** component. Same reason `BalticLink` exists: the file path, href,
+  target, rel and alt live in exactly one place and cannot drift.
+- `styles.css` — `.bs-lockup` / `.bs-lockup-link` block, inserted **before** the
+  `NAMED PARTNER LINK` block so that block stays last in source order. Width stated
+  explicitly at 208px with `height: auto` and `max-width: none`, so the intrinsic 709:297
+  ratio is exact and the global `img{max-width:100%}` rule cannot resize it (lesson 15).
+  Padding 30/34, reduced to 24/26 below 560px.
+- `pages/motorized.tsx` — a **new concealment section**, on a light `.block`, between
+  "Specified right, installed clean." and the FAQ. There was **no concealment story on either
+  page** before this (`rg -ni "conceal|recess|pocket|hidden|built-in"` over both pages returned
+  nothing), so this is written copy, not a logo drop.
+- `pages/drapery.tsx` — a fifth `<b>`-led bullet in "The Studio Elpa difference", naming
+  Blindspace in body copy with **no second lockup**. My call, disclosed: the client said
+  "and/or", and one lockup sitewide is the more conservative read of "standalone with clear
+  space".
+- Assets keep their official filenames minus the attachment hash, so provenance is obvious
+  in the repo.
+
+### The build does not alter the artwork — verified, not assumed
+
+The asset optimizer reported the PNG "58% smaller", which on a logo is exactly the kind of
+thing that would quietly quantise flat colour and count as a recolour. Measured instead:
+`compare -metric AE` = **0**, `RMSE` = **0 (0)**, dimensions unchanged at 709x297. The
+optimisation is lossless. Compliance holds through the build.
+
+### QA
+
+Three suites actively asserted Blindspace was absent and would have produced genuine
+failures that were **script staleness, not site defects**:
+
+1. `/tmp/balticqa.py` — embargo regex and its label narrowed to Lutron/Somfy.
+2. `/tmp/qa_copy.py` — Blindspace removed from the must-NOT-appear list; Lutron, Somfy,
+   "made in Europe" and "As seen in" kept.
+3. `/tmp/aeoqa.py` — **deliberately left banning Blindspace**, with a comment explaining
+   why: it only inspects JSON-LD, and naming a partner inside our own Organization /
+   LocalBusiness graph would imply an affiliation we must not claim. Keeping it banned there
+   is the correct guard, not staleness.
+
+New **`/tmp/blindspaceqa.py`**, **220 passed, 0 failed** against the built dist on 4310:
+official file only, exact href, `_blank`, `noopener`, exact alt, rendered ratio matched to
+both the intrinsic and the official 2.3872 (measured 2.3874), never upscaled, no `filter` /
+blend mode / reduced opacity / cropping `object-fit`, real clear space on all four sides,
+white plate, nothing else inside the link, no second logo, no tagline in the container,
+**not obstructed** (`elementFromPoint` at the centre returns the lockup), correct spelling
+sitewide with five misspelling variants checked, eleven endorsement/affiliation phrases
+absent, and Lutron/Somfy still absent on all nine routes.
+
+Full battery re-run green: lint 0/74 · build clean, 10 routes, sitemap 10 · aeoqa 545/545 ·
+teamqa 99/0 · balticqa 43/0 sitewide 8 · respqa 840/0 · faqqa 642/642 · contactqa 171/171 ·
+journalqa 264/0 · footerqa 125/125 · balticcontrast 8 links 0 below AA · heroviewqa 23/0 ·
+tradeqa PASS · menuqa PASS · guideshot clean · h1flash ALL PASS · qa2 17 images 0 broken ·
+fastscroll 0 broken · qa_a11y faded=0 all 10 · qa_booking 10 CTAs 0 bad · overflow360 0 ·
+motionqa 0 stuck 0 initLeft (motorized reveals 10 → 12, the two new blocks) · qa_copy em=0
+banned=0 missing_alt=0 emoji=0.
+
+`probe11` body text **10724, unchanged** — correct, because the new copy is on motorized and
+drapery, not the homepage. Main chunk 590.48 → **591.19 kB** (gzip 178.36 kB): `partner.tsx`
+is reached from the homepage, so the component lands in the eager chunk. Expected, tiny.
+
+### Honest non-completions
+
+1. **Neither supplied lockup can go on a dark background.** Both are opaque with a black
+   mark. A transparent or genuinely reversed file would have to be supplied.
+2. **The section's kicker, heading and both paragraphs are my words.** The client supplied
+   exactly one sentence, "For a fully concealed look, we install Blindspace recess systems",
+   which is used verbatim.
+3. **The drapery mention is text-only, with no lockup**, on my judgement rather than a client
+   instruction.
+4. I describe the systems as "pockets that finish flush with the ceiling or the reveal" and
+   deliberately avoided claiming a specific construction method I could not verify.

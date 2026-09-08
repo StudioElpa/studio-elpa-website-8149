@@ -234,3 +234,30 @@ then the card size is capped by the source images, deliberately.
 The hero clip plays **once**, never loops, then crossfades out over 600ms to the static
 illustration, which is the permanent resting state. Under reduced motion the video is never
 mounted and the still is all there is.
+
+## Partner lockups (Blindspace, V2)
+
+Third-party lockups are not ours to design with. They get their own rules, and those rules
+beat every other convention in this file.
+
+- **Only the supplied official artwork.** `/assets/blindspace-for-windowmodes-black.png`
+  (709x297) and `/assets/blindspace-for-windowmodes-blue.png` (714x305). No redraws, no
+  recolours, no crops, no tracing into SVG.
+- **Never restyle it.** No CSS `filter`, no `mix-blend-mode`, no reduced opacity, no
+  `object-fit: cover`, no forced height. State the width and let `height: auto` hold the
+  intrinsic 709:297 ratio.
+- **Standalone, with clear space.** Nothing else inside the link: no second logo, no
+  Studio Elpa wordmark, no tagline, no caption text. Minimum 20px of padding on all four
+  sides; we ship 30px vertical, 34px horizontal (24/26 at phone widths).
+- **Light grounds only.** Both supplied files are OPAQUE with a black mark: the "blue" file
+  is the same black mark on a sage plate (#adc9c6), not a reversed logo. Since the page ground
+  is cream (`--bg` #f5f1ea), the lockup sits on a white (#fff) plate that matches the
+  artwork's own baked-in white exactly, so the seam is invisible and the padding reads as
+  clear space rather than as a stray white rectangle. A hairline border makes the plate read
+  as an intentional card. **Never place either file on `.band.dark`** — that needs a
+  transparent or genuinely reversed lockup, which has not been supplied.
+- **Always linked**, to the partner's own site, new tab, `rel="noopener"`, with the alt text
+  the partner specified verbatim.
+- **Render it through the component**, never as loose markup. `BlindspaceLockup` in
+  `components/partner.tsx` is the only place the file path, href, rel and alt exist, for the
+  same reason `BalticLink` exists: so they cannot drift between mentions.

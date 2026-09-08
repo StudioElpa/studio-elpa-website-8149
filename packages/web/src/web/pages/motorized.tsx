@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { LandingHeader, LandingFooter } from "../components/site-chrome";
 import { Faq, type FaqEntry } from "../components/faq";
 import { CONTACT } from "../components/brand";
-import { BalticLink } from "../components/partner";
+import { BalticLink, BlindspaceLockup } from "../components/partner";
 import { PageSeo } from "../components/page-seo";
 import { usePageMotion } from "../hooks/use-motion";
 
@@ -158,6 +158,33 @@ export default function MotorizedPage() {
 								<b>Our own installers</b> and one point of contact, start to finish.
 							</li>
 						</ul>
+					</div>
+				</section>
+
+				<section className="block">
+					<div className="wrap two" data-reveal-group>
+						<div data-reveal>
+							<div className="kicker">Concealment</div>
+							<h2 className="big">The hardware can disappear into the architecture.</h2>
+							<p className="lede">
+								A motorized shade is only ever as clean as the opening it lives in. Where the
+								ceiling or the window reveal allows it, we specify a recess so the roller, the
+								fabric roll, and the motor sit out of the line of sight.
+							</p>
+						</div>
+						<div data-reveal>
+							<p>
+								For a fully concealed look, we install Blindspace recess systems: pockets that
+								finish flush with the ceiling or the reveal, so the shade reads as part of the room
+								instead of something added to it afterwards.
+							</p>
+							<p>
+								It is a specification decision rather than a retrofit, so it is worth raising
+								early. If your project is still at framing or drywall, tell us and we will detail
+								it with your builder.
+							</p>
+							<BlindspaceLockup />
+						</div>
 					</div>
 				</section>
 

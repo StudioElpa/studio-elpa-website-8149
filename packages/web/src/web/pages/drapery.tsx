@@ -142,6 +142,10 @@ export default function DraperyPage() {
 							<li>
 								<b>We protect the designer's vision</b> when you're working with one.
 							</li>
+							<li>
+								<b>Concealed hardware</b> where the architecture allows it: for a fully concealed
+								look, we install Blindspace recess systems so the track sits out of sight.
+							</li>
 						</ul>
 					</div>
 				</section>

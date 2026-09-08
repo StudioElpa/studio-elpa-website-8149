@@ -4037,6 +4037,55 @@ footer.lp .wordmark {
 }
 
 /* ============================================================================
+   BLINDSPACE LOCKUP (official co-brand artwork, shown standalone)
+   The supplied PNG is a black mark on an OPAQUE white plate (verified: no alpha
+   channel, corner pixel rgb(255,255,255)). The page ground is cream (--bg
+   #f5f1ea), so the artwork cannot be dropped in bare without showing a white
+   rectangle edge, and the usage rules forbid recoloring or cropping it. The link
+   therefore carries a white plate that matches the artwork's own white exactly,
+   with generous padding standing in as the required clear space, plus a hairline
+   so the plate reads as an intentional card rather than a stray white patch.
+   Width is stated explicitly with height:auto, so the intrinsic 709x297 ratio is
+   preserved exactly (no distortion) and the global img{max-width:100%} rule at
+   the top of this file cannot resize it. Nothing else may sit inside the link.
+   ============================================================================ */
+.bs-lockup {
+	margin: 36px 0 0;
+}
+
+.bs-lockup-link {
+	display: inline-block;
+	background: #fff;
+	border: 1px solid var(--hairline);
+	padding: 30px 34px;
+	line-height: 0;
+	text-decoration: none;
+	transition: border-color 0.25s ease;
+}
+
+.bs-lockup-link:hover,
+.bs-lockup-link:focus-visible {
+	border-color: var(--ink-soft);
+}
+
+.bs-lockup-link img {
+	display: block;
+	width: 208px;
+	height: auto;
+	max-width: none;
+}
+
+@media (max-width: 560px) {
+	.bs-lockup-link {
+		padding: 24px 26px;
+	}
+
+	.bs-lockup-link img {
+		width: 176px;
+	}
+}
+
+/* ============================================================================
    NAMED PARTNER LINK (Baltic Electrical)
    Measured, not assumed: the olive --accent (#6D7204) reads 4.60:1 on --bg and
    4.84:1 on --surface, both clearing WCAG AA, but only 2.69:1 on the dark ink
