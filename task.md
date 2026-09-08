@@ -627,3 +627,72 @@ NEXT: V1.2 sections 4-16. s9 needs [data-process]/[data-process-progress]
 markup added; the GSAP side is written and inert. s11 before/after is the third
 approved GSAP experience, not built. Outstanding from s2: confirm the thin
 active-section indicator still works.
+
+## V1.2 SECTIONS 4, 5, 6 (DONE, verified)
+
+### §4 "At your service" — commit 4bc22c2
+Same four items, same destinations (#process, #services, /estimate.html, #contact),
+same illustrations. Added `kind: "promise" | "action"` to PILLARS and a
+`pillar-promise` / `pillar-action` class.
+- `.pillars` columns `repeat(4, 1fr)` -> `1.18fr 1.18fr 0.82fr 0.82fr`
+  (measured 295/295/205/205 at 1440).
+- Promise h3 22.5 -> 26px; action h3 16.5px, ink-soft, plus a CSS-drawn chevron
+  (`.pillar-go`, aria-hidden) that nudges 0.5em -> 0.8em on hover.
+- Action artwork 74% width and 26px top padding, so the actions read as a
+  quieter rail beside the two promises.
+- `align-items: stretch` (not `start`): with `start` the hairline between the
+  two action cells ran visibly short while the other two ran full height.
+- Mobile 860: 2x2, promises row then actions row, hierarchy by type only
+  (21px / 15px), action art back up to 88%, top padding reset to 14px.
+- Divider language and the four-edge tile feather untouched. No GSAP.
+- TRAP HIT: first draft used `var(--muted)`, which does not exist in :root
+  (the token is `--ink-soft`). It would have silently inherited --ink and lost
+  the hierarchy. Always grep :root before using a token.
+
+### §5 "The promise" — commit 8ad5cf5
+Copy untouched. The closing line stopped being a second soft paragraph in the
+centred column and became a pull quote beside the explanatory paragraph.
+- New `.promise-grid`: `1.12fr 0.88fr`, gap 64, max-width 1000 centred
+  (measured 524/412 at 1440, body 220-740, quote 808-1220). Mobile: one column.
+- TRAP HIT: I wrote a NEW `.pull` rule and collided with the site's existing
+  `.pull` component (line ~329, used by journal-blackout.tsx and blackout.tsx).
+  Both rules applied, so the quote got my top hairline AND the base olive left
+  rule. Fixed by deleting my block and reusing the existing component, with
+  `.promise-grid .pull { max-width: none; margin: 0 }` for layout only.
+  Grep for the class name before inventing one.
+
+### §6 "Who we are" — commit d18109a
+Two-column layout, heading, all copy, founder link all preserved
+(`sentenceIntact: true` in /tmp/whoweareqa.py, which reassembles the section's
+innerText and checks the original sentence survives verbatim).
+- Third paragraph split: lead sentence stays a paragraph (`.cq-lead`), the
+  quotation becomes `.client-quote` > `.cq-said` (Cormorant 27px / 23px mobile,
+  ink) + `.cq-not` (16px, ink-soft).
+- Deliberately NOT the `.pull` treatment: §5's pull quote is the studio
+  speaking and owns the olive rule; this is a client speaking, so it is set
+  apart by scale and space instead. Reusing `.pull` would make the two adjacent
+  sections look identical.
+- `.body-text .cq-said` is scoped through `.body-text` because `.body-text p`
+  sets ink-soft at (0,1,1) and would beat a bare `.cq-said`.
+- One entrance only: `data-reveal` on `.client-quote`. `paragraphsWithReveal: 0`.
+- IMAGERY DELIBERATELY SKIPPED. `about.jpg` is unused and was inspected: it is a
+  wide marketing plate with its own baked-in headline ("ELEVATE YOUR VIEW.
+  LAYERED SOPHISTICATION.") and a Studio elpa signature. Dropping it beside
+  "We start with the room, not the catalog." would put a second competing
+  headline in untranslatable baked-in type next to the real one. The brief's
+  condition is "if a visual asset already exists that fits naturally" - this one
+  does not. Report as a deliberate non-completion.
+
+### Verification after each of §4, §5, §6
+lint 21 files 0/0; build clean, 8 routes prerendered; flashprobe all 8 routes
+zero hiddenAt and zero flashMs; motionqa GSAP on index only, 0 stuck / 0
+initLeft on all 8, reduced motion gsapChunks=[], GSAP blocked -> h1 opacity 1.
+Main chunk 567.38 -> 567.83 kB raw, 173.55 -> 173.65 kB gzip across all three
+sections (about 0.1 kB gzip total).
+
+### The stale-Vite trap bit twice more this session
+`.promise-grid` came back null from querySelector, and later a CSS probe showed
+my DELETED `.pull` block still matching. Both were the dev server serving stale
+modules, not real bugs. `/tmp/pullprobe.py` (new) dumps every CSS rule that
+matches an element plus its computed values - use it whenever a style looks
+wrong, before editing anything.
