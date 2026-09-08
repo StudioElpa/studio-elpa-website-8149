@@ -211,10 +211,10 @@ export function SiteFooter() {
 				</div>
 				<div className="f-mid">
 					<div className="f-say">
-						<p>
-							If you are still weighing options, start with a conversation. Thirty minutes, no
-							obligation, and you will come away knowing what your windows actually need.
-						</p>
+						{/* V1.2 section 16: a "thirty minutes, no obligation, you will come away
+						    knowing what your windows need" pitch lived here and restated the
+						    contact section almost word for word. Removed so the footer signs
+						    off rather than selling the same call twice. */}
 						<a className="f-begin" href="#contact">
 							Begin a conversation
 						</a>

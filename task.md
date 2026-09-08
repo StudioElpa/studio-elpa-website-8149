@@ -1951,3 +1951,71 @@ and the GSAP-chunk-blocked run; `/tmp/fastscroll.py` TOTAL BROKEN 0;
   checks. Trust the built CSS plus computed styles in a real browser instead.
 - **Lesson 7 again.** Both real defects (prerender baking, 24px floor) were
   invisible to reasoning and only appeared under measurement.
+
+## V1.2 SECTION 16: FOOTER (ONE DUPLICATED CONVERSION PARAGRAPH REMOVED)
+
+Brief (line 239): keep the wordmark treatment, the brand line about good window
+treatments, the Aviva signature, real phone and email, the South Florida service
+area, the response-time statement and the privacy link. Remove one of the
+repeated conversion paragraphs so the footer does not repeat the contact
+section. Keep it warm, concise, personal. Keep the cream typographic wordmark on
+dark; do not recolor the color logo.
+
+### What was removed, and why that one
+
+`SiteFooter` in `components/site-chrome.tsx` had exactly one conversion
+paragraph, inside `.f-say`:
+
+> "If you are still weighing options, start with a conversation. Thirty minutes,
+> no obligation, and you will come away knowing what your windows actually
+> need."
+
+That is the contact section's pitch restated almost word for word. The contact
+block already promises the thirty-minute call, "no obligation", and (since
+section 14) "You'll leave the first meeting knowing exactly what's possible,
+whether or not you work with us." Deleted; replaced by a JSX comment recording
+what stood there.
+
+`.f-say` now holds just the quiet `Begin a conversation` link (`href="#contact"`)
+followed by the Aviva signature, so the footer signs off instead of selling the
+same call twice. **Nothing else was touched** - every "keep" item in the brief
+is still in place and asserted by QA.
+
+Scope check before editing: `SiteFooter` is used by **`index.tsx` only**, and
+`index.tsx` is the only page carrying `id="contact"`, so the `#contact` anchor
+cannot dangle. `LandingFooter` and `ThinFooter` were not touched.
+
+CSS: one rule added after `footer.site .f-begin:hover` -
+`footer.site .f-say .f-begin:first-child { margin-top: 0; }`. The link's 12px top
+offset existed only to clear the deleted paragraph. The JSX comment is not an
+element, so `:first-child` still matches.
+
+### Verification: `/tmp/footerqa.py` OVERALL PASS 97/97
+
+New script. 1440/1180/390/360 plus a built-HTML pass. Per viewport: wordmark is
+the text "Studio Elpa" and **not** a bitmap (zero `<img>` in the footer, so the
+cream typographic treatment on dark still stands); brand line verbatim;
+signature verbatim; phone text `(561) 836-0026` behind a `tel:` href; email text
+`aviva@studioelpa.com` behind the matching `mailto:`; "Serving South Florida.";
+"We reply within one business day."; privacy link resolves to exactly
+`/privacy.html`; all three distinctive fragments of the deleted paragraph absent;
+`.f-say` contains no paragraph other than the signature; exactly one `.f-begin`;
+child order is link then signature; no em dash; no page errors.
+
+Contrast solved against the measured footer background, not assumed: wordmark and
+brand line both clear AA. Built-HTML pass repeats every assertion against
+`dist/index.html` so the prerendered footer is proven too.
+
+### One measurement that looks alarming and is not
+
+`/tmp/probe11.py` body text length fell 12031 -> 10308 across sections 15 and 16.
+Only ~160 characters of copy were deleted. The rest is **lesson 18**: `innerText`
+excludes text hidden by `visibility: hidden`, so once the section 15 CSS actually
+reached the browser the collapsed FAQ answers stopped counting. `/tmp/faqqa.py`
+proves those answers are present in the DOM and readable when opened, and the
+dist pass proves they ship in the static HTML. Not a copy loss.
+
+### Regression suite
+
+`bun run lint` 0 violations; `/tmp/probe11.py` renders; `bun run build` passes
+including the section 15 prerender guard, 8 routes written.

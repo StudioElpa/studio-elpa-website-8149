@@ -1206,6 +1206,12 @@ footer.site .f-begin:hover {
 	border-bottom-color: #fff;
 }
 
+/* The link now leads its column: the 12px offset existed to clear the
+   conversion paragraph that section 16 removed. */
+footer.site .f-say .f-begin:first-child {
+	margin-top: 0;
+}
+
 /* The signature. Italic serif, so it reads as a person signing off rather
    than another line of body copy. */
 footer.site .f-sign {
