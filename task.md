@@ -1050,3 +1050,19 @@ Verification: lint 21 files 0/0 · build clean, 8 routes prerendered, main chunk
 571.91 kB raw / 174.07 kB gzip · flashprobe no flash on any route · motionqa
 GSAP on index only, 0 stuck / 0 initLeft, reduced motion clean, GSAP blocked
 leaves h1 visible · fastscroll TOTAL BROKEN 0 · overflow360 0 on all 8.
+
+### RESOLVED — the body-paragraph variant (same day)
+
+Client answered the flag: match it to the heading. Line 446 now reads
+
+    One point of contact, from the first conversation to the last shade raised on your schedule.
+
+`rg -n "last screw" packages/web/src` returns nothing. Both occurrences now end
+on the same image, so the heading/paragraph echo is restored. Verified: lint 21
+files 0/0 · build clean, 8 routes prerendered · oneroof at 360 and 1440 still
+3 lines, 0 clip, 0 doc overflow · overflow360 0 on all 8 · /tmp/oneroof-1440.png
+viewed, both lines read correctly.
+
+Client also ruled on the attached "Warm Editorial" typography brief
+(`/home/user/Attachments/pasted-1_9CR68p.txt`): **finish V1.2 SS8-SS16 first,
+then do the typography overhaul.** It is queued, not cancelled.

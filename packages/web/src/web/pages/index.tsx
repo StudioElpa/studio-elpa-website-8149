@@ -443,7 +443,7 @@ export default function HomePage() {
 								insured electrical partner, scheduled and managed by us. No chasing a third party,
 								no <em>"that's not our department,"</em> and no gap between the person who designed
 								your project and the people who finish it. One point of contact, from the first
-								conversation to the last screw.
+								conversation to the last shade raised on your schedule.
 							</p>
 						</div>
 					</div>
