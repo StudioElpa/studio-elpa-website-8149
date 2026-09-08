@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
-import { Logo, Wordmark, CONTACT } from "./brand";
+import { Logo, FooterLogo, CONTACT } from "./brand";
 import { useCondensedHeader, useScrollSpy } from "../hooks/use-motion";
 
 /* ---------------------------------------------------------------------------
@@ -196,14 +196,15 @@ export function SiteHeader() {
  * Full footer, homepage only (the landing pages use LandingFooter, the article
  * and privacy pages ThinFooter). Deliberately not a link-column grid: a
  * wordmark, one line in the studio's voice, a signed note, and the real
- * contact block. Dark ground, so the wordmark stands in for the logo.
+ * contact block. Dark ground, so it uses the reversed cream lockup (V2); the
+ * text wordmark it replaced was only ever a stand-in for that artwork.
  */
 export function SiteFooter() {
 	return (
 		<footer className="site">
 			<div className="wrap">
 				<div className="f-top">
-					<Wordmark />
+					<FooterLogo />
 					<p className="f-line">
 						Good window treatments do not announce themselves. They just make a room feel
 						finished.
@@ -266,7 +267,7 @@ export function LandingFooter() {
 	return (
 		<footer className="lp">
 			<div className="wrap">
-				<Wordmark size={24} />
+				<FooterLogo />
 				<p>
 					Custom window treatments in European fabrics, made for how you live. Serving South
 					Florida.

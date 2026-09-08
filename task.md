@@ -2689,3 +2689,103 @@ underline, 4.60/4.84:1), the dark-band treatment (--dark-kick plus underline,
 6.13:1), why --accent must never be used on dark, where the rule lives and why
 it is last in the file, and the rule that named trade partners always render
 through <BalticLink />.
+
+## §9 V2 PHASE 1 (footer lockup + Elvira + hero video: DONE and committed)
+
+Baseline: V1 complete at `086f35e`, tree clean. Backup `/home/user/backups/studioelpa-v1-final.tar.gz`
+(9.3 MB, 185 files). Plan written to `V2-PLAN.md` and approved by the user, with these answers:
+
+- Drapery-headers card copy: **only 3.5 of 9 received** (Ripple Fold, Pinch Pleat, French Pleat, Euro
+  Pleat truncated mid-sentence). Guide is PARKED until the rest arrives. Do not invent the copy.
+- Elvira: title confirmed **"Creative Director, Home Textiles"**. Bio not written yet; the user
+  authorised exactly one placeholder line: "Elvira Vasiljeva leads home textile design at Studio Elpa."
+  Leave room to expand. Invent nothing.
+- Hero poster: user will attach `hero-clean-final.png`. Video work proceeds; poster wired when it lands.
+- Video budget: **balanced, under 4 MB**.
+- Performance: **code-splitting is a real Phase 1 workstream**, before adding pages.
+- Footer logo: **confirmed** to replace the text wordmark (supersedes V1 locked decision #5).
+- Market figures: **prioritisation only**, never in public page copy.
+
+### Done so far
+
+1. **Assets placed** in `packages/web/public/assets/`:
+   - `hero-motion.mp4` 1,125,352 B (H.264 high, CRF 22, 1600x900, audio stripped, +faststart)
+   - `hero-motion.webm` 697,815 B (VP9 CRF 32) — both from the HEVC original, total 1.82 MB, under budget
+   - `team-elvira.jpg` 109,478 B (900x1200, 3:4 crop from the 741x1600 original)
+   - `logo-footer-cream.png` 47,400 B (640x240 reversed lockup, cream on transparent, tagline included)
+2. **Footer logo swap.** New `<FooterLogo>` in `components/brand.tsx` (intrinsic 640x240, inline height
+   owns the size, alt carries the tagline copy so it is not trapped in the bitmap). `<Wordmark>` kept
+   and documented but no longer used by either footer. `site-chrome.tsx` import and both call sites
+   swapped. CSS `.footer-logo` + `footer.site`/`footer.lp` rhythm added after the `.wordmark` rules.
+   **`footerqa.py`'s "wordmark-is-text" assertion must now be updated deliberately, not "fixed".**
+3. **Elvira team block (§8).** Added inside `#about`, after the `.wrap.two` grid, as `.wrap.team`
+   `data-reveal`. Kicker "Design", h3 name, `.team-role` title, one placeholder line. CSS `.team` /
+   `.team-photo` / `.team-role` added after `.cq-not`; class names verified free beforehand.
+   Deliberately not a card grid and not a circular avatar.
+
+Checks so far: `bun run lint` 0 violations. `probe11` body text **10476** (was 10369) — the baseline
+moved again; Elvira's three lines account for it.
+
+### Next
+
+Hero video into `.hero-frame` (poster pending), then §3 AEO foundation, then code-splitting.
+
+### Hero motion clip (V2 §9)
+
+New `components/hero-motion.tsx` exporting `<HeroMotion poster>`. It refuses to mount the `<video>`
+at all when `prefers-reduced-motion: reduce` matches, and otherwise mounts on `requestIdleCallback`
+(3 s timeout) with a 1200 ms `setTimeout` fallback for Safari. WebM `<source>` first, MP4 second,
+`muted loop playsInline autoPlay preload="auto" aria-hidden tabIndex={-1}`, and it fades in over
+1200 ms on `canplay`. Carries a `biome-ignore useMediaCaption` comment — removing it fails lint.
+
+Placed in `.hero-frame` **after the `<img>` and before `.hero-sweep`**, so the sunlight sweep still
+paints on top. `.hero-video` CSS mirrors the still's grade exactly
+(`sepia(.3) saturate(.86) brightness(1.03) contrast(.93)`) so the fade is a dissolve, not a colour
+jump, and `display: none !important` inside the existing `prefers-reduced-motion` block.
+
+- **The still remains the LCP element**: the `<img>` is untouched, still preloaded, still
+  `fetchPriority="high"`. The video only mounts after idle. That is how §9's "must not delay LCP" holds.
+- **The prerender guard is not tripped**: it fails the build on `#root` descendants with inline
+  `opacity: 0` *and non-empty text*. The video has no text, and `prerender.py` drives Chrome with
+  `reduced_motion="reduce"`, so the video is never in the snapshot.
+- Interim poster is `/assets/hero-1120.jpg` — swap when `hero-clean-final.png` arrives.
+
+### The footer lockup squish — a real defect, not a script defect
+
+`footerqa` failed 123/125 at 1440 and 1180: natural ratio 2.667 vs rendered 2.532. The lockup
+rendered 263.33x104 instead of 277.33x104, i.e. ~14 px narrower — genuinely squashed.
+
+Cause, established by measurement rather than reasoning (five inline-style variants tried in the
+browser): `footer.site .f-top` is `grid-template-columns: auto 1fr`, and Chrome resolved that auto
+track to **263.328 px** — it does not feed the height-derived width of a `max-width: 100%` replaced
+element back into intrinsic track sizing. The global `img { max-width: 100% }` at styles.css:159 then
+clamped the image to the 263 px track while `height: 104px` held, so the ratio broke. `justify-self`
+was a red herring: `max-width: none` alone rendered 277.33x104 at exactly 2.667 with **0 overflow**.
+
+Fix: `max-width: none` on `footer.site .footer-logo` and `footer.lp .footer-logo` (where the fixed
+height is what we mean), `max-width: 100%` restated in the `≤560px` branch (where the width is
+column-derived and the clamp is correct again), plus `justify-self: start; align-self: end;
+aspect-ratio: 640 / 240` on the base `.footer-logo` as belt-and-braces against future distortion.
+
+`footerqa.py` itself was updated **deliberately**, not "fixed back": the two V1 assertions
+`wordmark present` / `wordmark is text not bitmap` are now inverted, with a comment saying so, and
+the script asserts the lockup's src, load state, alt (must carry "Studio Elpa", "window treatments"
+and "home textiles" so tagline copy is not trapped in the bitmap), undistorted ratio, column fit,
+minimum height, absence of any text wordmark and that the lockup is the footer's only bitmap. The
+old wordmark contrast check was retired — a bitmap has no computed text colour. 97 → 125 checks.
+
+### QA results for this slice
+
+`footerqa` **125/125** · `respqa` 826/0 · `faqqa` 642/642 · `journalqa` 258/0 · `contactqa` 171/171 ·
+`balticqa` 43/0 (sitewide count still 8) · `balticcontrast` 8 links, 0 below AA · `tradeqa` PASS ·
+`heroviewqa` 15/0 · `fastscroll` 0 broken · `overflow360` 0 at 360 · `motionqa` 0 stuck ·
+`h1flash` ALL PASS · `qa_a11y` no reduced-motion errors · `qa2` 0 broken images, 0 page errors ·
+`qa_copy` embargo clean · `qa_booking` 10 CTAs, 0 misconfigured · `bun run lint` 0 violations ·
+`probe11` body text **10476** (new baseline) · `bun run build` clean, prerender wrote 8/8 routes.
+The asset optimizer takes `hero-motion.mp4` a further 56% down in `dist`.
+
+Main chunk 578.21 kB / gzip 175.22 kB — code-splitting is the next workstream, still not started.
+
+### Still blocked on the user
+
+The 5.5 missing drapery-header card texts (guide parked), Elvira's real bio, `hero-clean-final.png`.

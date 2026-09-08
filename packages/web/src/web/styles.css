@@ -452,6 +452,56 @@ h2.big.center {
 	margin-bottom: 0;
 }
 
+/* V2 section 8: the design lead. Deliberately not a card grid, and not a
+   circular avatar. A hairline rule, one portrait and three lines, so it reads
+   as part of "who we are" rather than a team page bolted on. */
+.team {
+	display: grid;
+	grid-template-columns: 172px 1fr;
+	gap: 28px;
+	align-items: center;
+	margin-top: 52px;
+	padding-top: 32px;
+	border-top: 1px solid var(--hairline);
+}
+
+.team-photo {
+	width: 172px;
+	height: 229px;
+	object-fit: cover;
+	object-position: 50% 26%;
+	display: block;
+}
+
+.team-text h3 {
+	font-size: 25px;
+	margin: 8px 0 2px;
+}
+
+.team-role {
+	font-size: 16px;
+	letter-spacing: 0.02em;
+	color: var(--ink-soft);
+	margin-bottom: 12px;
+}
+
+.team-text p:last-child {
+	max-width: 52ch;
+	margin-bottom: 0;
+}
+
+@media (max-width: 700px) {
+	.team {
+		grid-template-columns: 1fr;
+		gap: 20px;
+	}
+
+	.team-photo {
+		width: 150px;
+		height: 200px;
+	}
+}
+
 .band {
 	background: var(--bg-alt);
 }
@@ -1429,6 +1479,58 @@ footer.site .wordmark {
 	margin-bottom: 12px;
 }
 
+/* The reversed cream lockup supplied in V2. It replaces the text wordmark in
+   both footers; the inline height on <FooterLogo> owns the size, so this only
+   handles rhythm and keeps the bitmap from ever being stretched. */
+.footer-logo {
+	display: block;
+	height: auto;
+	width: auto;
+	max-width: 100%;
+	/* Both footers lay their top row out with grid, where a grid item's default
+	   justify-self:auto resolves to stretch and squashed the lockup ~14px
+	   narrower than its 640x240 artwork. Opt out of stretch on both axes and
+	   restate the intrinsic ratio so the bitmap can never be distorted. */
+	justify-self: start;
+	align-self: end;
+	aspect-ratio: 640 / 240;
+}
+
+footer.site .footer-logo {
+	height: 104px;
+	/* The auto grid track resolves to ~263px, and max-width:100% against it beat
+	   the fixed height and squashed the artwork to a 2.53 ratio. The height is
+	   what we mean here, so drop the clamp; the phone branch below restores it
+	   once the width is column-derived instead. Measured 277.33x104, 0 overflow. */
+	max-width: none;
+	margin-bottom: 10px;
+	/* The artwork carries its own clear space, so pull the optical left edge
+	   back onto the column rule the text wordmark sat on. */
+	margin-left: -14px;
+}
+
+footer.lp .footer-logo {
+	height: 80px;
+	max-width: none;
+	margin: 0 auto 8px;
+}
+
+/* At phone widths the lockup at its desktop height eats the full column, so
+   size it from the column instead. width wins, height:auto keeps the ratio. */
+@media (max-width: 560px) {
+	footer.site .footer-logo,
+	footer.lp .footer-logo {
+		height: auto;
+		width: min(240px, 68%);
+		/* Width is column-derived here, so the clamp is safe again. */
+		max-width: 100%;
+	}
+
+	footer.site .footer-logo {
+		margin-left: -10px;
+	}
+}
+
 /* ============================================================================
    PAGE: HOME
    ============================================================================ */
@@ -1612,6 +1714,31 @@ footer.site .wordmark {
    plus-lighter is the only mode that reads on this ground. Opacity is then
    held at 0.20: from 0.30 up the band starts washing the mullions out of the
    right-hand window, and the pencil detail has to survive the light. */
+/* V2 section 9: the motion clip sits exactly on top of the still, inside the
+   frame so it inherits the same feather mask and the same breathing loop. It
+   starts transparent and is faded in by the .on class only once the browser
+   reports canplay, so a slow connection shows the still rather than a black
+   box. The element is mounted client-side after idle and is never mounted under
+   reduced motion, so this opacity:0 can never strand text in the prerendered
+   HTML: there is no text, and there is no video in the snapshot. */
+.hero-video {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	/* The same grade the still carries, so the fade reads as a dissolve
+	   rather than a colour jump halfway through. */
+	filter: sepia(0.3) saturate(0.86) brightness(1.03) contrast(0.93);
+	opacity: 0;
+	transition: opacity 1200ms ease;
+	pointer-events: none;
+}
+
+.hero-video.on {
+	opacity: 1;
+}
+
 .hero-sweep {
 	position: absolute;
 	top: -8%;
@@ -1653,6 +1780,12 @@ footer.site .wordmark {
 	}
 
 	.hero-sweep {
+		display: none !important;
+	}
+
+	/* Belt and braces: the component already refuses to mount the clip under
+	   reduced motion, so this only catches a preference flipped after load. */
+	.hero-video {
 		display: none !important;
 	}
 }

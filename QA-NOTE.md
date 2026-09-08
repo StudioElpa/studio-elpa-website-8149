@@ -614,6 +614,63 @@ matches whitespace-normalised `textContent`.
 
 ---
 
+## §10 V2 Phase 1 — footer lockup, the team block, the hero motion clip
+
+Three pieces of V2, all measured rather than eyeballed.
+
+**Footer lockup.** The reversed cream artwork (`logo-footer-cream.png`, 640x240) replaces
+the live-text wordmark in both footers, at the user's explicit confirmation. This
+supersedes the V1 decision that dark grounds render the wordmark as Newsreader text.
+`footerqa.py` grew 97 → **125 checks** and its two V1 assertions ("wordmark present",
+"wordmark is text not bitmap") were **inverted deliberately**, with a comment in the script
+saying so — this is a changed requirement, not a silenced failure. The old wordmark contrast
+check was retired, because a bitmap has no computed text colour. Because the tagline is
+baked into the bitmap, the script now asserts the alt text carries "Studio Elpa", "window
+treatments" and "home textiles", so that copy is not lost to crawlers or screen readers.
+
+**One real site defect was caught by that new suite**, unusually — thirteen of the previous
+fourteen QA surprises were script defects. `footerqa` failed 123/125 at 1440 and 1180 px:
+the lockup's natural ratio is 2.667 but it rendered 2.532, i.e. 263.33x104 instead of
+277.33x104. Cause, isolated by trying five inline-style variants in a real browser rather
+than by reasoning: `footer.site .f-top` is `grid-template-columns: auto 1fr`, Chrome resolved
+that auto track to 263.328 px without feeding the replaced element's height-derived width
+into intrinsic track sizing, and the global `img { max-width: 100% }` then clamped the image
+to the track while `height: 104px` held. `justify-self` was a red herring — `max-width: none`
+alone restored 277.33x104 at exactly 2.667 with zero overflow. Fixed with `max-width: none`
+on both desktop rules, `max-width: 100%` restated in the `≤560px` branch where the width is
+column-derived, and `aspect-ratio: 640 / 240` on the base rule as insurance. **125/125.**
+
+**Team block.** Elvira Vasiljeva, "Creative Director, Home Textiles" (title confirmed by the
+user), added inside `#about`. Deliberately an editorial two-column split, not a card grid and
+not a circular avatar. **Her card carries a single approved placeholder line, not a bio** —
+the user authorised that exact sentence and nothing more, so no background, tenure or
+credentials were invented. Body-text baseline moved 10369 → **10476** as a result; that is
+the new `probe11` baseline.
+
+**Hero motion clip.** A new `heroviewqa.py` (15 checks, 15/0) verifies the video mounts,
+carries `muted`/`loop`/`playsInline`/`autoplay`/`aria-hidden`, is not paused, advances its
+`currentTime`, applies the `.on` fade to computed opacity 1, and **covers the still exactly
+(dx/dy/dw/dh all 0.0)**; that under `reduced_motion="reduce"` **zero videos mount** and the
+still is visible; and that both encodes return 200 with the right MIME type. Chrome needs
+`--autoplay-policy=no-user-gesture-required` for this test. The still stays the LCP element —
+untouched, still preloaded, still `fetchPriority="high"` — and the prerender guards are not
+tripped, because the video has no text and `prerender.py` renders with reduced motion so the
+video is never in the snapshot.
+
+**Full battery re-run for this slice, all green:** `footerqa` 125/125, `respqa` 826/0,
+`faqqa` 642/642, `journalqa` 258/0, `contactqa` 171/171, `balticqa` 43/0 (sitewide count
+still 8), `balticcontrast` 8 links 0 below AA, `tradeqa` PASS, `heroviewqa` 15/0,
+`fastscroll` 0 broken, `overflow360` 0 overflow at 360, `motionqa` 0 stuck reveals,
+`h1flash` ALL PASS, `qa_a11y` no reduced-motion errors, `qa2` 0 broken images 0 page errors,
+`qa_copy` embargo clean, `qa_booking` 10 CTAs 0 misconfigured, `lint` 0 violations,
+`bun run build` clean with 8/8 routes prerendered.
+
+**Not improved by this slice:** the main chunk is now 578.21 kB (gzip 175.22 kB) and
+Lighthouse mobile Performance is still **78**. Code-splitting is the next V2 workstream and
+has not started, so no performance claim should be made for Phase 1 yet.
+
+---
+
 ## Open items before go-live
 
 1. **`estimate.html` shows unconfirmed pricing to real prospects.** The original's
@@ -632,3 +689,8 @@ matches whitespace-normalised `textContent`.
    (see §8). The remaining gap is the ~575 kB main JS chunk's parse cost, which
    gates LCP at 5.3 s. Closing it needs real code-splitting work, not tuning.
 5. Confirm you're happy with the privacy-link repoint and the Attio deal-name hyphen.
+6. **Three V2 content blockers.** The drapery-headers guide is parked: only 3.5 of the nine
+   card texts arrived (Ripple Fold, Pinch Pleat, French Pleat, and Euro Pleat truncated
+   mid-sentence), and the copy will not be invented. Elvira's card needs real bio copy to
+   replace its one approved placeholder line. And the hero video currently uses
+   `/assets/hero-1120.jpg` as an interim poster, pending `hero-clean-final.png`.

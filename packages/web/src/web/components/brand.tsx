@@ -97,6 +97,43 @@ export function Logo({
 	);
 }
 
+/**
+ * True pixel dimensions of /assets/logo-footer-cream.png: the reversed lockup
+ * Aviva supplied in V2, drawn cream on transparent so it sits on the dark ink
+ * footer without any recoloring. It carries the full tagline, so the alt text
+ * carries it too rather than leaving that copy trapped in the bitmap.
+ */
+const LOGO_FOOTER_W = 640;
+const LOGO_FOOTER_H = 240;
+
+interface FooterLogoProps {
+	/**
+	 * Rendered height in px. Omit it (both footers do) to let CSS own the
+	 * height: an inline height would beat the stylesheet and freeze the lockup
+	 * at one size, which is exactly what makes it too wide on a 390px screen.
+	 */
+	height?: number;
+	className?: string;
+}
+
+/**
+ * Reversed cream lockup for dark footers. This is the real asset, so it
+ * replaces the temporary <Wordmark> text treatment there. <Wordmark> stays for
+ * any dark ground where no reversed artwork exists.
+ */
+export function FooterLogo({ height, className = "footer-logo" }: FooterLogoProps) {
+	return (
+		<img
+			className={className}
+			src="/assets/logo-footer-cream.png"
+			alt="Studio Elpa, window treatments and home textiles"
+			width={LOGO_FOOTER_W}
+			height={LOGO_FOOTER_H}
+			style={height ? { height, width: "auto" } : undefined}
+		/>
+	);
+}
+
 interface WordmarkProps {
 	/** Font size in px. Footer uses the CSS default (26). */
 	size?: number;

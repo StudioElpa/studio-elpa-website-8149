@@ -129,13 +129,34 @@ file **and** the codepoint inside the declared range.
 
 ## Logo handling
 
-Only `logo.png` and `logo-mark.png` exist today (no SVG, no reversed mark).
+- Light backgrounds: `logo-header.png` (898x255, tagline-free crop) through `<Logo>`.
+- Dark footers/bands: **`logo-footer-cream.png` (640x240, reversed cream lockup with the
+  "window treatments & home textiles" tagline), through `<FooterLogo>`.** This is a V2
+  decision and it **supersedes the V1 rule** that dark grounds render the wordmark as live
+  Newsreader text — that rule was only ever a stand-in until real reversed artwork existed.
+- `<Wordmark>` is kept and still exported as the fallback for a dark ground with no reversed
+  artwork, but nothing uses it. It is dead code on purpose, not an oversight.
+- Because the tagline is baked into the bitmap, `<FooterLogo>`'s alt text carries "Studio
+  Elpa, window treatments and home textiles" so that copy stays crawlable and readable to
+  assistive tech. `footerqa.py` asserts this.
+- **Never put an inline `height` on the lockup.** `<FooterLogo>`'s `height` prop exists but
+  both call sites omit it, because an inline style beats every stylesheet rule including
+  media queries and froze the lockup at its desktop size on phones.
+- **Never let `max-width: 100%` and a fixed `height` both apply to it inside an auto grid
+  track.** `footer.site .f-top` is `auto 1fr`; Chrome sizes that track without feeding the
+  height-derived width back in, so the clamp wins and the artwork squashes (measured 2.532
+  against its true 2.667). The desktop rules use `max-width: none`; the `≤560px` branch,
+  where the width is column-derived instead, restates `max-width: 100%`.
 
-- Light backgrounds: the existing color logo image.
-- Dark footers/bands: the "Studio Elpa" wordmark set as live text in **Newsreader weight
-  500**, cream, rather than force-recoloring the color logo bitmap.
-- Both go through the `<Logo>` and `<Wordmark>` components, so a real SVG and a reversed
-  light logo can be dropped in later by changing those two files only.
+## Team block
+
+- One person, presented as an editorial two-column split (`172px 1fr`), not a card grid and
+  not a circular avatar — both are Section 5b tells.
+- Portrait is a real photograph, `object-fit: cover` with `object-position: 50% 26%` so the
+  crop favours the face. Separated from the "who we are" copy above it by a `--hairline`
+  rule, and stacks to one column below 700px.
+- Titles are real. **No invented background, tenure, credentials or awards** — the card
+  carries one approved placeholder line until real bio copy arrives.
 
 ## Motion (brief Section 7, as revised by the V1.2 §1 refactor)
 
@@ -162,6 +183,13 @@ section reveals and every hover/focus transition, is plain CSS driven by an
 - Durations 0.5–0.8s, easing `power2.out` / `power3.out`. Nothing bounces, spins, or slides
   in from off-screen.
 - Hero text is readable immediately and never gated behind animation.
+- **Hero motion clip (V2).** The hand-drawn hero illustration also exists as a ~10 s silent
+  loop (`hero-motion.webm` / `.mp4`, 1.82 MB total). Contract: the still `<img>` stays the
+  LCP element and is never replaced; the video mounts only after `requestIdleCallback`, is
+  `muted loop playsInline aria-hidden` with no controls and no audio track, and dissolves in
+  over 1200 ms carrying the **same sepia grade as the still** so there is no colour jump.
+  Under `prefers-reduced-motion: reduce` the `<video>` is **never mounted at all** — CSS
+  alone is not enough, because zeroing a loop's duration snaps it to its final keyframe.
 - **Removed in the refactor and not coming back:** the hero text stagger (kicker → headline
   → paragraph → buttons) and the photography parallax. Both cost more in bundle weight and
   perceived delay than they returned. The hero illustration keeps its slow breathing zoom and

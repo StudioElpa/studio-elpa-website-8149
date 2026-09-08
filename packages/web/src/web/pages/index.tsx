@@ -5,6 +5,7 @@ import { Faq, type FaqEntry } from "../components/faq";
 import { BeforeAfter } from "../components/before-after";
 import { CONTACT } from "../components/brand";
 import { BalticLink } from "../components/partner";
+import { HeroMotion } from "../components/hero-motion";
 import { usePageMotion, useHomeMotion } from "../hooks/use-motion";
 
 /* Copy is ported verbatim from the original index.html. Structure and section
@@ -242,6 +243,9 @@ export default function HomePage() {
 									fetchPriority="high"
 									decoding="async"
 								/>
+								{/* V2 section 9. Mounted after idle, over the still, never under
+								    reduced motion. The <img> above stays the LCP element. */}
+								<HeroMotion poster="/assets/hero-1120.jpg" />
 								{/* Sunlight drifting through the glass. Decorative only, so it is
 								    hidden from assistive tech and cannot take pointer events. */}
 								<span className="hero-sweep" aria-hidden="true" />
@@ -347,6 +351,25 @@ export default function HomePage() {
 							<p>
 								<Link to="/founder.html">Read a note from our founder →</Link>
 							</p>
+						</div>
+					</div>
+					{/* V2 section 8. A real designer with a real face, kept to a name, a
+					    title and one line. The bio Aviva is writing expands the last
+					    paragraph; nothing here is invented in the meantime. */}
+					<div className="wrap team" data-reveal>
+						<img
+							className="team-photo"
+							src="/assets/team-elvira.jpg"
+							alt="Elvira Vasiljeva, Creative Director of Home Textiles at Studio Elpa"
+							width={900}
+							height={1200}
+							loading="lazy"
+						/>
+						<div className="team-text">
+							<div className="kicker">Design</div>
+							<h3>Elvira Vasiljeva</h3>
+							<p className="team-role">Creative Director, Home Textiles</p>
+							<p>Elvira Vasiljeva leads home textile design at Studio Elpa.</p>
 						</div>
 					</div>
 				</section>
