@@ -99,12 +99,28 @@ export function usePageMotion<T extends HTMLElement = HTMLDivElement>() {
 			el.addEventListener("transitionend", done, { once: true });
 		};
 
+		// Still waiting to be revealed. Emptied as elements arrive, and used by
+		// the scroll sweep below to know when it can stop listening.
+		const pending = new Set(items);
+
+		/**
+		 * Put an element straight into its final state, with no transition.
+		 * Used for content the reader has already scrolled past, where an
+		 * entrance would animate something nobody is looking at, and where
+		 * leaving it hidden would mean the copy never appears at all.
+		 */
+		const finalize = (el: HTMLElement) => {
+			el.style.transitionDelay = "";
+			el.classList.remove(HIDDEN, SHOWN);
+		};
+
 		const io = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
 					if (!entry.isIntersecting) continue;
 					const el = entry.target as HTMLElement;
 					io.unobserve(el); // play once
+					pending.delete(el);
 					reveal(el);
 				}
 			},
@@ -115,13 +131,42 @@ export function usePageMotion<T extends HTMLElement = HTMLDivElement>() {
 
 		for (const el of items) io.observe(el);
 
+		// Safety net for fast scrolling.
+		//
+		// An Intersection Observer only calls back when the intersection ratio
+		// crosses a threshold. On a hard flick of the wheel an element can go
+		// from below the viewport to above it between two frames, never once
+		// measured as intersecting, so no callback is ever delivered and the
+		// element stays at opacity 0 permanently. Measured on this homepage: a
+		// fast flick left 15 blocks of copy invisible on desktop and 17 on
+		// mobile, including whole section headings.
+		//
+		// So on every scroll, sweep anything still pending that is now entirely
+		// above the viewport and finalize it. The listener removes itself once
+		// nothing is pending, so it costs nothing for the rest of the session.
+		let ticking = false;
+		const sweep = () => {
+			ticking = false;
+			for (const el of pending) {
+				if (el.getBoundingClientRect().bottom >= 0) continue;
+				io.unobserve(el);
+				pending.delete(el);
+				finalize(el);
+			}
+			if (!pending.size) window.removeEventListener("scroll", onScroll);
+		};
+		const onScroll = () => {
+			if (ticking) return;
+			ticking = true;
+			requestAnimationFrame(sweep);
+		};
+		window.addEventListener("scroll", onScroll, { passive: true });
+
 		return () => {
 			io.disconnect();
+			window.removeEventListener("scroll", onScroll);
 			// Leave the DOM in its final, visible state.
-			for (const el of items) {
-				el.style.transitionDelay = "";
-				el.classList.remove(HIDDEN, SHOWN);
-			}
+			for (const el of items) finalize(el);
 		};
 	}, []);
 
