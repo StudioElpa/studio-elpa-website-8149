@@ -986,3 +986,67 @@ Verification: lint 21 files 0/0 · build clean, 8 routes prerendered · flashpro
 no flash on any route · motionqa GSAP on index only, 0 stuck / 0 initLeft,
 reduced motion clean, GSAP blocked leaves h1 visible · fastscroll 0 · overflow360
 0 on all 8.
+
+---
+
+## ONE ROOF HEADING — "LAST SCREW" COPY SWAP (commit 6426575)
+
+Client instruction, verbatim:
+
+> Replace the line "One team, from the first question to the last screw." with:
+> "One team, from the first question to the last shade raised on your schedule."
+> Update it everywhere that phrase appears (the One Roof / One Team section
+> heading and anywhere else it's used).
+
+### What changed
+
+`packages/web/src/web/pages/index.tsx`, the ONE ROOF section's `h2.big`
+(now lines 429-432), reformatted to multi-line JSX and reading:
+
+    One team, from the first question to the last shade raised on your schedule.
+
+Nothing else. The client's exact phrase appears exactly once in the codebase.
+
+### Geometry — measured, not assumed
+
+The new line is ~46% longer than the old one, so it was checked at four widths
+with a new script `/tmp/oneroof.py` (takes a viewport width; reports the
+heading's computed font-size, line count, box size, self-clipping and document
+overflow, and writes `/tmp/oneroof-<width>.png`).
+
+| width | font-size | lines | heading w x h | heading clip | doc overflow |
+|-------|-----------|-------|---------------|--------------|--------------|
+| 1440  | 47.5px    | 3     | 472 x 164     | 0            | 0            |
+| 1024  | 41.68px   | 3     | 444 x 144     | 0            | 0            |
+| 390   | 31.5px    | 3     | 342 x 109     | 0            | 0            |
+| 360   | 31.5px    | 3     | 312 x 109     | 0            | 0            |
+
+No clipping, no overflow, three lines everywhere. `/tmp/oneroof-1440.png` and
+`/tmp/oneroof-390.png` both viewed and read correctly (olive kicker, three-line
+Cormorant heading left, body right).
+
+### FLAGGED, DELIBERATELY NOT CHANGED
+
+`packages/web/src/web/pages/index.tsx` line ~446, the closing sentence of the
+ONE ROOF body paragraph, still reads:
+
+    One point of contact, from the first conversation to the last screw.
+
+This is a *variant* of the client's phrase ("first conversation", not "first
+question"), so it is not covered by "everywhere that phrase appears". Rewriting
+it would mean inventing client copy that was not approved. But the original copy
+relied on the heading and this sentence echoing each other, and that echo is now
+broken: the paragraph closes on an image the heading above it no longer uses.
+Raised with the client for a decision; not touched pending their word.
+
+### Consequence for V1.2 SS8
+
+The ONE ROOF heading is now three lines at every breakpoint where it was
+previously shorter, making that dark section taller. SS8 asks for *reduced*
+dark-section height. Note the tension when SS8 is executed; the height budget
+there has to absorb this.
+
+Verification: lint 21 files 0/0 · build clean, 8 routes prerendered, main chunk
+571.91 kB raw / 174.07 kB gzip · flashprobe no flash on any route · motionqa
+GSAP on index only, 0 stuck / 0 initLeft, reduced motion clean, GSAP blocked
+leaves h1 visible · fastscroll TOTAL BROKEN 0 · overflow360 0 on all 8.
