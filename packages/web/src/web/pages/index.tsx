@@ -659,14 +659,18 @@ export default function HomePage() {
 							<p className="soft">
 								Every project here starts the same way, with a conversation, not a commitment. Tell
 								us a little about your home and what you're hoping to improve, and we'll take it
-								from there.
+								from there. You'll leave the first meeting knowing exactly what's possible, whether
+								or not you work with us.
 							</p>
 						</div>
-						<div className="contact-grid" data-reveal-group>
-							<div data-reveal>
+						{/* V1.2 section 14: the form and the direct-contact block reveal together as
+						    one unit. Individual fields are never animated (ContactForm carries no
+						    data-reveal of its own). */}
+						<div className="contact-grid" data-reveal>
+							<div>
 								<ContactForm sourcePage="/index.html" />
 							</div>
-							<div className="contact-side" data-reveal>
+							<div className="contact-side">
 								<h3>Prefer to talk?</h3>
 								<a
 									className="btn btn-dark"
@@ -696,10 +700,17 @@ export default function HomePage() {
 								<div className="row">
 									<span className="l">Response</span>Within one business day
 								</div>
-								<p className="soft" style={{ marginTop: 20, fontSize: 14 }}>
-									Here's what happens next: we'll get back to you within one business day, ask a
-									few things to understand your project, and set up a time to visit. No pressure,
-									no obligation, just the start of getting it right.
+								{/* V1.2 section 14: "what happens next" as a concise three-step
+								    sequence instead of one run-on paragraph. The wording of the three
+								    actions is the original copy, split. */}
+								<div className="next-lead">Here's what happens next</div>
+								<ol className="next-steps">
+									<li>We get back to you within one business day.</li>
+									<li>We ask a few things to understand your project.</li>
+									<li>We set up a time to visit.</li>
+								</ol>
+								<p className="soft next-note">
+									No pressure, no obligation, just the start of getting it right.
 								</p>
 							</div>
 						</div>
@@ -717,24 +728,14 @@ export default function HomePage() {
 					</div>
 				</section>
 
-				{/* ---------------- FINAL CTA ---------------- */}
-				<section className="block">
-					<div className="wrap">
-						<div className="callout" data-reveal>
-							<div className="kicker">No pressure. Just a conversation.</div>
-							<h2>Tell us about the room.</h2>
-							<p>
-								We'll bring the questions, the samples, and the experience. You'll leave the first
-								meeting knowing exactly what's possible, whether or not you work with us.
-							</p>
-							<div style={{ marginTop: 26 }}>
-								<a className="btn btn-solid" href="#contact">
-									Begin a conversation
-								</a>
-							</div>
-						</div>
-					</div>
-				</section>
+				{/* V1.2 section 14: the final "Tell us about the room." callout is removed.
+				    Its heading was identical to the contact section's own h2 higher up the
+				    same page and its button only scrolled back to that section, so it
+				    repeated the conversion request without adding a step. The one piece of
+				    information it carried that was not stated elsewhere ("You'll leave the
+				    first meeting knowing exactly what's possible, whether or not you work
+				    with us.") has been folded into the contact intro paragraph. The
+				    .callout styles stay: drapery, motorized and blackout still use them. */}
 			</main>
 
 			<SiteFooter />

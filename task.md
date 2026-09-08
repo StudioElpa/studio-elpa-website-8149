@@ -1701,3 +1701,64 @@ is now duplicative of the two "Coming soon" markers. It is copy, and section 13
 does not list it as removable, so it was deliberately LEFT IN rather than
 silently deleted. Worth folding into the section 16 de-duplication pass if the
 user agrees.
+
+## V1.2 SECTION 14 — CONTACT (commit pending)
+
+Brief: keep the form, fields and submission behaviour, the "Prefer to talk?" block,
+phone/email/scheduling link/service area/response expectation, privacy and a11y.
+Simplify: keep form + direct contact together, turn "what happens next" into a concise
+three-step sequence, remove the later duplicate CTA if it repeats the same conversion
+request, reveal the form as ONE unit, never animate individual fields.
+
+Four edits, `pages/index.tsx` + `styles.css`:
+
+1. Contact intro gained one sentence: "You'll leave the first meeting knowing exactly
+   what's possible, whether or not you work with us." This is the unique promise rescued
+   from the deleted CTA, so the delete cost no information.
+2. `.contact-grid` went from `data-reveal-group` + two `data-reveal` children to a single
+   `data-reveal` on the container, children bare. `ContactForm` carries no `data-reveal`
+   of its own, so no field animates individually.
+3. "What happens next" paragraph became `.next-lead` + a real `<ol class="next-steps">`
+   with exactly three `<li>` + `.next-note`. The three strings are the original run-on
+   sentence split VERBATIM. A real `<ol>` so a screen reader announces "list of 3";
+   numerals come from a CSS counter so they are decoration and never announced twice.
+4. The final CTA `<section>` (`.callout`, "Tell us about the room.", btn to `#contact`)
+   was DELETED. Justified by measurement, not taste: `rg` proved "Tell us about the room."
+   was the same heading twice on one page (contact h2 + callout h2) and the callout's
+   button only scrolled back up to that very section. Its second sentence ("We'll bring
+   the questions, the samples, and the experience.") was dropped deliberately because the
+   FAQ already promises samples and measuring tools.
+
+`.callout` CSS was NOT removed: drapery/motorized/blackout still use it. Verified styled
+(bg rgb(57,41,27)) on all three after the change.
+
+VERIFICATION
+- `/tmp/contactqa.py` OVERALL PASS 171/171 across 1440/1180/390/360 + 2 reduced modes.
+- Four initial failures were the SCRIPT, not the markup: a fixed 1400ms sleep read the
+  grid mid-tween (0.838 = ~290ms into a 0.7s transition). Replaced with a settle poll:
+  opacity reaches 1 at ~1800ms (the reveal starts late), and at 100ms reduced. Lesson 9.
+- `/tmp/qa_booking.py`: 10 booking CTAs sitewide, 0 misconfigured, unchanged. The deleted
+  CTA used `#contact`, not the booking URL, exactly as predicted.
+- Built `dist/index.html` (styles stripped, sliced from `<div`): 0 `callout`, "Tell us
+  about the room." x1, one `<ol class="next-steps">` with 3 verbatim `<li>`, next-lead +
+  next-note present, rescued promise present, `<div class="contact-grid" data-reveal="true">`
+  with 0 `data-reveal` inside and 0 `data-reveal-group`. The single inline `opacity: 0` in
+  the file is inside the RunableBadge sprite, has no text, and is why the prerender guard
+  correctly ignores it.
+
+SUBMISSION BEHAVIOUR — NOT VERIFIED THIS SECTION, AND WHY
+Running `/tmp/qa_form.py` and `/tmp/qa_form_fail.py` TRANSMITTED REAL LEADS: the root
+`.env` has live FORMSPREE_ENDPOINT and SHEET_ENDPOINT, the dev server loads `.env`, so
+`leads.submit` took its live branches and emailed Aviva + appended to the Sheet. 2
+confirmed (qa_form_fail, run twice: the form was replaced by the thank-you state, which
+only happens on ok:true), 1 likely (qa_form success branch). ATTIO_API_KEY is empty so
+Attio was skipped. Absence of `[leads]` lines in the dev log is NOT evidence against it,
+that path only logs on failure. User informed; up to 3 Sheet records to delete.
+BOTH SCRIPTS ARE NOW GUARDED, approved by the user:
+- `qa_form_fail.py` aborts `**/api/rpc/**` for `leads/submit` in the browser. That IS the
+  dead-endpoint condition it was testing, and it never reaches the server.
+- `qa_form.py` fills the honeypot `#cf-trap`, so the server's own first branch returns
+  {ok:true, sinks:all-skipped}: the thank-you UI runs through real app code, transmitting
+  nothing.
+Consequence: the sinks are unproven from the sandbox and always were. Confirmed plan is
+ONE real submission at go-live, then delete the test record.

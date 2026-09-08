@@ -2264,6 +2264,60 @@ form textarea[aria-invalid="true"] {
 	margin-bottom: 3px;
 }
 
+/* ---------------------------------------------------------------------------
+   V1.2 section 14: "what happens next" as a three-step sequence.
+
+   Was one run-on paragraph carrying three actions. Now a real <ol>, so the
+   sequence is conveyed by the markup and not only by the styling, and a screen
+   reader announces "list of 3". The numerals come from a CSS counter, which
+   means they are decoration and are never read out twice.
+
+   The lead-in reuses the same label treatment as `.row .l` above so the side
+   panel keeps one vocabulary.
+   --------------------------------------------------------------------------- */
+
+.contact-side .next-lead {
+	font-size: 12.5px;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--accent);
+	margin-top: 22px;
+	margin-bottom: 10px;
+}
+
+.contact-side .next-steps {
+	counter-reset: nextstep;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 8px;
+}
+
+.contact-side .next-steps li {
+	counter-increment: nextstep;
+	display: grid;
+	grid-template-columns: 22px 1fr;
+	gap: 10px;
+	align-items: baseline;
+	font-size: 15.5px;
+	line-height: 1.5;
+	color: var(--ink);
+}
+
+.contact-side .next-steps li::before {
+	content: counter(nextstep);
+	font-family: var(--serif);
+	font-size: 15.5px;
+	color: var(--accent);
+}
+
+.contact-side .next-note {
+	margin-top: 14px;
+	margin-bottom: 0;
+	font-size: 14px;
+}
+
 /* ============================================================================
    PAGE: LANDING PAGES (drapery / motorized / blackout)
    ============================================================================ */
