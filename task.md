@@ -1468,3 +1468,133 @@ NOTE on the reveal count: index reads 54 under normal motion but 56 under
 reduced motion. Expected — the two static `<figure data-reveal>` elements
 unmount when the interactive frame (deliberately no `data-reveal`) replaces
 them. Not a regression.
+
+---
+
+## V1.2 SECTION 12 — FUTURE COLLECTIONS AS A MANIFESTO (commit 8a6a7cc)
+
+### The brief
+
+Keep all four future collection names and the existing vision copy. Reduce the
+generic expansion-grid appearance; treat the section as an editorial manifesto:
+one strong overarching statement, four understated collection names, tactile
+imagery only where suitable existing assets are available, no generic cards,
+no four-item GSAP entrance sequence.
+
+### What was there before
+
+`.collections[data-reveal-group]` mapped `COLLECTIONS` into four `.collection`
+divs, each with its own `data-reveal`. CSS: `.collections` was
+`repeat(2, 1fr)` with `gap: 20px`; `.collection` was a bordered padded box
+(`border: 1px solid var(--dark-rule); padding: 26px 28px`), `h3` 25px. That is
+literally a 2x2 card grid with a four-item staggered entrance — the exact two
+things the brief names.
+
+### What was built
+
+Two files. `pages/index.tsx`: the list becomes
+`className="collections manifesto"` carrying a single `data-reveal`;
+`data-reveal-group` and the four per-item `data-reveal`s are removed. Copy and
+all four titles untouched. `styles.css`: a `.collections.manifesto` block added
+after `.collection p` (the original card rules are left intact, deliberately —
+see the height measurement below), plus a mobile reset in the 860px block.
+
+- `.collections.manifesto` — single column, `gap: 0`, `border-top` hairline.
+- `.manifesto .collection` — grid `0.82fr 1.18fr`, `gap: 40px`,
+  `align-items: baseline`, `border: none` + `border-bottom` hairline,
+  `padding: 22px 0`.
+- `.manifesto .collection h3` — 21px, down from 25px.
+- `.manifesto .collection p` — 16.5px.
+
+### The design decisions and why
+
+The boxes are gone entirely: no border box, no padding shell, no 2x2 tiling.
+What remains is one hairline-ruled column, each row setting an understated name
+against its line of copy. That answers "no generic cards" and "editorial
+manifesto" in one move.
+
+"One strong overarching statement" is satisfied by the EXISTING `h2.big`
+"Window treatments are where we begin." — deliberately not new copy, because
+the brief also says to keep the existing vision copy. The collection names were
+cut 25px -> 21px specifically so that statement stays the loudest thing in the
+band. Verified by measurement: h2 47.5px vs h3 21px at 1440, 31.5px vs 21px at
+390.
+
+One reveal instead of four is the direct answer to "no four-item entrance
+sequence". The existing one was CSS-staggered rather than GSAP, but the spirit
+is identical. Same move already made in section 8. Sitewide reveal count on
+index falls 54 -> 51 (four removed, one added); reduced motion 56 -> 53.
+
+Deliberately ONE column at every width. `.collections.manifesto` is (0,2,0) and
+would beat the (0,1,0) mobile rule `.collections { grid-template-columns: 1fr }`
+— the exact specificity trap that bit sections 8 and 10. Keeping the outer list
+single-column at all widths means that fight never happens.
+
+### The trap that DID apply, and was nearly shipped
+
+`.manifesto .collection` is (0,2,0) and sets an inner two-column row grid, and
+the 860px block had no reset for it. A CSS comment I had already written
+claimed one was added "explicitly in that block" — it was not. Without it the
+name and its body copy sit in two cramped columns on a phone. Added
+`.manifesto .collection { grid-template-columns: 1fr; gap: 6px; padding: 18px 0 }`
+next to the existing `.collections` mobile rule, and verified by measurement
+that the rows stack at 390 and 360. Sixth instance of lesson 6.
+
+### No imagery — deliberate, per the brief's own condition
+
+The brief conditions imagery on "suitable existing assets are available". There
+is no bedding, bath, outdoor or living textile photograph in the inventory, and
+the brief forbids stock and invented assets. Skipped and reported, exactly as
+already done for sections 6, 8 and 10.
+
+### HEIGHT: the section got TALLER on desktop, and that is the honest number
+
+Measured `#next` height, card grid vs manifesto, by dropping the `manifesto`
+class in the live DOM (the original `.collections`/`.collection` rules are
+still in the stylesheet, so this restores the true before state):
+
+| width | before (cards) | after (manifesto) | delta |
+|-------|---------------:|------------------:|------:|
+| 1440  | 798            | 856               | +58 (+7.3%) |
+| 1180  | 798            | 856               | +58 (+7.3%) |
+| 390   | 1118           | 1130              | +12 (+1.1%) |
+| 360   | 1144           | 1156              | +12 (+1.0%) |
+
+Four stacked rows are taller than a 2x2 grid. Section 12 asked for the card
+appearance to go, not for height, so this is an accepted trade rather than a
+regression — but do NOT claim a reduction for this section. (Contrast section 8,
+which did cut height.)
+
+### Verification
+
+`/tmp/collqa.py` OVERALL PASS, 174/174 across six modes (1440, 1180, 390, 360,
+1440-reduced, 390-reduced): manifesto class applied; four collections; all four
+titles and all four body strings verbatim; exactly one `data-reveal`, on the
+container, zero on children; no `data-reveal-group`; list single-column; every
+row has zero top/right/left border and a 1px bottom rule; every row fully
+opaque after reveal; h3 21px; rows share one left edge and width; name beside
+copy on desktop, stacked on mobile with the inner grid reset to 1fr; h2 louder
+than h3; zero document overflow; zero page errors.
+
+NO-JS GUARANTEE PROVED ON THE BUILT FILE: in `dist/index.html` with `<style>`
+stripped, the container open tag is
+`<div class="collections manifesto" data-reveal="true">`, `data-reveal` inside
+the list is 0, `data-reveal-group` is 0, four `<h3>` with the titles verbatim,
+all four bodies present, and no inline `opacity:0` anywhere in the block.
+
+lint 21 files 0/0 · page loads (`/tmp/probe11.py`, root children 2, all section
+ids present) · build clean, 8 routes prerendered · fastscroll TOTAL BROKEN 0 ·
+overflow360 0 on all 8 · flashprobe no flash · motionqa 0 stuck / 0 initLeft on
+all 8, reduced motion 0 GSAP chunks, GSAP blocked leaves h1 and hero visible ·
+brand audit dist 0 hits (source still only the two comments in
+`estimate-engine.ts`) · `.env` identical to backup · screenshots viewed at 1440
+and 390.
+
+### Lesson repeated: verify the QA script, including its slicing
+
+My first dist check reported "data-reveal inside the list: 2" and looked like a
+failure. The script was wrong twice over: it sliced from `class="collections
+manifesto"` rather than from the `<div`, so the container tag was never counted
+and the depth walk closed after the first item. Fixed by starting at
+`rindex('<div', 0, k)`. The real answer was 0. Seventh instance of lesson 9 —
+a failing assertion is a claim about the script first, the code second.
