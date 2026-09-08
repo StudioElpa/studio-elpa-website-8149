@@ -268,6 +268,23 @@ h2.big.center {
 	color: var(--ink-soft);
 }
 
+/* One body size for running prose, sitewide.
+   The "What we do" intro sat at the browser default 16px because .soft only
+   ever set a colour, so it read visibly smaller than the "Who we are"
+   paragraph directly above it at .body-text's 18.5px. Every paragraph a
+   reader reads as prose under a heading now resolves to the same 18.5px, and
+   nothing was scaled DOWN to get there.
+   Deliberately NOT included: component copy that is its own tier by design
+   (service cards, collection and journal tiles, the compact third services
+   row), captions, form helper text, footers, and the .cq-not counterpart in
+   the client quotation. Those are hierarchy, not inconsistency. Ledes that
+   are already LARGER (.lede 20.5px, .serif-lede 26px, journal article prose
+   20px) are left alone. */
+.narrow > p,
+.callout p {
+	font-size: 18.5px;
+}
+
 /* V1.2 section 5. The explanatory paragraph and the closing line sit side by
    side rather than stacked in one centred column. Deliberately off-centre: the
    paragraph column is wider than the quote column, and the pair is capped well
@@ -677,7 +694,7 @@ ul.inline li {
 .faq-a p {
 	margin: 0;
 	color: var(--ink-soft);
-	font-size: 17.5px;
+	font-size: 18.5px;
 }
 
 /* ============================================================================
@@ -1614,7 +1631,7 @@ footer.site .wordmark {
 .step-row p {
 	margin: 0;
 	color: var(--ink-soft);
-	font-size: 17.5px;
+	font-size: 18.5px;
 }
 
 .trade-cols {
@@ -2155,7 +2172,7 @@ footer.lp .wordmark {
 
 .page-article .cta p {
 	color: var(--dark-body);
-	font-size: 18px;
+	font-size: 18.5px;
 	max-width: 470px;
 	margin: 0 auto 22px;
 }
@@ -2226,7 +2243,7 @@ footer.lp .wordmark {
 
 .page-privacy p,
 .page-privacy li {
-	font-size: 18px;
+	font-size: 18.5px;
 	color: var(--ink-soft);
 }
 
@@ -2281,7 +2298,7 @@ footer.lp .wordmark {
 	color: var(--ink-soft);
 	max-width: 480px;
 	margin: 14px auto 0;
-	font-size: 17.5px;
+	font-size: 18.5px;
 }
 
 .page-estimate .est-nav-back {

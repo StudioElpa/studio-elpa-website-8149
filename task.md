@@ -868,3 +868,121 @@ their hunks are interleaved in the same `styles.css` region (deleting the
 `.pillar-action` / `.pillar-go` rules sits inside the same hunk as the §7
 additions), so hunk-splitting them risked a broken intermediate commit for no
 real gain.
+
+---
+
+## "AT YOUR SERVICE" ILLUSTRATION MATCHING — BUILT, THEN REVERTED AT THE CLIENT'S REQUEST
+
+The client's second round of feedback on these tiles said the four illustrations
+were mismatched: the two on the left dense and full-frame, the two on the right
+"shrunken and faint". The ask was to crop/zoom each to equalize apparent size and
+to bring the lighter two up to the same weight.
+
+### What measurement actually showed (worth keeping: the stated cause was wrong)
+
+Measured on the four 1000x750 sources with PIL/numpy. The subject extents ALREADY
+matched within a few percent; nothing was floating in whitespace.
+
+| source            | extent        | ink cov | stroke | inkMass/px |
+|-------------------|---------------|---------|--------|------------|
+| tile-glove.jpg    | 68.4 x 76.9   | 26.7%   | 109.3  | 30.9       |
+| tile-custom.jpg   | 75.4 x 81.9   | 28.6%   | 100.3  | 30.4       |
+| tile-estimate.jpg | 69.9 x 78.3   | 15.0%   | 104.4  | 16.8       |
+| tile-appt.jpg     | 75.5 x 80.0   | 24.7%   |  86.3  | 24.7       |
+
+Two DIFFERENT causes, not one:
+- Quick Estimate reads shrunken because it is SPARSE (~45% less ink). Its strokes
+  are already at reference darkness. A composition problem, not a framing one.
+- Schedule a Private Appointment reads faint because its STROKES are thin (86 vs
+  ~105). It is actually a busy drawing (a whole room interior).
+
+### The generator and why gamma was the wrong tool
+
+tools/match-tile-set.py went through three revisions:
+- v1: solved a global gamma so "mean ink where ink>30" hit 100. SELF-REFERENTIAL:
+  darkening pushes faint pixels ACROSS the ink>30 threshold and inflates the very
+  mean being solved. Drove appt's coverage 24.7% -> 42.2%, denser than either
+  reference.
+- v2: added a coverage guard, which walked the gamma back so strokes stayed light
+  while coverage still climbed. Muddy, milder. Root cause: a gamma below 1 boosts
+  the FAINTEST values fastest, so a background wash muddies before linework darkens.
+- v3: per-tile policy instead of one blanket rule. glove and custom passed through
+  untouched as references; appt got a threshold-gated stroke boost solved on a
+  FROZEN mask (so darkening cannot recruit new pixels); estimate got crop only,
+  because its strokes were already at reference and darkening would have put hard
+  black on empty paper.
+
+Rendered-space measurement (/tmp/tiledensity.py, which crops each <img> out of a
+real screenshot so the CSS grade and the feather are included) showed the appt fix
+worked and, more importantly, that the goal itself was wrong: the two REFERENCE
+tiles differ from each other by 34% on innerMass, and custom has the lightest
+strokes of all four yet the client reads it as fine. Exact numerical equality
+across four hand-drawn illustrations is neither achievable nor desirable.
+
+### Reverted
+
+Before the estimate crop level was settled, the client said to stop: revert all
+four to the ORIGINAL images, do not match ink weight or size, just keep the boxes
+uniform with the shared four-edge feather and hover lift. Done:
+- index.tsx reverted to tile-glove/custom/estimate/appt.jpg (git checkout).
+- The four tile-*-set.jpg derivatives and tools/ removed.
+- No CSS touched. The uniform-box work from commit 2bdc920 stands untouched:
+  aspect-ratio 4/3, object-fit cover, --feather-x 14% / --feather-y 20% dual-mask
+  with mask-composite intersect, one 22.5px centred label, scale+lift hover.
+- /tmp/pillarqa.py PASS on desktop and mobile; screenshot checked by eye.
+
+LESSON WORTH KEEPING: beware self-referential image metrics. Freeze the mask
+before solving, and always sanity-check a second independent metric for runaway.
+
+---
+
+## ONE BODY SIZE FOR RUNNING PROSE, SITEWIDE
+
+Client: the "What we do" intro ("These are solutions, not a menu...") rendered
+SMALLER than the "Who we are" paragraph directly above it. All body/lede
+paragraphs must be one size; pull the smaller ones UP, never shrink the larger.
+
+Cause: .soft only ever set a colour, never a size, so those paragraphs fell back
+to the browser default 16px while .body-text sets 18.5px.
+
+Surveyed every paragraph and list item on all 8 routes with /tmp/parasize.py
+(computed font-size, family, colour, ancestor trail) rather than reading CSS.
+
+Raised to 18.5px:
+- .narrow > p            (section intro/lede columns, incl. the cited case)
+- .callout p
+- .faq-a p               17.5 -> 18.5
+- .step-row p            17.5 -> 18.5
+- .page-estimate .est-head p   17.5 -> 18.5
+- .page-privacy p, li    18   -> 18.5
+- .page-article .cta p   18   -> 18.5
+- blackout.tsx had an inline style={{fontSize: 17}} on running prose. Replaced
+  with the shared .body-text class on its container. An inline value is exactly
+  how a paragraph gets out of step, so it is gone rather than retuned.
+
+Deliberately NOT raised, and reported as such: component copy that is its own
+tier by design (service cards 16px, the compact third services row 15px,
+collection and journal tiles 16px), captions (.ba-cap), form helper text
+(.reassure 14.5, .contact-side .soft 14), footers (12.5), .cq-not (16, the
+deliberate counterpart in the client quotation), .svc-close (17, a closing line
+not body copy), and the estimate wizard's .sub (17, UI helper). Nothing was
+scaled DOWN: .lede 20.5, journal article prose 20, .serif-lede 26 left alone.
+
+No mobile overrides existed for any of these selectors, so one set of desktop
+rules covers both breakpoints. Verified: 0 horizontal overflow at 360px on all
+8 routes.
+
+### A QA script that cried wolf
+
+/tmp/fastscroll.py reported TOTAL BROKEN: 1 after these edits, deterministically.
+Investigated instead of accepting it: the flagged .svc-feature carried .reveal-in
+and sat at opacity 0.9866 at the probe's fixed 1200ms sample, settling to exactly
+1 with the reveal classes stripped by ~1500ms. The mobile anchor-jump scenario
+runs a smooth scroll AND THEN a 0.7s fade, which does not fit in 1200ms. Widened
+the settle to 2000ms with a comment; the 0.99 test itself is unchanged, since a
+genuinely stuck reveal reads exactly 0 and never gains .reveal-in. Back to 0.
+
+Verification: lint 21 files 0/0 · build clean, 8 routes prerendered · flashprobe
+no flash on any route · motionqa GSAP on index only, 0 stuck / 0 initLeft,
+reduced motion clean, GSAP blocked leaves h1 visible · fastscroll 0 · overflow360
+0 on all 8.

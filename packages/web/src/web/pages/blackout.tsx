@@ -126,10 +126,13 @@ export default function BlackoutPage() {
 
 				<section className="block band dark">
 					<div className="wrap two" data-reveal-group>
-						<div data-reveal>
+						{/* Uses the shared .body-text size rather than a one-off inline
+						    font-size: running prose is one size sitewide, and an inline
+						    value is exactly what put this paragraph out of step. */}
+						<div className="body-text" data-reveal>
 							<div className="kicker">The easy part</div>
 							<h2 className="big">Let the room close itself.</h2>
-							<p style={{ fontSize: 17 }}>
+							<p>
 								Most people who own blackout shades don't use them the way they should. The
 								window's too tall, the cord's a hassle, and it's late. Motorization removes the
 								excuse: shades that lower on a schedule you set once, and rise gently in the
