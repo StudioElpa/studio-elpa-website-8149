@@ -580,9 +580,12 @@ export default function HomePage() {
 								work.
 							</p>
 						</div>
-						<div className="collections" data-reveal-group>
+						{/* V1.2 section 12: an editorial manifesto list, not an expansion grid.
+						    One reveal on the whole list rather than four staggered items, so
+						    there is no four-item entrance sequence. */}
+						<div className="collections manifesto" data-reveal>
 							{COLLECTIONS.map((c) => (
-								<div className="collection" key={c.title} data-reveal>
+								<div className="collection" key={c.title}>
 									<h3>{c.title}</h3>
 									<p>{c.body}</p>
 								</div>

@@ -2005,6 +2005,52 @@ footer.site .wordmark {
 	margin: 0;
 }
 
+/* ---------------------------------------------------------------------------
+   V1.2 section 12: the collections read as an editorial manifesto list, not an
+   expansion grid of cards.
+
+   The boxes are gone: no border box, no padding shell, no 2x2 tiling. What is
+   left is a single hairline-ruled column, each row setting an understated name
+   against its line of copy. Deliberately ONE column at every width, so the
+   (0,1,0) mobile rule further down never has to fight a (0,2,0) declaration
+   here. The inner row grid IS reset for mobile, explicitly, in that block.
+
+   No imagery: the brief conditions it on suitable existing assets, and there is
+   no bedding, bath, outdoor or living textile photograph in the inventory.
+   Same call already made for sections 6, 8 and 10.
+   --------------------------------------------------------------------------- */
+
+.collections.manifesto {
+	grid-template-columns: 1fr;
+	gap: 0;
+	margin-top: 22px;
+	border-top: 1px solid var(--dark-rule);
+}
+
+.manifesto .collection {
+	display: grid;
+	grid-template-columns: 0.82fr 1.18fr;
+	gap: 40px;
+	align-items: baseline;
+	/* the rules between rows are the only structure; no card remains */
+	border: none;
+	border-bottom: 1px solid var(--dark-rule);
+	padding: 22px 0;
+}
+
+.manifesto .collection h3 {
+	/* understated: smaller and quieter than the 25px card heading it replaces,
+	   so the overarching statement above stays the loudest thing in the band */
+	font-size: 21px;
+	line-height: 1.25;
+	margin-bottom: 0;
+}
+
+.manifesto .collection p {
+	font-size: 16.5px;
+	line-height: 1.62;
+}
+
 /* journal */
 .journal {
 	display: grid;
@@ -3188,6 +3234,14 @@ footer.lp .wordmark {
 
 	.collections {
 		grid-template-columns: 1fr;
+	}
+
+	/* the manifesto row grid is (0,2,0), so it needs its own reset here or the
+	   name and its copy sit in two cramped columns on a phone */
+	.manifesto .collection {
+		grid-template-columns: 1fr;
+		gap: 6px;
+		padding: 18px 0;
 	}
 
 	.ba {
