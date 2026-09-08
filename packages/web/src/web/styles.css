@@ -423,6 +423,26 @@ ul.clean li b {
 	border-color: transparent;
 }
 
+/* V1.2 section 8: the "one roof" dark band.
+   Scoped deliberately rather than editing .block, so the other sections keep
+   their 82px rhythm. Two levers, both measured:
+   1. Less vertical padding. The band is full bleed and dark, so its padding
+      reads as far more empty space than the same padding on a cream section.
+   2. An asymmetric split. The heading is three short lines; the body is a long
+      paragraph. Giving the body the wider column costs the heading nothing and
+      removes body lines, which is what actually shortens the section. The copy
+      itself is untouched, per the brief. */
+/* .block.oneroof, not .oneroof: the section carries both classes, so at equal
+   specificity whichever rule comes later in the file wins. The mobile .block
+   override sits after this one, which silently ate the padding here once. */
+.block.oneroof {
+	padding: 64px 0;
+}
+
+.oneroof .two {
+	grid-template-columns: 0.86fr 1.14fr;
+}
+
 ul.inline {
 	list-style: none;
 	display: flex;
@@ -2775,6 +2795,19 @@ footer.lp .wordmark {
 	.trade-cols {
 		grid-template-columns: 1fr;
 		gap: 32px;
+	}
+
+	/* .oneroof .two is (0,2,0) and would otherwise beat the (0,1,0) rule above,
+	   leaving the dark band in two columns on a phone. Reset it explicitly, and
+	   take the band's padding and gap down further: at 390px this section is the
+	   tallest uninterrupted run of dark on the site. */
+	.oneroof .two {
+		grid-template-columns: 1fr;
+		gap: 24px;
+	}
+
+	.block.oneroof {
+		padding: 44px 0;
 	}
 
 	.svc,

@@ -423,15 +423,19 @@ export default function HomePage() {
 				</section>
 
 				{/* ---------------- ONE ROOF ---------------- */}
-				<section className="block band dark">
-					<div className="wrap two" data-reveal-group>
-						<div data-reveal>
+				{/* V1.2 section 8: one quiet reveal for the whole band, not two
+				    staggered halves, and it fires before the band reaches the
+				    fold (data-reveal="early") so the dark slab is never seen
+				    empty on a fast scroll or an anchor jump. */}
+				<section className="block band dark oneroof">
+					<div className="wrap two" data-reveal="early">
+						<div>
 							<div className="kicker">One roof, no runaround</div>
 							<h2 className="big">
 								One team, from the first question to the last shade raised on your schedule.
 							</h2>
 						</div>
-						<div className="body-text" data-reveal>
+						<div className="body-text">
 							<p>
 								Custom window treatments usually mean juggling people: a salesperson, an installer
 								you've never met, and, for motorized shades, an electrician you have to find and

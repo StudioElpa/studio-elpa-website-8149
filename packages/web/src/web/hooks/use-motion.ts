@@ -114,22 +114,43 @@ export function usePageMotion<T extends HTMLElement = HTMLDivElement>() {
 			el.classList.remove(HIDDEN, SHOWN);
 		};
 
-		const io = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (!entry.isIntersecting) continue;
-					const el = entry.target as HTMLElement;
-					io.unobserve(el); // play once
-					pending.delete(el);
-					reveal(el);
-				}
-			},
-			// Fires a little before the element's top edge arrives, matching the
-			// old "top 82%" trigger.
-			{ rootMargin: "0px 0px -18% 0px", threshold: 0.01 },
-		);
+		// Two triggers, one reveal.
+		//
+		// Default: fires as the element's top edge arrives, matching the old
+		// "top 82%" trigger. Motion belongs to the act of scrolling.
+		//
+		// Early, opted into with data-reveal="early": fires a fifth of a
+		// viewport BEFORE the element reaches the fold. V1.2 section 8 asks for
+		// this on the dark "one roof" band. A full-bleed dark section whose copy
+		// has not arrived yet reads as an empty slab, and on a fast scroll or an
+		// anchor jump that slab is the entire screen. Revealing ahead of the
+		// fold means the band is never seen empty.
+		const observers: IntersectionObserver[] = [];
 
-		for (const el of items) io.observe(el);
+		const makeObserver = (rootMargin: string) => {
+			const obs = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						if (!entry.isIntersecting) continue;
+						const el = entry.target as HTMLElement;
+						// play once, and it only ever sits in one observer
+						obs.unobserve(el);
+						pending.delete(el);
+						reveal(el);
+					}
+				},
+				{ rootMargin, threshold: 0.01 },
+			);
+			observers.push(obs);
+			return obs;
+		};
+
+		const io = makeObserver("0px 0px -18% 0px");
+		const ioEarly = makeObserver("0px 0px 20% 0px");
+
+		for (const el of items) {
+			(el.dataset.reveal === "early" ? ioEarly : io).observe(el);
+		}
 
 		// Safety net for fast scrolling.
 		//
@@ -149,7 +170,9 @@ export function usePageMotion<T extends HTMLElement = HTMLDivElement>() {
 			ticking = false;
 			for (const el of pending) {
 				if (el.getBoundingClientRect().bottom >= 0) continue;
-				io.unobserve(el);
+				// The element sits in exactly one observer, but the sweep does
+				// not know which, so drop it from both.
+				for (const obs of observers) obs.unobserve(el);
 				pending.delete(el);
 				finalize(el);
 			}
@@ -163,7 +186,7 @@ export function usePageMotion<T extends HTMLElement = HTMLDivElement>() {
 		window.addEventListener("scroll", onScroll, { passive: true });
 
 		return () => {
-			io.disconnect();
+			for (const obs of observers) obs.disconnect();
 			window.removeEventListener("scroll", onScroll);
 			// Leave the DOM in its final, visible state.
 			for (const el of items) finalize(el);

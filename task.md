@@ -1066,3 +1066,106 @@ viewed, both lines read correctly.
 Client also ruled on the attached "Warm Editorial" typography brief
 (`/home/user/Attachments/pasted-1_9CR68p.txt`): **finish V1.2 SS8-SS16 first,
 then do the typography overhaul.** It is queued, not cancelled.
+
+---
+
+## V1.2 SECTION 8 — "ONE TEAM, NO RUNAROUND" DARK BAND
+
+Brief asks: shorten excessive vertical height; never let the band read as an
+empty dark slab during scrolling or anchor navigation; trigger any reveal
+BEFORE the content enters the viewport; important text visible by default; at
+most one quiet grouped reveal; faint textile/architectural detail only if a
+suitable existing asset exists.
+
+### 1. One reveal instead of two (index.tsx)
+
+The band had `data-reveal-group` on `.wrap.two` with `data-reveal` on BOTH
+children, so the heading and the body arrived as two staggered halves. Replaced
+with a single `data-reveal="early"` on `.wrap.two` and no group. One quiet
+grouped reveal, as the brief asks. Sitewide reveal count 57 -> 56.
+
+### 2. Reveal now fires before the band reaches the fold (use-motion.ts)
+
+The shared observer used `rootMargin: "0px 0px -18% 0px"`, i.e. it fires AFTER
+the element's top edge is already 18% inside the viewport. For a full-bleed dark
+section that is exactly the empty-slab failure the brief describes.
+
+Added a second observer, opted into per element with `data-reveal="early"`:
+
+    const io      = makeObserver("0px 0px -18% 0px");   // default, unchanged
+    const ioEarly = makeObserver("0px 0px 20% 0px");    // fires ahead of the fold
+
+Both feed the same `reveal()` / `pending` / `finalize()` machinery, so the
+fast-scroll safety net still covers them. The sweep and the cleanup now iterate
+an `observers` array rather than the single `io`, because an element sits in one
+observer and the sweep cannot know which.
+
+Default behaviour for every other reveal on the site is byte-for-byte unchanged.
+
+Verified with a new script `/tmp/earlyreveal.py`, which scrolls in 60px steps and
+samples the band at the first moment its top edge crosses the fold:
+
+| viewport | at first on-screen | classes | verdict |
+|---|---|---|---|
+| 1440x900 | opacity 0.983 | reveal-init reveal-in | PASS |
+| 390x780  | opacity 0.960 | reveal-init reveal-in | PASS |
+| 1440x900 reduced | opacity 1 | (none) | PASS |
+
+The copy is already arriving as the band appears, instead of sitting at 0.
+Reduced motion carries no reveal classes at all.
+
+### 3. Height reduction (styles.css) — measured
+
+Two levers, both scoped to a new `.oneroof` class so the rest of the site keeps
+its 82px rhythm. Copy untouched, per the brief.
+
+- Less vertical padding: 82 -> 64px desktop, 56 -> 44px mobile. Padding on a
+  full-bleed dark band reads as far more emptiness than the same padding on a
+  cream section.
+- Asymmetric split: `.oneroof .two` is `0.86fr 1.14fr` instead of `1fr 1fr`.
+  The heading is a few short lines, the body is one long paragraph, so giving
+  the body the wider column removes body lines. The heading grew 3 -> 4 lines
+  (164 -> 219px) but the body shrank far more.
+
+| viewport | before | after | delta |
+|---|---|---|---|
+| 1440 | 622px (0.69vh) | 521px (0.58vh) | -101px, -16.2% |
+| 390  | 902px (1.16vh) | 870px (1.12vh) | -32px, -3.5% |
+
+`/tmp/oneroof-1440.png` viewed: tighter band, heading and body balanced, no
+clipping.
+
+### TWO SPECIFICITY TRAPS HIT AND FIXED (both caught by measurement)
+
+1. `.oneroof .two` is (0,2,0) and beat the mobile `.two { grid-template-columns:
+   1fr }` at (0,1,0), leaving the dark band in TWO 133px columns on a phone.
+   Measured secH 1347px before the fix. Added an explicit mobile reset.
+2. `.oneroof { padding: 44px 0 }` sat at line 2806, BEFORE `.block { padding:
+   56px 0 }` at ~2830. Equal specificity, so the later rule won and the mobile
+   padding never applied. Both rules are now written `.block.oneroof` (0,2,0) so
+   source order cannot matter. Comment records why.
+
+Also re-learned lesson 1: the dev server served stale CSS through the first
+round of this, which is what made trap 2 look like trap 1. Restarted clean
+before trusting any number.
+
+### HONEST NON-COMPLETIONS FOR SECTION 8
+
+- **Mobile is still 1.12 viewports of dark (870px).** The band's height at 390px
+  is copy-bound: the body paragraph is long, the brief says keep the message,
+  and locked decision 8 forbids shrinking body text. Padding and gap are already
+  cut. The only remaining levers are cutting copy or shrinking type, both of
+  which are out of bounds. Flagged for the client.
+- **No textile or architectural detail added.** The brief allows one "only if an
+  existing suitable asset is available". There is none in
+  `packages/web/public/assets/` and stock/invented imagery is forbidden. Same
+  deliberate skip as sections 6, 10 and 12.
+- The heading is now 4 lines on desktop (was 3), a direct consequence of the
+  narrower heading column. It reads well and does not clip, but it is a visual
+  change the client has not seen; screenshot delivered.
+
+Verification: lint 21 files 0/0 · build clean, 8 routes prerendered · fastscroll
+TOTAL BROKEN 0 (the observer refactor is shared by every route, so this was the
+critical regression test) · motionqa 0 stuck / 0 initLeft on all 8, reduced
+motion clean, GSAP blocked leaves h1 visible · flashprobe no flash on any route
+(11 samples null) · overflow360 0 on all 8 · earlyreveal 3/3 PASS.
