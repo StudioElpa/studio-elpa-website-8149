@@ -427,7 +427,9 @@ export default function HomePage() {
 					<div className="wrap two" data-reveal-group>
 						<div data-reveal>
 							<div className="kicker">One roof, no runaround</div>
-							<h2 className="big">One team, from the first question to the last screw.</h2>
+							<h2 className="big">
+								One team, from the first question to the last shade raised on your schedule.
+							</h2>
 						</div>
 						<div className="body-text" data-reveal>
 							<p>
