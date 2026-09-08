@@ -886,16 +886,37 @@ ul.inline li {
 	transform: scaleY(0);
 }
 
+/* CSS-only open/close. Default is OPEN so the prerendered HTML and any
+   no-JS render show the answers; JS applies data-open="false" after mount.
+   Browsers without 0fr<->1fr interpolation (pre Chrome 107 / Firefox 120 /
+   Safari 16.4) simply snap open and closed, which is still fully usable. */
 .faq-a {
+	display: grid;
+	grid-template-rows: 1fr;
 	overflow: hidden;
+	transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.faq-a[data-open="false"] {
+	grid-template-rows: 0fr;
+	visibility: hidden;
+	transition:
+		grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+		visibility 0s linear 0.32s;
+}
+
+/* The grid item must be able to reach zero height. min-height alone is not
+   enough: padding on the item still counts toward the row's automatic
+   minimum, which left collapsed panels 24px tall. overflow:hidden resolves
+   the automatic minimum to 0, so the spacing moves inside, onto the <p>. */
 .faq-a > div {
-	padding-bottom: 24px;
+	min-height: 0;
+	overflow: hidden;
 }
 
 .faq-a p {
 	margin: 0;
+	padding-bottom: 24px;
 	color: var(--ink-soft);
 	font-size: 18.5px;
 }

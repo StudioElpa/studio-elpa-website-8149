@@ -1813,3 +1813,141 @@ VERIFICATION
   partner.tsx), all stripped at build.
 - Em dashes in RENDERED copy across all 8 dist routes: ZERO (scan strips style+script,
   then tags). The remaining source hits are all code comments.
+
+## V1.2 SECTION 15: FAQ ACCORDION (CSS TRANSITION, NO STAGED ENTRANCE, NO-JS SAFE)
+
+Brief (line 225): keep the accordion structure and all approved answers. Use CSS
+for the open/close transition unless GSAP is already loaded nearby. No staged
+entrance across every FAQ item. Answers available to AT. Preserve keyboard
+operation and correct aria-expanded/panel relationships. Content accessible if
+animation is disabled.
+
+### Three defects found, all three fixed
+
+1. **The transition was JS, not CSS.** `FaqItem.toggle()` used the Web Animations
+   API: measure `from`, set `height:auto`, measure `to`, restore, then
+   `panel.animate([...], 320ms)` with an `onfinish` writing `height:auto`/`0px`.
+   GSAP is not loaded anywhere near the FAQ, so the brief's exemption did not
+   apply. Replaced with a pure CSS `grid-template-rows: 1fr <-> 0fr` transition
+   driven by a `data-open` attribute. No JS measuring survives.
+
+2. **Staged entrance.** The container carried `data-reveal-group` and every
+   `.faq-item` carried its own `data-reveal` — literally the banned pattern.
+   Collapsed to a single `data-reveal` on a new `.faq-list` container, children
+   bare. Same move as sections 12, 13 and 14. Measured: index reveal count
+   49 -> 44 (six item reveals plus the group become one).
+
+3. **`style={{ height: 0 }}` was baked into the prerendered HTML**, so with no JS
+   or a failed chunk every answer shipped clipped to zero height and invisible.
+   The build-time prerender guard never caught it because it only inspects
+   inline `opacity: 0`. This broke both the brief's "accessible if animation is
+   disabled" bullet and the site's standing motion contract.
+
+### The approach: invert the default
+
+CSS default is now **open** (`grid-template-rows: 1fr`); the collapsed state is
+applied at runtime by JS. `FaqItem` holds `ready` (set in a mount `useEffect`)
+and `open`; `expanded = ready ? open : true`. So the first render — which is what
+the prerenderer and any no-JS visitor see — is fully expanded, and panels only
+collapse once the button is genuinely operable. This is the same contract the
+reveal system already uses: the hidden state is never authored in CSS.
+
+Removed the JS reduced-motion branch entirely. It is no longer needed: the global
+reduced-motion block zeroes `transition-duration`, so the accordion becomes an
+instant toggle for free. Collapsing is function, not motion, so reduced-motion
+users keep a working accordion.
+
+### THE PRERENDERER DEFEATED THE INVERSION ON THE FIRST TRY
+
+First build after the rewrite shipped `data-open="false"` in `dist/index.html`.
+Cause: **the prerenderer is a real browser.** It runs JS, so the mount effect
+fired and collapsed every panel *before* the snapshot was taken. Any state JS
+applies gets baked. Removing the inline `height: 0` had simply moved the same
+no-JS defect from an inline style to an attribute, and the guard still missed it.
+
+Fix in `packages/web/vite/prerender.py` (not a `__` file, editable):
+
+- **`open_disclosures(html)`** rewrites `<section class="faq-a" ... data-open="false">`
+  to `"true"` and flips `aria-expanded="false"` to `"true"` on
+  `<button class="faq-q">`, so the announced state never contradicts what is on
+  screen pre-hydration. Only those two tag types are touched; the inlined
+  stylesheet contains no `<section>`/`<button>` tags so it is unaffected. Runs
+  **before** `unblock_paint()`.
+- **`collapsed_panels(html)`** counts `.faq-a` sections still not `data-open="true"`
+  after normalization and appends to `failures`, which **fails the build**. The
+  defect cannot silently return.
+
+React re-collapses on hydration, so this only changes the pre-hydration and no-JS
+renders. With JS off, all answers show open and the buttons are inert — the same
+state V1 shipped, and honest.
+
+### CSS (styles.css, the `.faq-a` block ~line 889)
+
+```
+.faq-a { display: grid; grid-template-rows: 1fr; overflow: hidden;
+         transition: grid-template-rows 0.32s cubic-bezier(0.4,0,0.2,1); }
+.faq-a[data-open="false"] { grid-template-rows: 0fr; visibility: hidden;
+         transition: grid-template-rows 0.32s cubic-bezier(...),
+                     visibility 0s linear 0.32s; }
+.faq-a > div { min-height: 0; overflow: hidden; }
+.faq-a p { margin: 0; padding-bottom: 24px; ... }
+```
+
+`visibility: hidden` on the closed panel, delayed out by 0.32s so it does not
+kill the closing tween, removes collapsed answers from the a11y tree and stops
+the Baltic Electrical link inside answer 3 from being tab-reachable while
+hidden. `aria-expanded="false"` is what tells AT the content exists.
+
+**A 24px floor bug cost one full QA cycle.** Collapsed panels measured
+`height: 24px`, not 0, in every mode. `min-height: 0` on the grid item zeroes its
+*content box*, but the item's `padding-bottom: 24px` still counts toward the
+row's automatic minimum size, so `0fr` could never reach zero. Fix: give the item
+`overflow: hidden` (which resolves the automatic minimum to 0) and move the
+spacing inward onto `.faq-a p` as `padding-bottom`. Open-state appearance is
+unchanged.
+
+### Browser support, stated honestly
+
+`grid-template-rows: 0fr <-> 1fr` interpolation needs Chrome 107+, Firefox 120+,
+Safari 16.4+. Older browsers get an instant open/close with no tween, which still
+satisfies every accessibility and keyboard requirement. Flagged to the user.
+
+### Verification: `/tmp/faqqa.py` OVERALL PASS 642/642
+
+New script. 1440/1180/390/360 x {no-preference, reduce} x **both routes that
+render `<Faq>`** (`/index.html` 6 entries and `/motorized.html` 4 — the FAQ is
+not homepage-only). Uses a settle poll on `.faq-list` opacity, not a fixed sleep
+(lesson 9). Per mode: every answer non-empty; `aria-controls` == panel id;
+`aria-labelledby` == button id; starts collapsed with height < 1px and
+`visibility: hidden`; click opens (height > 20, visible, `data-open="true"`) and
+does not open siblings; click closes; **Enter** opens and closes; **Space** opens
+and closes; every panel opened at once stays readable; exactly one `data-reveal`
+on the container and zero inside; no `data-reveal-group`; no page errors.
+
+Dist / no-JS proof on both routes: every answer's text present in the built HTML;
+panel count matches; every panel `data-open="true"`; no inline height on any
+panel.
+
+Answer copy is untouched **by construction** — `git diff --stat` for this section
+is `faq.tsx`, `styles.css`, `prerender.py` only. `FAQS` in `index.tsx` and the
+motorized entries were never opened.
+
+### Regression suite after the change, all clean
+
+`bun run lint` 0 violations; `/tmp/probe11.py` renders (6 faq panel ids present);
+`bun run build` passes including the new prerender guard, 8 routes;
+`/tmp/flashprobe.py` no flash on any route (`flashMs: null`);
+`/tmp/motionqa.py` `stuck=0` / `initLeft=0` everywhere, including reduced motion
+and the GSAP-chunk-blocked run; `/tmp/fastscroll.py` TOTAL BROKEN 0;
+`/tmp/overflow360.py` 0 overflow on all routes.
+
+### Lesson repeats
+
+- **Lesson 1, seventh instance.** The first QA run's 96 failures ("collapsed
+  panel not visible, vis=visible") were the dev server serving stale CSS: source
+  and built CSS both had `data-open`, the served stylesheet had none. Documented
+  cure applied. Note also that `curl`ing `/src/web/styles.css` is an
+  **unreliable** way to introspect dev CSS — it disagreed with itself between
+  checks. Trust the built CSS plus computed styles in a real browser instead.
+- **Lesson 7 again.** Both real defects (prerender baking, 24px floor) were
+  invisible to reasoning and only appeared under measurement.

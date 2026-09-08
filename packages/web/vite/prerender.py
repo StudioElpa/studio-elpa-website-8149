@@ -111,6 +111,49 @@ def unblock_paint(html: str, dist: str) -> str:
     return html
 
 
+FAQ_PANEL_RE = re.compile(r"<section\b[^>]*>")
+FAQ_BUTTON_RE = re.compile(r"<button\b[^>]*>")
+
+
+def open_disclosures(html: str) -> str:
+    """Ship the static HTML with every FAQ answer expanded.
+
+    The prerenderer is a real browser, so the FAQ's mount effect collapses
+    every panel before the snapshot is taken. Baking that collapsed state in
+    would leave the answers clipped to zero height for anyone whose JS never
+    runs, which is the exact failure the inverted default exists to prevent.
+    React collapses them again on hydration, so this only changes the
+    pre-hydration and no-JS renders. aria-expanded is flipped with the panel
+    so the announced state never contradicts what is on screen.
+
+    Only <section class="faq-a"> and <button class="faq-q"> are touched; the
+    inlined stylesheet is left alone because it contains no such tags.
+    """
+
+    def panel(match: "re.Match[str]") -> str:
+        tag = match.group(0)
+        if 'class="faq-a"' not in tag:
+            return tag
+        return tag.replace('data-open="false"', 'data-open="true"')
+
+    def button(match: "re.Match[str]") -> str:
+        tag = match.group(0)
+        if 'class="faq-q"' not in tag:
+            return tag
+        return tag.replace('aria-expanded="false"', 'aria-expanded="true"')
+
+    return FAQ_BUTTON_RE.sub(button, FAQ_PANEL_RE.sub(panel, html))
+
+
+def collapsed_panels(html: str) -> int:
+    """Count FAQ panels that would ship collapsed. Must always be zero."""
+    return sum(
+        1
+        for tag in FAQ_PANEL_RE.findall(html)
+        if 'class="faq-a"' in tag and 'data-open="true"' not in tag
+    )
+
+
 def main() -> int:
     dist = sys.argv[1] if len(sys.argv) > 1 else "dist"
     dist = os.path.abspath(dist)
@@ -172,7 +215,11 @@ def main() -> int:
         httpd.shutdown()
 
     for route in list(snapshots):
+        snapshots[route] = open_disclosures(snapshots[route])
         snapshots[route] = unblock_paint(snapshots[route], dist)
+        collapsed = collapsed_panels(snapshots[route])
+        if collapsed:
+            failures.append(f"{route}: {collapsed} collapsed FAQ panels in static HTML")
 
     if failures:
         # Bail out rather than ship invisible text or a half-rendered page.
