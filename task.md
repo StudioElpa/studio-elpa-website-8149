@@ -1762,3 +1762,54 @@ BOTH SCRIPTS ARE NOW GUARDED, approved by the user:
   nothing.
 Consequence: the sinks are unproven from the sandbox and always were. Confirmed plan is
 ONE real submission at go-live, then delete the test record.
+
+## AD-HOC: BALTIC ELECTRICAL NAMED AND LINKED (after V1.2 section 14)
+
+STANDING FACT CHANGED. The old rule was: electrical is a "trusted, licensed and insured
+electrical partner" and the partner is NEVER named. The user has now cleared Baltic
+Electrical to be named and linked. Supersedes the earlier never-name rule.
+The Lutron / Somfy / Blindspace embargo is UNCHANGED and still in force.
+
+New `components/partner.tsx` exports `BALTIC_URL` and `<BalticLink />`. It exists so the
+href, target and rel can never drift between mentions: every "Baltic Electrical" on the
+site is the same link, `https://balticelectrical.com/`, `target="_blank" rel="noopener"`,
+with the business name itself as the link text. The file carries the Lutron/Somfy/
+Blindspace guardrail as a comment so nobody adds a component for them later.
+
+`FaqEntry.a` was already typed `React.ReactNode`, so FAQ answers took the link directly.
+`faq.tsx` did NOT need changing.
+
+FIVE mentions, all four requested locations:
+- index.tsx:159  homepage FAQ "do I need to hire my own electrician?" (string -> JSX)
+- index.tsx:455  One Roof / One Team paragraph
+- index.tsx:526  For Designers, the "projects don't stall" bullet
+- motorized.tsx  FAQ "Do I need to hire my own electrician?" (string -> JSX)
+- motorized.tsx  the "Motorized shades need power. We handle that." wiring block
+
+Framing preserved everywhere: we coordinate it, scheduled and managed by us, one point of
+contact, the client never has to find or schedule an electrician. Only the attribution is
+new. Adopted the user's "licensed, insured" phrasing over the old "trusted, licensed and
+insured", so the old string is gone sitewide (asserted).
+
+NOT DONE, FLAGGED: the Motorized hero support copy was requested but has NO electrical
+reference to attribute, and neither do its three cards. Naming Baltic there would mean
+inventing a new electrical claim in a paragraph about ease and cord-free safety, not
+attributing an existing one. Left alone pending the user's call.
+
+ALSO FLAGGED, three further electrical references the user's list did not enumerate:
+founder.tsx:69, blackout.tsx:153, and index.tsx:51 (the motorized service-card body).
+Left unnamed to avoid naming the partner 8 times unrequested.
+
+VERIFICATION
+- `/tmp/balticqa.py` OVERALL PASS 18/18 on /index.html and /motorized.html: every mention
+  linked with zero bare names, correct href, `_blank`, `noopener`, the link present inside
+  a real FAQ answer (every accordion opened first), the never-schedule framing intact, the
+  old unnamed phrasing gone, no page errors.
+- First run reported 2 of 3 on index. That was the DEV SERVER SERVING A STALE MODULE
+  (lesson 1), not a missing edit: source had all 3 and dist had 3 mentions + 3 anchors.
+  Fixed by the documented kill/rm .vite/restart cure, then 18/18.
+- Brand guardrail re-audited: dist has ZERO Lutron/Somfy/Blindspace. Source has only
+  comments (estimate-engine.ts:9,62 pre-existing, plus the new guardrail comment in
+  partner.tsx), all stripped at build.
+- Em dashes in RENDERED copy across all 8 dist routes: ZERO (scan strips style+script,
+  then tags). The remaining source hits are all code comments.

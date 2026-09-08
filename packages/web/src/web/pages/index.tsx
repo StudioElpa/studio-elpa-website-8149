@@ -4,6 +4,7 @@ import { ContactForm } from "../components/contact-form";
 import { Faq, type FaqEntry } from "../components/faq";
 import { BeforeAfter } from "../components/before-after";
 import { CONTACT } from "../components/brand";
+import { BalticLink } from "../components/partner";
 import { usePageMotion, useHomeMotion } from "../hooks/use-motion";
 
 /* Copy is ported verbatim from the original index.html. Structure and section
@@ -153,7 +154,13 @@ const FAQS: FaqEntry[] = [
 	},
 	{
 		q: "For motorized shades, do I need to hire my own electrician?",
-		a: "No, and that's one of the best reasons to work with us. We coordinate it for you through our trusted, licensed and insured electrical partner, so your motorized shades are wired and working on the same schedule as the rest of your project. You never have to find or schedule an electrician yourself.",
+		a: (
+			<>
+				No. We coordinate it through our licensed, insured electrical partner, <BalticLink />, on
+				the same schedule as the rest of your project. You never have to find or schedule an
+				electrician yourself.
+			</>
+		),
 	},
 	{
 		q: "Do you work with my interior designer?",
@@ -444,8 +451,8 @@ export default function HomePage() {
 							</p>
 							<p>
 								We keep it all coordinated under one roof. Our own installers hang every treatment,
-								and the electrical that motorization needs is handled by our trusted, licensed and
-								insured electrical partner, scheduled and managed by us. No chasing a third party,
+								and the electrical that motorization needs is handled by our licensed, insured
+								partner, <BalticLink />, scheduled and managed by us. No chasing a third party,
 								no <em>"that's not our department,"</em> and no gap between the person who designed
 								your project and the people who finish it. One point of contact, from the first
 								conversation to the last shade raised on your schedule.
@@ -515,8 +522,9 @@ export default function HomePage() {
 										every day, never subcontracted.
 									</li>
 									<li>
-										<b>A licensed, insured electrical partner.</b> Motorized projects don't stall
-										while a client hunts for an electrician; we coordinate it for you.
+										<b>A licensed, insured electrical partner.</b> The electrical is handled by{" "}
+										<BalticLink />, so motorized projects don't stall while a client hunts for an
+										electrician; we coordinate it for you.
 									</li>
 									<li>
 										<b>Proactive communication.</b> You'll always know where things stand.

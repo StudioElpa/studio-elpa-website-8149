@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { LandingHeader, LandingFooter } from "../components/site-chrome";
 import { Faq, type FaqEntry } from "../components/faq";
 import { CONTACT } from "../components/brand";
+import { BalticLink } from "../components/partner";
 import { usePageMotion } from "../hooks/use-motion";
 
 /* Copy ported verbatim from the original motorized.html, with one edit: the
@@ -26,7 +27,13 @@ const CARDS = [
 const FAQS: FaqEntry[] = [
 	{
 		q: "Do I need to hire my own electrician?",
-		a: "No. We coordinate it through our trusted, licensed and insured electrical partner, on the same schedule as the rest of your project. You never have to find or schedule one yourself.",
+		a: (
+			<>
+				No. We coordinate it through our licensed, insured electrical partner, <BalticLink />, on
+				the same schedule as the rest of your project. You never have to find or schedule one
+				yourself.
+			</>
+		),
 	},
 	{
 		q: "Can it work with my smart home?",
@@ -118,9 +125,9 @@ export default function MotorizedPage() {
 						<div className="note">
 							Most companies sell you the shades and then leave the electrical up to you: find your
 							own electrician, get on their schedule, and hope everyone shows up in the right
-							order. Not here. The wiring is handled by our trusted, licensed and insured
-							electrical partner, scheduled and managed by us. You never have to find or coordinate
-							an electrician. One point of contact, wired and working before we leave.
+							order. Not here. The wiring is handled by our licensed, insured partner,{" "}
+							<BalticLink />, scheduled and managed by us. You never have to find or coordinate an
+							electrician. One point of contact, wired and working before we leave.
 						</div>
 					</div>
 				</section>
