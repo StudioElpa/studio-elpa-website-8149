@@ -18,6 +18,7 @@ const Blackout = lazy(() => import("./pages/blackout"));
 const Estimate = lazy(() => import("./pages/estimate"));
 const Founder = lazy(() => import("./pages/founder"));
 const JournalBlackout = lazy(() => import("./pages/journal-blackout"));
+const DraperyHeaders = lazy(() => import("./pages/drapery-headers"));
 const Privacy = lazy(() => import("./pages/privacy"));
 
 /* Chunks are small and same-origin, so this is on screen for a moment at most.
@@ -39,6 +40,7 @@ function App() {
           <Route path="/estimate.html" component={Estimate} />
           <Route path="/founder.html" component={Founder} />
           <Route path="/journal-blackout.html" component={JournalBlackout} />
+          <Route path="/drapery-headers.html" component={DraperyHeaders} />
           <Route path="/privacy.html" component={Privacy} />
           <Route component={Index} />
         </Switch>

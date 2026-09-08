@@ -77,6 +77,18 @@
 			"priority": "0.5"
 		},
 		{
+			"path": "/drapery-headers.html",
+			"aliases": [],
+			"title": "Drapery Headers: Nine Ways to Hang a Curtain · Studio Elpa Journal",
+			"description": "Ripple fold, pinch, French, Euro, box, inverted box, goblet and grommet headers compared in plain English: how each one feels in a room, and what we love it for.",
+			"schema": "article",
+			"breadcrumb": "Drapery Headers, Compared",
+			"headline": "Drapery headers, compared",
+			"datePublished": "2026-09-08",
+			"changefreq": "yearly",
+			"priority": "0.6"
+		},
+		{
 			"path": "/privacy.html",
 			"aliases": [],
 			"title": "Privacy Policy · Studio Elpa",

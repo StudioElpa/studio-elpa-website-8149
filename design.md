@@ -206,3 +206,21 @@ alt text, 16px minimum body text, contrast checked against the warm palette.
 No purple/blue gradients, no glassmorphism, no neon, no default Bootstrap/Tailwind-looking
 components, no stock or AI-generated imagery, no fake logos or trust badges, no invented
 testimonials or statistics, no identical evenly-sized feature-card grids.
+
+## Guide cards (V2 Journal)
+
+The drapery-headers guide uses a two-column grid of cards, each a fixed 146px photo track
+beside its text. The track is fixed, not fractional, and the image carries `max-width: none`:
+the supplied header photographs are only ~150px wide, so a flexible track would upscale them.
+Nothing in this layout ever renders a photo above its natural size. The one landscape photo
+spans the full grid width with an explicit height and `align-self: start`, which is what stops
+the card row from stretching it.
+
+If higher-resolution header photography arrives, the grid can be made more generous; until
+then the card size is capped by the source images, deliberately.
+
+## Hero motion, resting state
+
+The hero clip plays **once**, never loops, then crossfades out over 600ms to the static
+illustration, which is the permanent resting state. Under reduced motion the video is never
+mounted and the still is all there is.

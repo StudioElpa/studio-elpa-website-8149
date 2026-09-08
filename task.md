@@ -2899,3 +2899,115 @@ Every V2 page added from here gets its title, description, canonical, JSON-LD, p
 pass, head guard and sitemap entry **for free** by adding one object to
 `site-routes.json` and mounting `<PageSeo>`. Add the route to the registry first, then
 `app.tsx`, then the page component.
+
+---
+
+## §11 V2 JOURNAL GUIDE: DRAPERY HEADERS, THE HERO POSTER, AND PLAY-ONCE HERO MOTION
+
+Three things landed together: the nine-card drapery-headers guide, the clean final hero
+artwork as the video poster, and a change to how the hero clip plays.
+
+### The guide — `/drapery-headers.html`
+
+The card copy arrived in full (`Runnable_V2_Drapery_Headers_3Voa5J.md`), which unblocked the
+page that had been parked since §9. **All nine cards' name, tagline, body, "The Feeling" and
+"We Love It For", plus the closing panel line, are the client's copy verbatim.** The dek, the
+single lead paragraph, the two closing paragraphs and the CTA block are my words.
+
+Route added to `site-routes.json` **before** `/privacy.html`, as `schema: "article"` with
+breadcrumb "Drapery Headers, Compared" and `datePublished: "2026-09-08"`. Because the registry
+is the single source of truth, the title, description, canonical, Article JSON-LD, breadcrumb,
+prerender pass, head guard and sitemap entry all came for free — exactly the payoff §10 was
+built for. Then `app.tsx` (lazy route) and the page component with `<PageSeo>` as first child.
+
+Layout is a two-column `.header-grid` of nine `.header-card`s; the ninth ("And beyond") spans
+full width because its photo is the only landscape one. One `<h1>`; the nine card names are
+`<h2>`s.
+
+**Two sizing decisions, both measured, both about never upscaling a real photograph.** The
+supplied photos are only ~150px wide. The photo track is therefore a fixed `146px` and the
+image carries `max-width: none`, so the global `img { max-width: 100% }` cannot re-enter and
+distort it — the same class of bug as the footer lockup squish. The wide card was **caught
+upscaling**: it first measured 296x297 from a 272px-tall source, because `height: 100%` filled
+the card row. Fixed with an explicit `height: 272px` plus `align-self: start`, re-measured at
+exactly 296x272. At ≤560px a full-bleed photo would have meant a >2x upscale, so the photo is
+centred as a swatch instead.
+
+The guide CSS was inserted **before** the Baltic Electrical partner-link block, which must stay
+last in source order.
+
+Both link directions are wired: the homepage's third Journal card was the "Coming soon"
+placeholder for this exact guide and is now a real link, and `drapery.tsx` gained a line
+pointing at the guide.
+
+### Hero poster
+
+`hero-clean-final.png` (actually a JPEG — `identify` before trusting an extension) became
+`/assets/hero-poster.jpg` at quality 74, 153,623 B, chosen by visual comparison against the
+source rather than by picking a number.
+
+**The hero `<img>` was deliberately NOT replaced.** The clean art is 1365px wide against the
+existing 1800px `hero.jpg` tier, so swapping it would downgrade the top srcset tier. Offered to
+the client instead; it needs a full-resolution export.
+
+### Play-once hero motion (client request, this turn)
+
+The client reported a jump at the end of the hero clip and asked for the loop to be removed,
+with a ~0.6s crossfade to the static image as the resting state.
+
+**Measured the cause before changing anything.** Frame-to-frame mean-abs-diff over the clip's
+last second tapers smoothly, 0.45 down to 0.013 — the clip settles on its own. The last frame
+against the first frame measures **54.38**, roughly 4,000x a settled step. So the jump was
+purely the loop seam, and the conditional instruction to "trim the final ~0.3s if jitter
+remains" **did not apply — no trim was made.**
+
+`loop` removed. On `ended` the component swaps `.on` for `.out`, which overrides only the
+transition duration to 600ms and lets the base `opacity: 0` dissolve the video back to the
+still; 600ms later the element unmounts and frees the decoder. `.hero-video.out` deliberately
+does not restate `opacity`, because at equal specificity (0,2,0) it would otherwise race `.on`
+on source order. `FADE_OUT_MS` in the component and the CSS duration must stay in sync.
+
+Reduced motion needed no change: the component already refuses to mount the video at all, so
+"static image only" was already true, and it is now asserted.
+
+### QA
+
+`heroviewqa` was **rewritten where it was wrong**: it asserted `loop is True`, which the client
+has now explicitly reversed. It gained a poster assertion and a whole play-once section, and
+went 15 → 23 checks, all passing. The fade measured **603ms** with a clean opacity ramp
+(1 → 0.007), the video unmounts, and it never restarts.
+
+`journalqa` also had to be corrected rather than obeyed: it modelled cards 1 **and** 2 as
+unpublished, and card 2 is now the live guide. While fixing it I found the hover section was
+**passing vacuously** — it dispatched a synthetic `MouseEvent`, which never triggers CSS
+`:hover`, so "does not lift on hover" could never have failed. It now drives a real pointer and
+asserts `:hover` actually matched before drawing any conclusion. 258 → 264 checks, all passing.
+
+Six scripts carried hardcoded route lists that missed the ninth route (`qa.py`, `qa_a11y.py`,
+`qa_copy.py`, `qa_booking.py`, `overflow360.py`, `motionqa.py`); all six now include it.
+
+Full battery: `lint` 0 · `build` clean, **9 routes, sitemap 9 urls** · `aeoqa` **493/493** ·
+`heroviewqa` **23/0** · `journalqa` **264/0** · `footerqa` 125/125 · `respqa` 833/0 · `faqqa`
+642/642 · `contactqa` 171/171 · `balticqa` 43/0 (sitewide 8) · `balticcontrast` 8 links, 0
+below AA · `tradeqa` PASS · `fastscroll` 0 broken · `overflow360` 0 across all 9 · `motionqa` 0
+stuck · `h1flash` ALL PASS · `qa_a11y` clean on all 9 · `qa2` 0 broken images, 0 page errors ·
+`qa_copy` 0 em dashes, 0 banned, 0 missing alt · `qa_booking` 10 CTAs, 0 misconfigured ·
+`guideshot` 9 cards, 1 h1, 0 overflow, every image at or below natural size.
+
+**`probe11` body text moved 10476 → 10481**, as expected from the Journal card swapping
+"Coming soon" for "Read the guide →". New baseline.
+
+### Honest non-completions from this slice
+
+1. The guide's dek, lead paragraph, two closing paragraphs and CTA block are **my words**, not
+   reviewed. The nine cards and the closing panel are the client's verbatim.
+2. **The nine photographs are only ~150px wide.** The layout never displays them larger, which
+   keeps them sharp but caps how generous the grid can be. Higher-resolution originals would be
+   needed to go bigger; upscaling would fabricate detail and was not done.
+3. The hero still was **not** swapped to the clean final art — resolution regression, see above.
+   So the clip now dissolves to `hero.jpg`, which still carries the stray pencil marks the clean
+   art removes. **This is the one point where the request and the shipped result differ, and it
+   is flagged to the client.**
+4. `datePublished: "2026-09-08"` for the guide is my assumption, like the blackout article's.
+5. Performance work is still not started; the guide adds a tenth lazy chunk but does not touch
+   the homepage critical path.

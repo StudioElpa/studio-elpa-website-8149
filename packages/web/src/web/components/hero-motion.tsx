@@ -9,6 +9,14 @@ import { useEffect, useState } from "react";
  * about the first paint changes, which is the whole point of "must not delay
  * LCP" in the brief.
  *
+ * The clip plays EXACTLY ONCE and is not looped. Measured, the wrap from the
+ * last frame back to the first was a mean-abs-diff of 54.4 against 0.013 for a
+ * settled frame-to-frame step, which is the visible jump the client reported;
+ * the clip's own closing frames taper smoothly to a near-freeze, so there is
+ * nothing to trim. On `ended` the video crossfades out over 600ms to reveal the
+ * static illustration underneath, then unmounts and frees the decoder. The
+ * resting state of the hero is therefore the still, permanently.
+ *
  * Reduced motion is a real no-op, not a shortened animation: the <video> is
  * never mounted at all, so the still is what the visitor sees. That also keeps
  * the prerendered HTML clean, since prerender.py captures every route with
@@ -24,13 +32,24 @@ const MP4 = "/assets/hero-motion.mp4";
 const WEBM = "/assets/hero-motion.webm";
 
 interface HeroMotionProps {
-	/** The still shown until the clip is ready. Same file as the hero <img>. */
+	/**
+	 * The still shown until the clip is ready. This is the clean final artwork
+	 * supplied for the poster, not the hero <img> file: the poster is fetched
+	 * only once the video mounts on idle, so it never competes with the LCP
+	 * image. It carries the same CSS grade as the still, so the handoff reads
+	 * as one image warming into motion.
+	 */
 	poster: string;
 }
+
+/** Must match the .hero-video.out transition-duration in styles.css. */
+const FADE_OUT_MS = 600;
 
 export function HeroMotion({ poster }: HeroMotionProps) {
 	const [mounted, setMounted] = useState(false);
 	const [playing, setPlaying] = useState(false);
+	const [ending, setEnding] = useState(false);
+	const [gone, setGone] = useState(false);
 
 	useEffect(() => {
 		const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -53,21 +72,33 @@ export function HeroMotion({ poster }: HeroMotionProps) {
 		};
 	}, []);
 
-	if (!mounted) return null;
+	// Once the fade-out has run, the video is removed for good and the still
+	// underneath is the resting state.
+	useEffect(() => {
+		if (!ending) return;
+		const t = window.setTimeout(() => setGone(true), FADE_OUT_MS);
+		return () => window.clearTimeout(t);
+	}, [ending]);
+
+	if (!mounted || gone) return null;
+
+	// .on fades the clip in over 1200ms; .out overrides the duration to 600ms
+	// and lets the base opacity:0 dissolve it back to the still.
+	const className = ending ? "hero-video out" : playing ? "hero-video on" : "hero-video";
 
 	return (
-		// biome-ignore lint/a11y/useMediaCaption: silent decorative loop, no speech
+		// biome-ignore lint/a11y/useMediaCaption: silent decorative clip, no speech
 		<video
-			className={playing ? "hero-video on" : "hero-video"}
+			className={className}
 			poster={poster}
 			autoPlay
 			muted
-			loop
 			playsInline
 			preload="auto"
 			aria-hidden="true"
 			tabIndex={-1}
 			onCanPlay={() => setPlaying(true)}
+			onEnded={() => setEnding(true)}
 		>
 			<source src={WEBM} type="video/webm" />
 			<source src={MP4} type="video/mp4" />

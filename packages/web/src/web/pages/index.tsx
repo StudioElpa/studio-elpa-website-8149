@@ -247,7 +247,7 @@ export default function HomePage() {
 								/>
 								{/* V2 section 9. Mounted after idle, over the still, never under
 								    reduced motion. The <img> above stays the LCP element. */}
-								<HeroMotion poster="/assets/hero-1120.jpg" />
+								<HeroMotion poster="/assets/hero-poster.jpg" />
 								{/* Sunlight drifting through the glass. Decorative only, so it is
 								    hidden from assistive tech and cannot take pointer events. */}
 								<span className="hero-sweep" aria-hidden="true" />
@@ -674,15 +674,15 @@ export default function HomePage() {
 								</p>
 								<span className="soon">Coming soon</span>
 							</div>
-							<div className="post post-soon">
+							<Link className="post" to="/drapery-headers.html">
 								<div className="tag">Drapery</div>
 								<h3>Ripple fold, pinch pleat, or grommet?</h3>
 								<p>
 									A plain-English guide to drapery headers, and how the one you choose changes the
 									whole feel of a room.
 								</p>
-								<span className="soon">Coming soon</span>
-							</div>
+								<span className="read">Read the guide →</span>
+							</Link>
 						</div>
 						<div className="center soft" style={{ marginTop: 26, fontSize: 14 }} data-reveal>
 							More articles coming soon.

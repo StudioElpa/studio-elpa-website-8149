@@ -708,6 +708,35 @@ layer is outside the codebase and has **not** been verified.
 
 ---
 
+## §12 V2 Journal guide, hero poster, play-once hero motion
+
+New route `/drapery-headers.html`: nine header cards, client copy verbatim, one `<h1>`,
+Article JSON-LD and breadcrumb, linked both ways with the homepage Journal and
+`drapery.html`. `guideshot` confirms 9 cards, 0 overflow at 1440/390/360, 0 page errors,
+and **every image rendered at or below its natural size** — the wide card was caught
+upscaling 272 → 297 and fixed to an exact 296x272.
+
+Hero clip no longer loops. Measured the reported end-of-clip jump first: the last frame
+against the first is a mean-abs-diff of **54.38** versus **0.013** for a settled
+frame-to-frame step, so it was the loop seam, not jitter in the closing frames. **No trim
+was needed.** On `ended` the video crossfades out over 600ms (measured 603ms) to the still
+and unmounts. Reduced motion mounts no video at all, unchanged and now asserted.
+
+Two QA scripts were corrected because they modelled the old behaviour, not because the
+site was wrong: `heroviewqa` asserted `loop is True` (15 → 23 checks), and `journalqa`
+treated the third Journal card as unpublished (258 → 264 checks). While fixing the latter
+I found its hover section **passed vacuously** — it dispatched a synthetic `MouseEvent`,
+which never triggers CSS `:hover`. It now drives a real pointer and asserts `:hover`
+actually matched. Six scripts with hardcoded route lists gained the ninth route.
+
+Battery: `lint` 0 · `build` clean, 9 routes, sitemap 9 urls · `aeoqa` **493/493** ·
+`heroviewqa` 23/0 · `journalqa` 264/0 · `footerqa` 125/125 · `respqa` 833/0 · `faqqa`
+642/642 · `contactqa` 171/171 · `balticqa` 43/0 · `balticcontrast` 0 below AA · `tradeqa`
+PASS · `fastscroll` 0 · `overflow360` 0 · `motionqa` 0 stuck · `h1flash` ALL PASS ·
+`qa_a11y` clean · `qa2` 0 broken · `qa_copy` 0 em dashes · `qa_booking` 10/0.
+**`probe11` body text 10476 → 10481**, expected: the Journal card swapped "Coming soon"
+for "Read the guide →".
+
 ## Open items before go-live
 
 1. **`estimate.html` shows unconfirmed pricing to real prospects.** The original's
@@ -726,8 +755,16 @@ layer is outside the codebase and has **not** been verified.
    (see §8). The remaining gap is the ~575 kB main JS chunk's parse cost, which
    gates LCP at 5.3 s. Closing it needs real code-splitting work, not tuning.
 5. Confirm you're happy with the privacy-link repoint and the Attio deal-name hyphen.
-6. **Three V2 content blockers.** The drapery-headers guide is parked: only 3.5 of the nine
-   card texts arrived (Ripple Fold, Pinch Pleat, French Pleat, and Euro Pleat truncated
-   mid-sentence), and the copy will not be invented. Elvira's card needs real bio copy to
-   replace its one approved placeholder line. And the hero video currently uses
-   `/assets/hero-1120.jpg` as an interim poster, pending `hero-clean-final.png`.
+6. **One V2 content blocker left: Elvira's bio.** Her card still carries the single
+   approved placeholder line, "Elvira Vasiljeva leads home textile design at Studio
+   Elpa." Real bio copy is needed; none will be invented.
+   The other two blockers are now **resolved**: the nine drapery-header card texts
+   arrived in full and the guide ships at `/drapery-headers.html`, and the hero video
+   poster is now the supplied clean final artwork at `/assets/hero-poster.jpg`.
+7. **The hero still was not swapped to the clean final art.** The clip now plays once and
+   dissolves to the static illustration, but that still is `hero.jpg`, which carries the
+   stray pencil marks the clean art removes. The supplied `hero-clean-final.png` is only
+   1365px wide against the existing 1800px srcset tier, so using it would downgrade
+   high-DPI screens. **A full-resolution export would let us complete the swap.**
+8. **Confirm both article publication dates** — `2026-07-01` for the blackout story and
+   `2026-09-08` for the headers guide are assumptions, and they appear in JSON-LD.

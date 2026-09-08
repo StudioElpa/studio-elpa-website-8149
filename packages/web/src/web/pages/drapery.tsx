@@ -95,6 +95,12 @@ export default function DraperyPage() {
 							stone, quiets the echo of a room, and frames a view the way it deserves. Done well,
 							it's the difference between a house and a home.
 						</p>
+						<p className="lede">
+							The header, the few inches at the top where the fabric meets the rod, decides more
+							about the feeling than almost anything else you choose. Our{" "}
+							<Link to="/drapery-headers.html">guide to drapery headers</Link> walks through all
+							nine, in plain English.
+						</p>
 					</div>
 				</section>
 
