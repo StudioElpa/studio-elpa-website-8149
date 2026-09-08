@@ -315,10 +315,21 @@ export default function HomePage() {
 								about drapery, or shades, or motors. We are consultants first, product experts
 								second, salespeople never.
 							</p>
-							<p>
-								It's a slower way to work. It's also the reason our clients tell us,{" "}
-								<em>"You really listened,"</em> instead of <em>"You sold me something."</em>
+							{/* V1.2 section 6. Same sentence, same words, same order. What the
+							    clients actually say was buried at the end of a dense paragraph, so
+							    it is now a separate typographic element. This is the section's one
+							    restrained entrance; the paragraphs above it are not animated. */}
+							<p className="cq-lead">
+								It's a slower way to work. It's also the reason our clients tell us,
 							</p>
+							<div className="client-quote" data-reveal>
+								<p className="cq-said">
+									<em>"You really listened,"</em>
+								</p>
+								<p className="cq-not">
+									instead of <em>"You sold me something."</em>
+								</p>
+							</div>
 							<p>
 								<Link to="/founder.html">Read a note from our founder →</Link>
 							</p>

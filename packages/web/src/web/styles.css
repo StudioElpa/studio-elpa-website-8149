@@ -297,6 +297,37 @@ h2.big.center {
 	margin: 0;
 }
 
+/* V1.2 section 6. What clients say, lifted out of the paragraph it was buried
+   in. Deliberately not the .pull treatment used in the promise section: that
+   one is the studio speaking and carries the olive rule, this one is a client
+   speaking, so it is set apart by scale and space instead. */
+.cq-lead {
+	margin-bottom: 10px;
+}
+
+.client-quote {
+	margin: 0 0 18px;
+	padding-left: 22px;
+}
+
+/* Scoped through .body-text on purpose: .body-text p already sets ink-soft at
+   (0,1,1), so a bare .cq-said colour rule would silently lose to it. */
+.body-text .cq-said {
+	font-family: var(--serif);
+	font-size: clamp(23px, 1.95vw, 27px);
+	line-height: 1.3;
+	color: var(--ink);
+	margin-bottom: 6px;
+}
+
+/* The counterweight, kept quiet: it exists to complete the sentence, not to
+   compete with what the client actually said. */
+.cq-not {
+	font-size: 16px;
+	color: var(--ink-soft);
+	margin-bottom: 0;
+}
+
 .band {
 	background: var(--bg-alt);
 }
