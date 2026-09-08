@@ -164,6 +164,23 @@ footer.lp a:focus-visible,
 	will-change: opacity, transform;
 }
 
+/* Horizontal variant, opted into with data-reveal="x". V1.2 section 10 asks
+   for a subtle horizontal reveal on the trade columns and explicitly rules out
+   a large entrance sequence, so this is the same 0.7s curve as the default with
+   the travel turned sideways and cut to 16px. Equal specificity to the rule
+   above, so it MUST stay after it; the .reveal-in state is (0,3,0) and wins
+   over both. The hook only special-cases data-reveal="early" when picking an
+   observer, so "x" uses the default trigger. */
+[data-reveal="x"].reveal-init {
+	transform: translateX(-16px);
+}
+
+/* The second column drifts in from its own outer edge, so the pair opens
+   outward from the dividing hairline rather than sliding as one slab. */
+[data-reveal="x"].reveal-init:nth-child(2) {
+	transform: translateX(16px);
+}
+
 /* Extra class, so this beats the hidden state on specificity. */
 [data-reveal].reveal-init.reveal-in {
 	opacity: 1;
@@ -1710,6 +1727,86 @@ footer.site .wordmark {
 	margin-top: 10px;
 }
 
+/* ---------------------------------------------------------------------------
+   V1.2 section 10: the trade section ("For designers, architects & builders").
+
+   The brief asks for a slightly more technical editorial identity, with
+   imagery ONLY where a suitable existing asset exists. There is no
+   measurement drawing, specification detail, fabric memo or installation crop
+   in packages/web/public/assets, and the brief forbids generic stock imagery,
+   so the technical register is carried entirely by layout and type: a spec
+   sheet rather than two columns of prose.
+
+   Copy is untouched. Every rule here is scoped to .trade so the shared
+   .trade-cols and ul.clean primitives keep behaving as before everywhere else.
+   --------------------------------------------------------------------------- */
+
+/* A drawing-sheet frame: one hairline across the top, and a vertical hairline
+   between the columns instead of a plain gap. gap goes to 0 because the rule
+   plus its padding now does the separating. */
+.trade .trade-cols {
+	grid-template-columns: 1.02fr 0.98fr;
+	gap: 0;
+	margin-top: 0;
+	border-top: 1px solid var(--hairline);
+	padding-top: 36px;
+}
+
+.trade .trade-col:first-child {
+	padding-right: 48px;
+}
+
+.trade .trade-col + .trade-col {
+	border-left: 1px solid var(--hairline);
+	padding-left: 48px;
+}
+
+/* Spec rows. The <b> lead-in becomes its own label line above the detail, the
+   way a specification line item reads, and a CSS counter numbers the rows.
+   The counter is generated content, so the numerals never enter the copy. */
+.trade .spec-list {
+	counter-reset: spec;
+	margin-top: 0;
+	border-top: 1px solid var(--hairline);
+}
+
+.trade .spec-list li {
+	counter-increment: spec;
+	display: grid;
+	grid-template-columns: 34px 1fr;
+	column-gap: 14px;
+	row-gap: 3px;
+	padding: 17px 0;
+	font-size: 17.5px;
+}
+
+.trade .spec-list li::before {
+	content: counter(spec, decimal-leading-zero);
+	grid-row: 1 / span 2;
+	font-family: var(--sans);
+	font-size: 12.5px;
+	letter-spacing: 0.12em;
+	color: var(--accent);
+	/* Optical alignment with the label's cap height, not its line box. */
+	padding-top: 3px;
+	font-variant-numeric: tabular-nums;
+}
+
+.trade .spec-list li b {
+	display: block;
+	font-family: var(--sans);
+	font-size: 13px;
+	font-weight: 500;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--ink);
+	/* Tighter than .kicker's 0.3em on purpose: these are spec labels sitting
+	   inside a list, not section kickers, and they must not compete with the
+	   olive kicker above them. */
+	line-height: 1.45;
+	margin-bottom: 2px;
+}
+
 /* projects */
 .project-head h3 {
 	font-family: var(--serif);
@@ -2844,6 +2941,28 @@ footer.lp .wordmark {
 	.trade-cols {
 		grid-template-columns: 1fr;
 		gap: 32px;
+	}
+
+	/* V1.2 section 10. `.trade .trade-cols` is (0,2,0) and would otherwise beat
+	   the (0,1,0) rule above, leaving the spec sheet in two ~150px columns on a
+	   phone. Same trap the .oneroof grid hit in section 8, so reset it
+	   explicitly, and swap the vertical dividing hairline for a horizontal one
+	   now that the columns are stacked. */
+	.trade .trade-cols {
+		grid-template-columns: 1fr;
+		gap: 30px;
+		padding-top: 26px;
+	}
+
+	.trade .trade-col:first-child {
+		padding-right: 0;
+	}
+
+	.trade .trade-col + .trade-col {
+		border-left: none;
+		padding-left: 0;
+		border-top: 1px solid var(--hairline);
+		padding-top: 30px;
 	}
 
 	/* .oneroof .two is (0,2,0) and would otherwise beat the (0,1,0) rule above,

@@ -1248,3 +1248,113 @@ Verification: lint 21 files 0/0 · build clean, 8 routes prerendered · processq
 3/3 modes PASS · fastscroll TOTAL BROKEN 0 · motionqa 0 stuck / 0 initLeft on
 all 8, reduced motion 0 GSAP chunks, GSAP blocked leaves h1 visible ·
 flashprobe no flash (11 samples null) · overflow360 0 on all 8.
+
+## V1.2 SECTION 10 — "FOR DESIGNERS, ARCHITECTS & BUILDERS" SPEC SHEET
+
+Brief: keep the existing copy and professional tone; give the section a
+slightly more technical editorial identity "using existing relevant assets if
+available", e.g. a measurement drawing, specification detail, fabric memo or
+installation crop; do NOT add generic stock imagery; a subtle horizontal reveal
+may be used but avoid a large entrance sequence.
+
+### Imagery deliberately skipped, per the brief's own condition
+
+There is no measurement drawing, specification detail, fabric memo or
+installation crop in `packages/web/public/assets`. The inventory is six 1600x1000
+service illustrations, the hero illustration, the before/after pair, the four
+"at your service" tiles, the logos, and `about.jpg` (a wide marketing plate with
+a baked-in headline and signature). The brief conditions imagery on "if
+available" and forbids generic stock, so imagery is a deliberate skip here, the
+same call already made for section 6 and section 8. Nothing was sourced or
+invented.
+
+That leaves the technical register to be carried entirely by layout and type.
+
+### The spec-sheet treatment
+
+Copy untouched, verbatim, asserted by QA. Markup: the section gained a `trade`
+class, the two columns gained `trade-col`, and the left list gained `spec-list`.
+Every CSS rule is scoped to `.trade` so the shared `.trade-cols` and `ul.clean`
+primitives behave exactly as before everywhere else.
+
+- **A drawing-sheet frame.** One hairline across the top of the columns, and a
+  vertical hairline BETWEEN them instead of a plain 44px gap. `gap` goes to 0
+  because the rule plus its 48px padding now does the separating. Columns went
+  from `1fr 1fr` to `1.02fr 0.98fr` (measured 510px / 490px at 1440).
+- **Specification line items.** Each `li` became a grid, `34px 1fr`. The `<b>`
+  lead-in is now its own label line ABOVE the detail text, the way a spec line
+  item reads: Jost 13px, uppercase, tracking 0.12em, ink. Deliberately tighter
+  than `.kicker`'s 0.3em so the labels do not compete with the olive kicker
+  above them.
+- **Row numerals via a CSS counter.** `counter(spec, decimal-leading-zero)`
+  renders 01..04 in olive 12.5px tabular in the gutter. Generated content, so
+  the numerals never enter the copy and are not in `textContent`.
+
+### The subtle horizontal reveal
+
+New opt-in variant, `data-reveal="x"`, added to the reveal block in styles.css:
+`translateX(-16px)`, with `:nth-child(2)` mirrored to `+16px` so the pair opens
+outward from the dividing hairline rather than sliding as one slab. Same 0.7s
+curve as the default; travel cut from 20px vertical to 16px horizontal. No
+entrance sequence, nothing staged.
+
+Motion contract preserved: the sideways offset lives on `.reveal-init`, applied
+by JS at runtime, never in CSS by default. `[data-reveal="x"].reveal-init` is
+(0,2,0), EQUAL to `[data-reveal].reveal-init`, so it must stay AFTER it in
+source order; `.reveal-in` is (0,3,0) and wins over both. The hook only
+special-cases `data-reveal="early"` when picking an observer, so "x" uses the
+default trigger and needed no JS change at all. Reveal count stays 56.
+
+### The mobile specificity trap, third time now
+
+`.trade .trade-cols` is (0,2,0) and beat the (0,1,0)
+`.two, .contact-grid, .trade-cols { grid-template-columns: 1fr }` in the 860px
+block, which would have left the spec sheet in two ~150px columns on a phone.
+Exactly the trap `.oneroof .two` hit in section 8. Reset explicitly in the
+860px block, and the vertical dividing hairline swaps to a horizontal one above
+the second column now that they stack. Measured: one 342px column at 390px, one
+312px column at 360px, columns genuinely stacked, 0 overflow at both.
+
+### THREE OF MY OWN QA ASSERTIONS WERE WRONG (lesson 9, third time)
+
+The first run of `/tmp/tradeqa.py` reported four failures. Only ZERO were real
+CSS defects:
+
+1. **"counters 01..04" FAIL.** `getComputedStyle(el, '::before').content`
+   returns the SPECIFIED string, `"counter(spec, decimal-leading-zero)"`.
+   Chrome never resolves it, and generated text is absent from `textContent`,
+   so the numerals cannot be read from the DOM at all. Proved with a standalone
+   minimal repro before touching anything. Assertion replaced with a structural
+   one (correct counter function, non-zero rendered box in the gutter) plus
+   visual confirmation from the screenshots.
+2. **"label on own line" FAIL, labelTop 17 at every width.** 17px is exactly
+   the row's `padding: 17px 0`. I had asserted against the row's BORDER box.
+   Replaced with a real test: a `Range` over the trailing detail text node,
+   asserting `detailTop >= labelBottom` and `detailLeft == labelLeft`.
+3. **"revealed at end" FAIL, second column at opacity 0.** The script parked
+   once with `scrollIntoView({block:'center'})` and never scrolled on. The
+   default trigger needs an element 18% inside the viewport, so a stacked
+   second column below the fold legitimately had not fired. Not a defect, but
+   NOT something to hand-wave either: the script now scrolls through and past
+   the section in 12 steps, and asserts both columns end settled. They do.
+4. **"opposite directions" FAIL on desktop only.** A race against the 70ms
+   group stagger: the second column read `matrix(1,0,0,1,15.9688,0)` mid
+   transition and my literal `"1, 16, 0"` substring match missed. Laptop hit
+   exactly 16 by luck. Now parses the matrix and asserts opposite signs,
+   magnitude >15, and no vertical component.
+
+Final: `/tmp/tradeqa.py` OVERALL PASS, 15 checks x 5 modes (1440, 1180, 390,
+360, 1440 reduced). Section height 941px desktop, 1620px at 390, 1715px at 360.
+
+### Flag for the user
+
+The uppercase spec labels keep the copy's trailing periods, so they render as
+"TECHNICAL EXPERTISE." and "PROACTIVE COMMUNICATION." Slightly unusual in caps.
+Fixing it would mean editing client copy, which the brief forbids, so it stays.
+Raise it; a one-character change per label would resolve it if they want.
+
+Verification: lint 21 files 0/0 · build clean, 8 routes prerendered · tradeqa
+5/5 modes PASS · fastscroll TOTAL BROKEN 0 · overflow360 0 on all 8 ·
+flashprobe no flash · motionqa reveals 56, 0 stuck / 0 initLeft on all 8,
+reduced motion 0 GSAP chunks, GSAP blocked leaves h1 and hero visible · brand
+audit clean (dist 0 hits) · screenshots viewed at 1440 and 390.

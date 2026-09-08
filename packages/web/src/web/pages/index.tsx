@@ -490,7 +490,7 @@ export default function HomePage() {
 				</section>
 
 				{/* ---------------- DESIGNERS ---------------- */}
-				<section className="block band accent" id="designers">
+				<section className="block band accent trade" id="designers">
 					<div className="wrap">
 						<div className="center narrow" style={{ marginBottom: 36 }} data-reveal>
 							<div className="kicker">For designers, architects &amp; builders</div>
@@ -502,9 +502,9 @@ export default function HomePage() {
 							</p>
 						</div>
 						<div className="trade-cols" data-reveal-group>
-							<div data-reveal>
+							<div className="trade-col" data-reveal="x">
 								<div className="kicker">What we bring</div>
-								<ul className="clean">
+								<ul className="clean spec-list">
 									<li>
 										<b>Technical expertise.</b> Solar exposure, stack-back, light control, fabric
 										behavior, and the details that make or break a spec.
@@ -522,7 +522,7 @@ export default function HomePage() {
 									</li>
 								</ul>
 							</div>
-							<div data-reveal>
+							<div className="trade-col" data-reveal="x">
 								<div className="kicker">How we work with you</div>
 								<div className="body-text">
 									<p>
