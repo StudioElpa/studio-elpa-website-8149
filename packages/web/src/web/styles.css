@@ -268,6 +268,35 @@ h2.big.center {
 	color: var(--ink-soft);
 }
 
+/* V1.2 section 5. The explanatory paragraph and the closing line sit side by
+   side rather than stacked in one centred column. Deliberately off-centre: the
+   paragraph column is wider than the quote column, and the pair is capped well
+   inside the 1240px wrap so the asymmetry reads as composition rather than as
+   a layout that ran out of room. */
+.promise-grid {
+	display: grid;
+	grid-template-columns: 1.12fr 0.88fr;
+	gap: 64px;
+	align-items: start;
+	max-width: 1000px;
+	margin: 30px auto 0;
+	text-align: left;
+}
+
+.promise-grid .body-text {
+	max-width: 520px;
+}
+
+/* The closing line reuses the site's existing .pull component (defined below:
+   italic serif, olive left rule) rather than inventing a second pull-quote
+   style, so the homepage matches the journal and blackout pages. Only the
+   layout is overridden here: the base rule centres itself in a 720px column,
+   which fights the grid cell it now sits in. */
+.promise-grid .pull {
+	max-width: none;
+	margin: 0;
+}
+
 .band {
 	background: var(--bg-alt);
 }
@@ -2666,6 +2695,18 @@ footer.lp .wordmark {
 
 	.pillar-action h3 {
 		font-size: 15px;
+	}
+
+	/* One column, so the asymmetry is vertical instead: the quote keeps its
+	   rule and its larger serif, stacked under the paragraph. */
+	.promise-grid {
+		grid-template-columns: 1fr;
+		gap: 26px;
+		margin-top: 24px;
+	}
+
+	.promise-grid .body-text {
+		max-width: none;
 	}
 
 	.contact-side {

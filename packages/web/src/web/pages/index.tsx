@@ -269,18 +269,27 @@ export default function HomePage() {
 				</section>
 
 				{/* ---------------- PROMISE ---------------- */}
+				{/* V1.2 section 5. Copy is untouched. The closing line used to be a
+				    second soft paragraph in the same centred column, where it read as an
+				    afterthought. It is now a pull quote set off to the right of the
+				    explanatory paragraph, which gives the section a rhythm without adding
+				    imagery or animation. */}
 				<section className="block">
-					<div className="wrap center narrow" data-reveal>
-						<div className="kicker">The promise</div>
-						<h2 className="big center">A beautiful home should also be a comfortable one.</h2>
-						<div className="body-text">
-							<p>
-								Window treatments do far more than dress a window. Done well, they soften the
-								afternoon glare, keep a room from overheating, protect your floors and furniture
-								from the sun, and let you sleep past sunrise. They make a space feel finished, and
-								easier to live in.
-							</p>
-							<p className="soft">
+					<div className="wrap">
+						<div className="center narrow" data-reveal>
+							<div className="kicker">The promise</div>
+							<h2 className="big center">A beautiful home should also be a comfortable one.</h2>
+						</div>
+						<div className="promise-grid" data-reveal>
+							<div className="body-text">
+								<p>
+									Window treatments do far more than dress a window. Done well, they soften
+									the afternoon glare, keep a room from overheating, protect your floors and
+									furniture from the sun, and let you sleep past sunrise. They make a space
+									feel finished, and easier to live in.
+								</p>
+							</div>
+							<p className="pull">
 								That's the whole point of what we do. Everything else is detail.
 							</p>
 						</div>
