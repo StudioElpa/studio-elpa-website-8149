@@ -50,7 +50,7 @@ real project on the site remains the arched dining window before/after.
 |---|---|
 | Brand tokens applied exactly; body copy readable at all sizes | **PASS**, with 2 recorded token deviations |
 | No AI/template design tells; real assets, no stock/AI imagery, no partner logos | **PASS** |
-| Headings Cormorant (sentence case), body Jost | **PASS** |
+| Headings serif (sentence case), body sans | **PASS** — originally Cormorant Garamond + Jost; **superseded** by the Warm Editorial pass, now Newsreader + Instrument Sans (see §8) |
 
 All 23 original photographs are used as-is. No stock or generated imagery was
 introduced. No partner logos appear anywhere.
@@ -203,7 +203,8 @@ computed styles. Scores alone were not sufficient here.
 
 ### Static export
 
-`bun run build` succeeds. The bundle is **4.4 MB**, well inside the 40 MB budget.
+`bun run build` succeeds. The bundle is **5.4 MB** (5,449,864 bytes as of the
+typography pass), well inside the 40 MB budget.
 All 9 routes return 200 with the correct `<h1>` and **zero console or page errors**;
 the homepage after a full scroll loads 14 images with **0 broken**.
 
@@ -211,6 +212,227 @@ the homepage after a full scroll loads 14 images with **0 broken**.
 endpoint is server-side. Hosting the static files alone on Porkbun means the form
 would have no backend. The README documents both the `.htaccess` SPA rewrite and
 this constraint.
+
+---
+
+## 6. V1.1 — the ten refinements
+
+All ten shipped (commits `1c292be` → `6d3938e`, plus `ebe3fe1` for the
+header/mobile/overflow pass). Verified by `/tmp/scale_type.py`, `/tmp/scale_vw.py`,
+`/tmp/hdrcheck.py`, `/tmp/logocheck.py`, `/tmp/navwrap.py`, `/tmp/overflow360.py`.
+
+| Check | Result |
+|---|---|
+| Type scale tightened, no orphaned or clipped headings | **PASS** |
+| Header logo swapped to the tagline-free crop (`logo-header.png`, 898×255) | **PASS** |
+| Mobile drawer opens/closes, focus trapped, Esc closes | **PASS** (`/tmp/menuqa.py`, 5/5) |
+| Zero horizontal overflow at 360px on all 8 routes | **PASS** (`/tmp/overflow360.py`) |
+| Reveal flash on load eliminated | **PASS** (`/tmp/flashprobe.py`, `fa22534`) |
+
+Honest non-completions carried out of V1.1: the breathing zoom and light sweep the
+brief described were **never actually built in V1.1** (they arrived in the V1.2 §3
+hero work), and the light sweep crosses the whole illustration rather than a single
+pane.
+
+## 7. V1.2 — the seventeen-section refinement pass
+
+All 17 sections shipped. §17 is this QA pass. Full battery, re-run in one sitting on
+the final tree:
+
+| Script | Result |
+|---|---|
+| `bun run lint` | **0 violations** |
+| `bun run build` | **passes**, 8 routes prerendered, both build guards pass |
+| `/tmp/probe11.py` | body text **10,308 chars, unchanged baseline** |
+| `/tmp/respqa.py` (7 widths × 3 routes) | **826 PASS / 0 FAIL** |
+| `/tmp/faqqa.py` (§15) | **642 / 642** |
+| `/tmp/footerqa.py` (§16) | **97 / 97** |
+| `/tmp/contactqa.py` (§14) | **171 checks, 0 failed** |
+| `/tmp/journalqa.py` (§13) | **258 checks, 0 failed** |
+| `/tmp/collqa.py` (§12) | **174 checks, 0 failed** |
+| `/tmp/cmpqa.py` (§11) | **80 / 80** |
+| `/tmp/tradeqa.py` (§10) | **OVERALL PASS** |
+| `/tmp/processqa.py` (§9) | anchor clears sticky header: **YES** |
+| `/tmp/balticqa.py` | **18 checks, 0 failed** |
+| `/tmp/scrollspy.py` (§2) | **PASS 5 / FAIL 0** |
+| `/tmp/motionqa.py`, `/tmp/h1flash.py`, `/tmp/flashprobe.py` | no stuck reveals, no flashes, hero never dips below opacity 1 |
+| `/tmp/fastscroll.py` (6 scenarios) | **TOTAL BROKEN: 0** |
+| `/tmp/qa_a11y.py` | every route `faded=0`, reduced-motion errors **NONE** |
+| `/tmp/qa_copy.py` | required phrases present, banned strings absent |
+| `/tmp/qa_booking.py` | **10 booking CTAs, 0 misconfigured** |
+| `/tmp/qa2.py` | 14 images, 0 broken, 0 page errors, href audit clean |
+| `/tmp/qa_wizard.py` | walks all 6 steps, validation fires, reco + CTAs correct |
+| `/tmp/overflow360.py` | zero overflow, all 8 routes |
+| `/tmp/parasize.py` | body copy uniform at 18.5px |
+| Brand-name audit | `dist` **zero hits**; `src` only 3 known code comments |
+| Em-dash scan | **0 em dashes** in rendered copy across all 8 dist routes |
+| `.env` diff | **byte-identical** to backup |
+
+**§2's active-section indicator is confirmed working after the motion refactor.**
+It has no DOM node, so `/tmp/scrollspy.py` reads the `::after` pseudo-element's
+computed style: 1px high, `rgb(109, 114, 4)` (`--accent`), opacity 1, width tracking
+each label. One honest nit: scrolled back to the very top, `#about` stays active
+because there is no `#home` nav link to hand the state back to.
+
+### Three QA findings that were script defects, not site defects
+
+Recorded because they would otherwise read as regressions:
+
+1. **`/tmp/respqa.py` reported 58 failures; 56 were its own bugs.** Proven with
+   `/tmp/verifyfail.py` *before* anything was edited. (a) "header phone runs 3
+   lines" — `Range.getClientRects()` returns a rect per fragment, including the
+   inline `<svg>`, and can return overlapping rects for one text run. The line
+   counter now walks text nodes only and merges by line-box centre; truth is one
+   line at every width (110.53px at 1440, 102.91px at 390). (b) "form type below
+   15px", 49 instances — every one was a field `<label>` at 13.5px uppercase, which
+   the brief explicitly allows to run small. The editable controls measure **18px**,
+   past the 16px iOS focus-zoom threshold.
+2. **`/tmp/tradeqa.py`'s `EXPECTED` copy was stale**, predating the approved
+   Baltic Electrical naming in `22d2fad`. Diffed with `/tmp/tradediff.py`, script
+   corrected, site untouched.
+3. **`/tmp/qa.py`'s "broken images" are a lazy-load artifact.** The six `art-*.jpg`
+   and two `ba-*.jpg` it flags all serve **200 with full bytes** (curl-verified) and
+   all exist on disk. They are `loading="lazy"` and were never scrolled into view,
+   so `naturalWidth` was 0 at check time.
+
+### Lead-transmission incidents — disclosed in full
+
+- **Historical: up to 3 real submissions were transmitted** by `/tmp/qa_form.py`
+  and `/tmp/qa_form_fail.py`, because the root `.env` holds live `FORMSPREE_ENDPOINT`
+  and `SHEET_ENDPOINT`. Two are confirmed ("QA Fail Branch", `qa+fail@example.com`)
+  and one likely ("QA Test Lead", `qa+sandbox@example.com`). **Delete these records
+  from the sheet.**
+- **This pass: `/tmp/qa_wizard.py` ran unguarded once** and the wizard auto-submits
+  on reaching step 6. Investigated immediately and **no lead was transmitted**:
+  `ps aux` and `ss -ltnp` show only Vite listening on 4200, there is no Hono API
+  process and no `/api` proxy in `vite.config.ts`, so the POST hit the SPA fallback
+  and died in the sandbox.
+- **All three scripts are now guarded** (route abort, or filling the `#cf-trap`
+  honeypot). The guards must never be removed. A `net::ERR_FAILED` console line in
+  `qa_wizard` output is the guard's own abort, not a site defect.
+
+## 8. The "Warm Editorial" typography overhaul
+
+Cormorant Garamond + Jost are **replaced sitewide** by **Newsreader** (headings,
+pull quotes, the footer wordmark) and **Instrument Sans** (body, UI, labels, FAQ
+questions). Shipped in three commits: `aee53a4` (fonts), `a963dad` (weights,
+leading, tracking), `0e1a64b` (responsive review).
+
+### Font payload
+
+| File | Axes | Bytes |
+|---|---|---|
+| `newsreader-var-latin.woff2` | `wght` 400–500, `opsz` pinned 24 | 37,712 |
+| `newsreader-italic-latin.woff2` | `wght` 400, `opsz` pinned 18 | 22,860 |
+| `instrument-sans-var-latin.woff2` | `wght` 400–600, `wdth` pinned 100 | 27,156 |
+| **After** | | **87,728 (85.7 kB)** |
+| **Before** (8 Google-served latin faces) | | **242,884 (237.2 kB)** |
+
+**64% smaller, and zero third-party font requests.** Verified by `/tmp/fontqa.py`
+(**85 PASS / 0 FAIL**): no external font request on any route, every
+`/fonts/*.woff2` returns `200 font/woff2` at the expected byte size, no synthetic
+bold and no synthetic italic anywhere, per-route family census as expected.
+`font-display: swap` appears 3× in source and 3× in the built CSS.
+
+### Four synthetic-face defects found and fixed
+
+They existed the moment the fonts changed and were only visible under measurement:
+`.nav-cta` asked weight 700 of a 400–600 face (now 600); `.wordmark` asked 600 of a
+400–500 face (now 500); `<em>` inherited the sans, which has no italic face (new
+`em, i, cite` rule in the serif italic); `.page-article .footnote` was italic in the
+sans (now serif italic, and grew 14.5px → 15.5px).
+
+### Glyph coverage
+
+`/tmp/glyphqa.py` checks every rendered character against each font's cmap:
+**Instrument Sans covers all 80 rendered characters.** Newsreader ships **no arrow
+glyphs anywhere upstream**, and the site renders `←`/`→` in seven places, so those
+are carried by Instrument Sans (listed inside `--serif` ahead of Georgia, with
+`unicode-range` widened to `U+2190-2193`). `/tmp/arrowfam.py` confirms all seven.
+
+### Performance — Lighthouse mobile, measured on the prerendered, gzipped `dist`
+
+| Metric | Before fonts (V1.2) | After |
+|---|---|---|
+| Performance | 71 | **78** |
+| FCP | 2.2 s | **2.0 s** |
+| LCP | 6.0 s | **5.3 s** |
+| TBT | 250 ms | **70 ms** |
+| CLS | 0.014 | **0** |
+| Speed Index | 2.4 s | 2.6 s |
+| Accessibility / Best Practices / SEO | 100 / 100 / 100 | **100 / 100 / 100** |
+
+Full progression, mobile: client-rendered uncompressed **54** → prerender 55 →
++ gzip 63 → + inline CSS + async fonts 63 → + hero `srcset` 64 → + motion refactor
+71 → **+ self-hosted typography 78**.
+
+Removing the Google Fonts link also removed a `prerender.py` trick that de-blocked
+the third-party font stylesheet, worth roughly **760 ms** of hero stall. The user
+was told this before the change and chose removal anyway. **The re-measure
+vindicates it: 71 → 78.**
+
+### Responsive review — 7 widths
+
+`/tmp/respqa.py`: **826 PASS / 0 FAIL**, no notes. Zero horizontal overflow, no nav
+label wraps, no clipped headings at any width.
+
+| Width | Hero height | h1 size / leading / tracking / weight | h1 lines | CLS |
+|---|---|---|---|---|
+| 1440 | 980 | 72.5 / 72.5px / -1.45px / 400 | 3 | 0.0012 |
+| 1280 | 980 | 72.5 / 72.5px / -1.45px / 400 | 3 | 0.0000 |
+| 1180 | 980 | 72.5 / 72.5px / -1.45px / 400 | 3 | 0.0003 |
+| 1024 | 902 | 69.43 / 69.43px / -1.389px / 400 | 2 | 0.0004 |
+| 768 | 780 | 52.07 / 52.07px / -1.041px / 400 | 2 | 0.0000 |
+| 390 | 788 | 43 / 44.72px / -0.86px / 400 | 4 | 0.0001 |
+| 360 | 771 | 43 / 44.72px / -0.86px / 400 | 4 | 0.0015 |
+
+The tighter hero leading pulled the **desktop** hero from 1013px to **980px**
+(−3.3%). The **mobile** hero grew 7px (781→788 at 390, 764→771 at 360, under 1%) to
+give Newsreader's descenders room: at 43px with leading 1.0 the ink below the
+baseline needed 12px and the line box gave 11px. Nothing was ever actually clipped
+(the clip probe returned null) but it read tight, so mobile leading went to 1.04 —
+still inside the brief's 0.98–1.04 hero band. Desktop keeps 1.0.
+
+### Deliberate typography deviations, all recorded
+
+- **Three variable-font files, not the six static faces** the brief's §1 lists.
+  Weight ranges are live, so nothing is synthesised.
+- **Body size stays 18.5px sitewide**, above the brief's 17–18px desktop band, at
+  the user's explicit choice: uniformity wins.
+- **The global heading weight flipped from 500 to 400**, so most headings are
+  lighter than they shipped. This is the brief's ranking; 500 is restated
+  deliberately in five clarity cases (`.page-lp .hero h1` and `.callout h2`
+  reversed on dark, `.collection h3` small serif on dark, `.svc-item h4` at 19px,
+  plus the wordmark and step numerals that were already 500).
+- **`.faq-q` dropped 22.5px → 19.5px** when it moved to Instrument Sans. A
+  deliberate optical match, but a real size reduction. Exactly six elements crossed
+  families (index census 138 sans / 61 serif → 144 sans / 55 serif).
+- **CTA tracking reduced**: `.btn` 0.13em → 0.10em, `.nav-cta` 0.14em → 0.11em,
+  `.page-estimate .btn` 0.2em → 0.13em. Padding untouched, so only width narrows.
+  Measured `.btn` height is now **47.625px**, not the 49.625px in the V1.2 notes;
+  that 2px came from the new font metrics, not this edit. Still above 44px.
+- **Eyebrow tracking was left alone** (`.kicker` 0.3em, `.svc-more-head h3`
+  0.24em). Only CTA tracking was called excessive.
+- **`text-wrap: balance` on `h2.big`** changes heading line breaks at **every**
+  width, not just mobile. It was added to fix a mobile orphan ("of." alone on a
+  line, 9–10% of the column, in "A few rooms we're proud of."), which
+  `/tmp/orphan390.py` proved lives on `h2.big.center` — an earlier attempt on
+  `.project-head h3` was measured, found ineffective, and reverted.
+- **One markup change was made**, the only one in the whole pass: an inline-styled
+  `<i>` in `estimate.tsx` became `<span className="assume-note">` with a real CSS
+  rule (sans, upright, 14px, `--ink-soft`). **No words changed.**
+
+### Nothing else moved
+
+Body text is **byte-identical at 10,308 characters**. `.env` is byte-identical to
+its backup. All 10 booking CTAs intact and correctly configured. The href audit is
+clean. No copy, integration, URL or functional change.
+
+### Screenshots
+
+Ten PNGs at 2× device scale in `/home/user/screens-typography/`: hero, service,
+process, contact and footer at both 1440 desktop and 390 mobile. Section clips
+start below the sticky header, so the header is out of frame by design.
 
 ---
 
@@ -284,6 +506,8 @@ this constraint.
    Attio ↔ Google Workspace sync is configured inside Attio, not by the site.
 3. **Send one real test submission** at go-live to confirm the notification email
    lands, then delete the test record from Attio and the sheet.
-4. **Lighthouse performance** cannot reach 90 on this client-rendered stack. Either
-   accept the current score or authorise SSR/prerendering.
+4. **Lighthouse performance is 78, not 90+.** Prerendering, gzip, inline CSS, a hero
+   `srcset`, the motion refactor and self-hosted fonts took mobile from 54 to 78
+   (see §8). The remaining gap is the ~575 kB main JS chunk's parse cost, which
+   gates LCP at 5.3 s. Closing it needs real code-splitting work, not tuning.
 5. Confirm you're happy with the privacy-link repoint and the Attio deal-name hyphen.

@@ -187,8 +187,8 @@ export const CONTACT = {
 ### Logo on dark backgrounds
 
 Only `logo.png` and `logo-mark.png` exist and both are dark-on-light. On dark
-bands the site therefore renders the "Studio Elpa" wordmark in cream Cormorant
-Garamond rather than recolouring or forcing the bitmap. If a genuine light/cream
+bands the site therefore renders the "Studio Elpa" wordmark as live text in
+cream Newsreader weight 500 rather than recolouring or forcing the bitmap. If a genuine light/cream
 logo file is ever supplied, the swap points are isolated in the `Logo` and
 `Wordmark` components in `brand.tsx`.
 
@@ -201,7 +201,10 @@ bun run build      # → packages/web/dist
 ```
 
 Upload the **contents** of `packages/web/dist` to the host's web root. The
-current build is **4.4 MB**, well inside the 40 MB budget.
+current build is **5.4 MB** (5,449,864 bytes), well inside the 40 MB budget.
+The largest single files are the 575 kB main JS chunk, the 53 kB stylesheet,
+the 44 kB lazy ScrollTrigger chunk, the photography, and the three 22–38 kB
+WOFF2 font files.
 
 Two hosting requirements:
 
@@ -230,9 +233,13 @@ Two hosting requirements:
 
 ```
 packages/web/
-  index.html                    title, meta description, Open Graph, fonts
+  index.html                    title, meta description, Open Graph, font preload
+  vite.config.ts                plugin registration (prerender plugin last)
+  vite/prerender-plugin.ts      build-only hook → prerender.py
+  vite/prerender.py             static prerender of all 8 routes + build guards
   public/
     assets/                     all 23 original photographs and logos
+    fonts/                      the three self-hosted WOFF2 files
     og-image.jpg                1200x630 social card
   src/
     api/routes/leads.ts         the lead-intake function (all three sinks)
@@ -243,7 +250,8 @@ packages/web/
         contact-form.tsx        homepage form
         faq.tsx                 keyboard-operable accordion
         site-chrome.tsx         headers and footers
-      hooks/use-motion.ts       GSAP + ScrollTrigger, reduced-motion aware
+      hooks/use-motion.ts       CSS reveals via IntersectionObserver, reduced-motion aware
+      lib/home-gsap.ts          the only GSAP importer, lazy-loaded on idle
       lib/estimate-engine.ts    estimate pricing and copy generation
       queries/leads.ts          useSubmitLead, readUtm
       styles.css                the whole design system
@@ -259,10 +267,93 @@ Two conventions worth knowing before editing:
 
 ### Motion contract
 
-No reveal class sets `opacity: 0` in CSS. GSAP animates *from* a hidden state at
-runtime, so if JavaScript fails to load, or the visitor prefers reduced motion,
-all copy renders immediately in its final state. **Preserve this** — moving the
-hidden state into CSS would make the site's text depend on JavaScript.
+No reveal class sets `opacity: 0` in CSS. The hidden state is applied at runtime
+(by the `IntersectionObserver` in `use-motion.ts`, or by GSAP where a scroll-linked
+experience uses it), so if JavaScript fails to load, or the visitor prefers reduced
+motion, all copy renders immediately in its final state. **Preserve this** for two
+reasons: moving the hidden state into CSS would make the site's text depend on
+JavaScript, and the prerender step has a build-time guard that fails the build if
+any `#root` descendant with text carries an inline `opacity: 0`.
+
+GSAP is no longer the default engine. `lib/home-gsap.ts` is the only module that
+imports it, never statically: it is reached through `import()` inside
+`requestIdleCallback` and drives a small number of scroll-linked experiences only.
+Everything else is CSS.
+
+### Fonts (self-hosted, no Google Fonts request)
+
+The site loads no third-party font. Three WOFF2 files live in
+`packages/web/public/fonts/` and are referenced from `styles.css` by absolute
+path (`url("/fonts/...")`), never imported from source.
+
+| File | Axes | Bytes |
+|---|---|---|
+| `newsreader-var-latin.woff2` | `wght` 400–500, `opsz` pinned to 24 | 37,712 |
+| `newsreader-italic-latin.woff2` | `wght` 400, `opsz` pinned to 18, static | 22,860 |
+| `instrument-sans-var-latin.woff2` | `wght` 400–600, `wdth` pinned to 100 | 27,156 |
+| **Total** | | **87,728 (85.7 kB)** |
+
+The eight faces Google previously served (Cormorant Garamond 400/500/600 + italic
+400, Jost 300/400/500/600, latin subsets) totalled **242,884 bytes (237.2 kB)**.
+Self-hosting is **64% smaller** and removes two preconnects plus a blocking
+third-party stylesheet. All three declare `font-display: swap`. `index.html`
+preloads only `newsreader-var-latin.woff2`; leave the hero-image preload above it
+alone.
+
+Weight ranges are kept **live** so the browser never synthesises a weight, and the
+italic is a real face so `<em>` is never slanted synthetically.
+
+**Two traps to know before touching these files.**
+
+1. **`opsz` is what costs bytes.** Left live, the Newsreader roman alone was
+   86.2 kB. Pinning the optical-size axis took it to 36.8 kB. Pin it.
+2. **Newsreader ships no arrow glyphs anywhere upstream** — not in Google's latin
+   slice, not in the full 564-glyph TTF — and the site renders `←`/`→` in seven
+   places. Instrument Sans carries them, which needed two things: the sans rebuilt
+   from the upstream full TTF, and the declared `unicode-range` widened to include
+   `U+2190-2193`. **`unicode-range` gates a font out regardless of what the file
+   actually contains**, so any future glyph addition needs both the glyph in the
+   file and its codepoint inside the declared range. Belt and braces, `--serif`
+   lists `"Instrument Sans"` ahead of Georgia.
+
+To regenerate them:
+
+```bash
+pip install --break-system-packages brotli   # fontTools cannot read woff2 without it
+```
+
+- **Newsreader:** `curl` the css2 API with a modern-Chrome `User-Agent`, download
+  the **`latin`** subset files from `fonts.gstatic.com`, then instance with
+  `fontTools.varLib.instancer.instantiateVariableFont(font, limits, inplace=False,
+  updateFontNames=False)` and save with `flavor = "woff2"`.
+- **Instrument Sans:** built from the **upstream full TTF**
+  (`google/fonts/ofl/instrumentsans/InstrumentSans[wdth,wght].ttf`), instanced to
+  `{"wdth": 100, "wght": (400, 600)}`, then
+  `pyftsubset --unicodes=<latin + U+2190-2193>
+  --layout-features=kern,liga,calt,ccmp,locl,mark,mkmk,rlig --no-hinting
+  --desubroutinize --flavor=woff2`. That lean build is 27.2 kB, smaller than
+  Google's 28.3 kB slice while carrying four glyphs more.
+
+### Prerendering
+
+`packages/web/vite/prerender-plugin.ts` (`apply: "build"`, `enforce: "post"`) shells
+out from `closeBundle` to `packages/web/vite/prerender.py`, which serves the built
+`dist` on port **4311** with an SPA fallback, drives system Chrome over all **8**
+routes with `reduced_motion="reduce"`, and writes the rendered markup back into each
+`.html` file. It also inlines the built stylesheet so first paint is not
+render-blocked. It is registered **last** in `vite.config.ts`; the asset optimizer
+runs after it.
+
+**Two guards fail the build** rather than shipping a broken page:
+
+1. any `#root` descendant with non-empty text and an inline `opacity: 0`;
+2. any FAQ `.faq-a` panel that is not `data-open="true"` (the accordion's CSS
+   default is open and the collapsed state is applied at runtime, so a
+   prerendered collapsed panel would ship permanently shut to no-JS visitors).
+
+**Caveat: prerendering only affects the production build.** `bun run dev` on port
+4200 is still client-rendered, so anything you measure in dev is not what visitors
+get. Measure against `dist`.
 
 ---
 

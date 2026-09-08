@@ -2355,3 +2355,153 @@ wraps. Headings clear of clipping at all seven widths.
   `/tmp/motionqa.py` no stuck reveals. `/tmp/fastscroll.py` TOTAL BROKEN: 0.
 - `/tmp/overflow360.py` zero overflow on all 8 routes. `/tmp/parasize.py`
   body copy still uniform.
+
+---
+
+## §7 PERFORMANCE AND QA, PLUS THE V1 LOCK-DOWN PASS
+
+Closes the typography brief's §7 (line 195) and V1.2's §17 (line 255). No site
+code changed in this step. Four documents were rewritten: `design.md`,
+`README.md`, `QA-NOTE.md` and this file.
+
+### Lighthouse mobile, re-measured on the prerendered + gzipped dist
+
+`/tmp/lh-typography.json`, served by `/tmp/gzserve.py` on port 4310.
+
+| metric | before fonts (V1.2) | now |
+|---|---|---|
+| Performance | 71 | **78** |
+| FCP | 2.2 s | **2.0 s** |
+| LCP | 6.0 s | **5.3 s** |
+| TBT | 250 ms | **70 ms** |
+| CLS | 0.014 | **0** |
+| Speed Index | 2.4 s | 2.6 s |
+| A11y / Best Practices / SEO | 100 / 100 / 100 | **100 / 100 / 100** |
+
+Full progression, mobile: 54 client-rendered uncompressed → 55 prerender →
+63 + gzip → 63 + inline CSS + async fonts → 64 + hero srcset → 71 + motion
+refactor → **78 + self-hosted typography**.
+
+Self-hosting won *even though* it forfeited the `unblock_paint()` async-font
+trick worth ~760 ms of hero stall. LCP is still gated on the 575 kB main chunk
+parse, so the brief's 90+ goal remains unmet. Reported honestly.
+
+### §7 checklist
+
+- All three `/fonts/*.woff2` return `200 font/woff2` at 37712 / 22860 / 27156.
+- No external font request anywhere: `/tmp/fontqa.py` 85 PASS 0 FAIL.
+- `font-display: swap` present 3× in source, 3× in the built CSS.
+- No page or console errors on any of the 9 routes (`/tmp/qa.py`).
+- No missing glyphs, no synthetic bold, no synthetic italic.
+- CLS 0.0000–0.0015 across all 7 widths; Lighthouse reports 0.
+- Prerender and hydration preserved: 8 routes, both build guards pass.
+- Hero heading never delayed: `/tmp/h1flash.py` ALL PASS.
+
+### Lock-down battery, all green in one sitting
+
+`bun run lint` 0 · `bun run build` passes · `probe11` body text 10308 unchanged ·
+`respqa` 826/0 · `fontqa` 85/0 · `glyphqa` all 80 covered · `faqqa` 642/642 ·
+`footerqa` 97/97 · `contactqa` 171/0 · `balticqa` 18/0 · `journalqa` 258/0 ·
+`collqa` 174/0 · `tradeqa` OVERALL PASS · `cmpqa` 80/80 · `cmp390` CLS 0.00000 ·
+`menuqa` 5/5 · `qa_a11y` faded=0 everywhere · `qa_copy` clean · `qa_booking`
+10 CTAs 0 misconfigured · `qa2` 14 images 0 broken · `qa_wizard` full walk ·
+`h1flash` / `flashprobe` / `motionqa` clean · `fastscroll` 0 broken ·
+`overflow360` 0 · `parasize` uniform 18.5px · `processqa` anchor clears header ·
+brand-name audit clean in dist · 0 em dashes in rendered copy across 8 routes ·
+`.env` byte-identical to `/tmp/.env.studioelpa.bak`.
+
+### V1.2 §2's last open item is now CLOSED
+
+`/tmp/scrollspy.py` is new. The thin active-section indicator still works after
+the GSAP motion refactor: PASS 5 / FAIL 0. It has no DOM node, so the script
+reads `getComputedStyle(el, '::after')` — 1px high, `rgb(109, 114, 4)`
+(`--accent`), opacity 1, width tracking each label. Nav links are
+`#about`, `#services`, `#process`, `#designers`, `#contact`, plus `#projects`.
+
+One honest nit, noted not chased: scrolled back to the very top, `#about` stays
+active because there is no `#home` nav link to hand the state back to.
+
+### tradeqa.py had a stale expectation — script fixed, site untouched
+
+`FAIL copy verbatim` at all 5 modes. `/tmp/tradediff.py` (new) diffed rendered
+against expected: row index 2 legitimately gained the Baltic Electrical naming
+in the approved commit `22d2fad`. `EXPECTED` updated → OVERALL PASS. **Twelfth
+time a QA script lied before the site did.**
+
+### qa.py's "broken_images" is a lazy-load artifact, not a defect
+
+The six `art-*.jpg` on `/` and two `ba-*.jpg` on `/drapery.html` all serve 200
+with full bytes (curl-verified: 272442, 354620, 286471, 264038, 367671, 194993,
+193411, 188457) and all exist on disk. They are `loading="lazy"` and were never
+scrolled into view, so `naturalWidth` was 0 at check time.
+
+### A lead-transmission near-miss, investigated and guarded
+
+`qa_wizard.py` had no guard and the wizard auto-submits on reaching step 6 (it
+printed "Sending your request…"). **No lead was transmitted:** `ps aux` and
+`ss -ltnp` show only Vite listening on 4200, there is no Hono API process and no
+`/api` proxy in `packages/web/vite.config.ts`, so the POST hit the SPA fallback
+and died in the sandbox. Formspree/Sheet forwarding lives in the backend handler,
+which never executed.
+
+`/tmp/qa_wizard.py` is now guarded with the same
+`page.route("**/api/rpc/**", _block_leads)` abort used in `qa_form_fail.py`,
+installed immediately before the `page.goto(.../estimate.html)` line. Re-run
+confirms `[guard] blocked lead submit`. The resulting
+`net::ERR_FAILED` console line is that abort, not a site defect. **Never remove
+the guard.** Lesson: before believing a QA script transmitted something, check
+what is actually listening.
+
+### Screenshots
+
+`/tmp/screens.py` is new. Ten PNGs at `device_scale_factor=2` into
+`/home/user/screens-typography/`. It walks the whole page first to settle every
+reveal, then does `scrollIntoView` + `page.screenshot(clip=box)` per section
+(never `locator.screenshot()`, per the `.hero-frame` timeout lesson).
+
+| file | size |
+|---|---|
+| `hero-desktop.png` | 1440x981 |
+| `service-desktop.png` | 1440x1967 |
+| `process-desktop.png` | 1440x1249 |
+| `contact-desktop.png` | 1440x1299 |
+| `footer-desktop.png` | 1440x549 |
+| `hero-mobile390.png` | 390x788 |
+| `service-mobile390.png` | 390x2400 (capped) |
+| `process-mobile390.png` | 390x2141 |
+| `contact-mobile390.png` | 390x2163 |
+| `footer-mobile390.png` | 390x811 |
+
+Section clips start below the sticky header, so the header and logo are out of
+frame by design. For header shots use `/tmp/hdrshot.py` or the existing
+`/tmp/hdr-1440.png` / `/tmp/hdr-390.png`.
+
+### Documentation rewrite
+
+- **`design.md`** — the whole Typography section replaced with a "Warm Editorial"
+  section (three files with axes and bytes, the 237.2 → 85.7 kB delta,
+  `font-display: swap`, family roles, the 400-default / 500-exceptions ranking,
+  the line-height bands, tracking values, the 18.5px body decision,
+  `text-wrap: balance`, the arrow-glyph finding). The Cormorant wordmark line now
+  reads Newsreader 500. Buttons records the real tracking values (0.10 / 0.11 /
+  0.13em) and notes the 47.625px measured height. Motion rewritten for the V1.2
+  §1 refactor: GSAP lazy and limited, CSS `IntersectionObserver` reveals, the
+  removed hero stagger and photography parallax, the reduced-motion no-op trap.
+- **`README.md`** — the cream Cormorant wordmark line fixed; bundle figure
+  4.4 MB → 5.4 MB (5,449,864 bytes) with the largest files named; the file tree
+  gained `fonts/`, `vite.config.ts`, `prerender-plugin.ts` and `prerender.py`;
+  `use-motion.ts` re-described and `home-gsap.ts` added; the Motion contract
+  rewritten to cover the runtime hidden state and the prerender guard that
+  depends on it. Two new sections: **Fonts** (the three files, the payload delta,
+  why `opsz` is pinned, the arrow-glyph / `unicode-range` trap, and the exact
+  regeneration steps including `--break-system-packages brotli`) and
+  **Prerendering** (the plugin, port 4311, the 8 routes, the two build guards,
+  and the caveat that prerendering only affects the production build).
+- **`QA-NOTE.md`** — §2's "Headings Cormorant, body Jost" row rewritten as
+  superseded; bundle figure corrected; the Lighthouse open item rewritten as
+  "78, not 90+, gated on the 575 kB chunk". Three new sections: **§6 V1.1**,
+  **§7 V1.2** (the full battery table, the scroll-spy closure, the three
+  script-defect findings, and both lead-transmission incidents disclosed in
+  full) and **§8 the typography overhaul** (payload table, the four synthetic-face
+  defects, glyph coverage, the Lighthouse table, the 7-width responsive table,
+  every deliberate deviation, and the "nothing else moved" evidence).
