@@ -611,8 +611,12 @@ export default function HomePage() {
 								We spend our days thinking about how rooms work. This is where we share some of it.
 							</p>
 						</div>
-						<div className="journal" data-reveal-group>
-							<Link className="post" to="/journal-blackout.html" data-reveal>
+						{/* V1.2 section 13: only the first story is published. The other two are
+						    marked "Coming soon" and stripped of link-like styling (.post-soon) so
+						    an unavailable article never reads as clickable. One reveal on the
+						    container replaces the three-item stagger. */}
+						<div className="journal" data-reveal>
+							<Link className="post" to="/journal-blackout.html">
 								<div className="tag">Light</div>
 								<h3>The case for real darkness</h3>
 								<p>
@@ -621,21 +625,23 @@ export default function HomePage() {
 								</p>
 								<span className="read">Read the story →</span>
 							</Link>
-							<div className="post" data-reveal>
+							<div className="post post-soon">
 								<div className="tag">Comfort</div>
 								<h3>Why your beautiful room has a glare problem</h3>
 								<p>
 									The quiet fix that keeps the view and loses the squint, and protects your floors
 									and furniture while it's at it.
 								</p>
+								<span className="soon">Coming soon</span>
 							</div>
-							<div className="post" data-reveal>
+							<div className="post post-soon">
 								<div className="tag">Drapery</div>
 								<h3>Ripple fold, pinch pleat, or grommet?</h3>
 								<p>
 									A plain-English guide to drapery headers, and how the one you choose changes the
 									whole feel of a room.
 								</p>
+								<span className="soon">Coming soon</span>
 							</div>
 						</div>
 						<div className="center soft" style={{ marginTop: 26, fontSize: 14 }} data-reveal>

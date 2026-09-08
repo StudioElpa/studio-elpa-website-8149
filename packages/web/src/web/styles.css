@@ -2105,6 +2105,49 @@ a.post .read {
 	color: var(--accent);
 }
 
+/* ---------------------------------------------------------------------------
+   V1.2 section 13: unpublished stories must not read as clickable.
+
+   Only the first story is published, and it stays exactly as it was: a real
+   link on a raised surface with the accent "Read the story" line and the hover
+   lift. The other two lose the card affordances that imply a target - the
+   surface fill, the solid hairline and any hover response - and gain a plain
+   "Coming soon" marker as real text, so a screen reader announces the state
+   too. Titles and descriptions are untouched.
+
+   These rules are (0,1,0)/(0,2,0), the same weight as the `.post` rules above,
+   so they MUST stay after them in source order.
+   --------------------------------------------------------------------------- */
+
+.post-soon {
+	background: none;
+	border-style: dashed;
+	border-color: var(--hairline);
+	/* no transform/border transition: nothing here responds to a pointer */
+	transition: none;
+	cursor: default;
+}
+
+.post-soon h3 {
+	color: var(--ink-soft);
+}
+
+.post-soon .tag {
+	/* the accent reads as "actionable" on this site, so the unavailable cards
+	   drop it for the same muted ink as their body copy */
+	color: var(--ink-soft);
+	opacity: 0.75;
+}
+
+.post-soon .soon {
+	margin-top: 16px;
+	font-size: 13.5px;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--ink-soft);
+	opacity: 0.8;
+}
+
 /* contact */
 .contact-grid {
 	display: grid;
