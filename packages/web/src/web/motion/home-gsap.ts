@@ -133,6 +133,26 @@ export async function startHomeMotion(root: HTMLElement): Promise<StopMotion> {
 				},
 			);
 		}
+
+		// ---- active step emphasis (brief section 9) ----
+		// toggleClass only. The class adds emphasis to the step the reader is on
+		// (see .step-row.is-active in styles.css); it never removes emphasis
+		// from the others, so forthcoming steps read as normal copy rather than
+		// disabled content, and every step is fully readable from the start with
+		// or without this running. No pinning, no scroll hijacking.
+		if (track) {
+			for (const step of track.querySelectorAll<HTMLElement>("[data-step]")) {
+				ScrollTrigger.create({
+					trigger: step,
+					// The rows tile contiguously, so a band of "row straddles the
+					// viewport midline" makes exactly one step active at a time.
+					// A wider band (60%/40%) lit two adjacent steps at once.
+					start: "top 50%",
+					end: "bottom 50%",
+					toggleClass: { targets: step, className: "is-active" },
+				});
+			}
+		}
 	}, root);
 
 	// Fonts and lazy images change layout after first paint; recompute.

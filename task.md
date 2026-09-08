@@ -1169,3 +1169,82 @@ TOTAL BROKEN 0 (the observer refactor is shared by every route, so this was the
 critical regression test) · motionqa 0 stuck / 0 initLeft on all 8, reduced
 motion clean, GSAP blocked leaves h1 visible · flashprobe no flash on any route
 (11 samples null) · overflow360 0 on all 8 · earlyreveal 3/3 PASS.
+
+---
+
+## V1.2 SECTION 9 — "HOW WE WORK" PROCESS PROGRESS LINE
+
+All six steps and their copy kept verbatim. No copy touched.
+
+### 1. Markup (index.tsx)
+
+`.steps` gained `data-process`; each `.step-row` gained `data-step`; a new
+track was added as the first child:
+
+    <div className="process-line" aria-hidden="true">
+      <span className="process-line-fill" data-process-progress />
+    </div>
+
+This is the markup the GSAP written back in section 1 had been waiting for. It
+had been inert since then because `[data-process]` did not exist anywhere.
+
+### 2. Line placement — the gutter, not through the numerals
+
+`.step-row` is `grid-template-columns: 64px 1fr; gap: 24px`, so the gutter runs
+x=64..88. The line sits at x=76, its centre. Asserted, not eyeballed:
+`maxNumRight < lineX < minHeadLeft` holds at both widths (desktop 284 < 296 <
+308, mobile 88 < 100 < 112), so the line connects all six steps without ever
+crossing a digit. No mobile override needed; the column stays 64px there.
+
+### 3. Motion contract preserved
+
+`.process-line-fill` is `scaleY(1)` in CSS, i.e. FULLY DRAWN by default. GSAP
+animates it back from `scaleY(0)` at runtime. So reduced motion, a failed GSAP
+chunk and no-JS all show the complete static line, which is what the brief asks
+for. Confirmed: reduced motion reports `transform: none` and scaleY 1 at every
+scroll position, with zero GSAP chunks loaded.
+
+### 4. Active-step emphasis is ADDITIVE ONLY
+
+The brief forbids near-zero opacity on future steps and forbids forthcoming
+content looking disabled. So nothing is ever dimmed: the active step GAINS
+emphasis rather than the others losing it.
+
+    .step-row.is-active .n  { transform: scale(1.06); }
+    .step-row.is-active h3  { color: var(--accent); }
+
+Driven by `ScrollTrigger.create({ toggleClass })` per step. No pinning, no
+scrub on text, no scroll hijacking.
+
+**Single cursor, found by measurement.** The first window (`top 60%` /
+`bottom 40%`) is a 180px band while a row is ~147px, so it lit TWO adjacent
+steps at once (measured `active: [2,3]`, `[4,5]`). Changed to `top 50%` /
+`bottom 50%`: a row is active only while it straddles the viewport midline, and
+since rows tile contiguously exactly one qualifies. Re-measured: `[1] [3] [4]
+[6]` desktop, `[2] [3] [5] [6]` mobile, never two at once.
+
+`allReadable` asserts every h3 and p sits above 0.99 opacity at every sampled
+scroll position, in all three modes. It never fails.
+
+### 5. Anchor navigation
+
+`#process` lands clear of the sticky header in every mode: desktop secTop 92 vs
+header 84, mobile secTop 80 vs header 72. Uses the existing global
+`section { scroll-margin-top }`; nothing new was needed.
+
+### A QA SCRIPT THAT LIED TO ME (lesson 8, again)
+
+`/tmp/processshot.py` parked mid-section to light a step, then called
+`scrollTo(0,0)` before a `full_page` clip screenshot, because a full-page clip
+needs document-absolute coordinates. Scrolling to 0 reset the scrub to ~0 and
+cleared every `is-active`, so the capture showed a bare hairline and no
+highlight, and looked exactly like a feature that had not worked. The feature
+was fine; the script defeated it. Replaced with `/tmp/processshot2.py`, which
+takes a plain viewport screenshot in place with no scroll reset.
+`/tmp/process-live-1440.png` viewed: olive line drawn to the reader's position,
+step 5 lit in olive, steps 4 and 6 at full normal contrast.
+
+Verification: lint 21 files 0/0 · build clean, 8 routes prerendered · processqa
+3/3 modes PASS · fastscroll TOTAL BROKEN 0 · motionqa 0 stuck / 0 initLeft on
+all 8, reduced motion 0 GSAP chunks, GSAP blocked leaves h1 visible ·
+flashprobe no flash (11 samples null) · overflow360 0 on all 8.

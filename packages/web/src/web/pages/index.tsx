@@ -467,9 +467,17 @@ export default function HomePage() {
 						</div>
 					</div>
 					<div className="wrap" style={{ marginTop: 20 }}>
-						<div className="steps" data-reveal-group>
+						{/* V1.2 section 9: one fine vertical line connecting the six
+						    steps. The track is plain CSS and is fully drawn by
+						    default, so reduced motion, a failed GSAP chunk and
+						    no-JS all show the complete line. GSAP only ever draws
+						    it back from scaleY(0), never hides copy. */}
+						<div className="steps" data-reveal-group data-process>
+							<div className="process-line" aria-hidden="true">
+								<span className="process-line-fill" data-process-progress />
+							</div>
 							{STEPS.map((s, i) => (
-								<div className="step-row" key={s.title} data-reveal>
+								<div className="step-row" key={s.title} data-reveal data-step>
 									<div className="n">{i + 1}</div>
 									<div>
 										<h3>{s.title}</h3>
