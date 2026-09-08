@@ -9,16 +9,34 @@ import { usePageMotion, useHomeMotion } from "../hooks/use-motion";
    order are unchanged; only rhythm, motion, and the accordion/form mechanics
    were touched. */
 
+/* V1.2 section 4. Same four items, same destinations, same illustrations. The
+   only change is rank: the first two are what we promise, the last two are
+   things you can do right now, so they read as actions rather than as two more
+   interchangeable feature cards. */
 const PILLARS = [
-	{ href: "#process", img: "tile-glove.jpg", alt: "White glove service", title: "White Glove Service" },
 	{
+		kind: "promise" as const,
+		href: "#process",
+		img: "tile-glove.jpg",
+		alt: "White glove service",
+		title: "White Glove Service",
+	},
+	{
+		kind: "promise" as const,
 		href: "#services",
 		img: "tile-custom.jpg",
 		alt: "Fully customized solutions",
 		title: "Fully Customized Solutions",
 	},
-	{ href: "/estimate.html", img: "tile-estimate.jpg", alt: "Quick estimate", title: "Quick Estimate" },
 	{
+		kind: "action" as const,
+		href: "/estimate.html",
+		img: "tile-estimate.jpg",
+		alt: "Quick estimate",
+		title: "Quick Estimate",
+	},
+	{
+		kind: "action" as const,
 		href: "#contact",
 		img: "tile-appt.jpg",
 		alt: "Schedule a private appointment",
@@ -221,19 +239,31 @@ export default function HomePage() {
 							<h2 className="big center">A calm, hands-on way to work.</h2>
 						</div>
 						<div className="pillars" data-reveal-group>
-							{PILLARS.map((p) =>
-								p.href.startsWith("#") ? (
-									<a className="pillar" href={p.href} key={p.title} data-reveal>
+							{PILLARS.map((p) => {
+								const cls = `pillar pillar-${p.kind}`;
+								const inner = (
+									<>
 										<img className="pimg" src={`/assets/${p.img}`} alt={p.alt} />
-										<h3>{p.title}</h3>
+										<h3>
+											{p.title}
+											{/* Decorative affordance on the two action items only, so a
+											    reader is not told about a chevron that carries no meaning. */}
+											{p.kind === "action" ? (
+												<span className="pillar-go" aria-hidden="true" />
+											) : null}
+										</h3>
+									</>
+								);
+								return p.href.startsWith("#") ? (
+									<a className={cls} href={p.href} key={p.title} data-reveal>
+										{inner}
 									</a>
 								) : (
-									<Link className="pillar" to={p.href} key={p.title} data-reveal>
-										<img className="pimg" src={`/assets/${p.img}`} alt={p.alt} />
-										<h3>{p.title}</h3>
+									<Link className={cls} to={p.href} key={p.title} data-reveal>
+										{inner}
 									</Link>
-								),
-							)}
+								);
+							})}
 						</div>
 					</div>
 				</section>

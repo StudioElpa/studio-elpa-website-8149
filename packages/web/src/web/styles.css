@@ -1212,9 +1212,22 @@ footer.site .wordmark {
 }
 
 /* at your service */
+
+/* V1.2 section 4. Four equal columns made the two promises and the two actions
+   read as one undifferentiated card row. The promises now take the wider
+   columns and the actions sit in narrower ones, so the row has a front and a
+   back without anything being demoted out of reach. The hairline dividers stay
+   exactly as they were. */
 .pillars {
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: 1.18fr 1.18fr 0.82fr 0.82fr;
+
+	/* Stretch, not start: the action cells are shorter than the promise cells,
+	   and with start the hairline between the two actions ran visibly short
+	   while the other two ran full height. Stretching the cells keeps every
+	   divider the same length; the action content stays top-aligned on its own
+	   padding. */
+	align-items: stretch;
 }
 
 .pillar {
@@ -1288,6 +1301,59 @@ footer.site .wordmark {
 	font-weight: 500;
 	color: var(--ink);
 	transition: color 0.2s;
+}
+
+/* The two service promises: the principal statements in the row. */
+.pillar-promise h3 {
+	font-size: 26px;
+}
+
+/* The two actions: same illustrations, quieter voice. Smaller artwork, smaller
+   label, and a chevron so they read as somewhere to go rather than as another
+   claim about the work. */
+.pillar-action {
+	padding-top: 26px;
+}
+
+.pillar-action .pimg {
+	width: 74%;
+	margin: 0 auto;
+}
+
+.pillar-action h3 {
+	font-size: 16.5px;
+	letter-spacing: 0.05em;
+	color: var(--ink-soft);
+	margin-top: 12px;
+}
+
+.pillar-action:hover h3 {
+	color: var(--accent);
+}
+
+.pillar-go {
+	display: inline-block;
+	width: 0.42em;
+	height: 0.42em;
+	margin-left: 0.5em;
+	border-right: 1.5px solid currentcolor;
+	border-top: 1.5px solid currentcolor;
+	transform: translateY(-0.08em) rotate(45deg);
+	transition: margin-left 0.25s ease;
+}
+
+.pillar-action:hover .pillar-go {
+	margin-left: 0.8em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pillar-go {
+		transition: none !important;
+	}
+
+	.pillar-action:hover .pillar-go {
+		margin-left: 0.5em;
+	}
 }
 
 .pillar:hover h3 {
@@ -2580,6 +2646,26 @@ footer.lp .wordmark {
 	.pillar {
 		border-right: none;
 		padding: 14px;
+	}
+
+	/* Two up, so the promises take the first row and the actions the second.
+	   The desktop size split is too coarse at this width: the extra top padding
+	   would break the row alignment and 74% artwork inside a half-width tile
+	   gets too small to read. Hierarchy here comes from type alone. */
+	.pillar-action {
+		padding-top: 14px;
+	}
+
+	.pillar-action .pimg {
+		width: 88%;
+	}
+
+	.pillar-promise h3 {
+		font-size: 21px;
+	}
+
+	.pillar-action h3 {
+		font-size: 15px;
 	}
 
 	.contact-side {
