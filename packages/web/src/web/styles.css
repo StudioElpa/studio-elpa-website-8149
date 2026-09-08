@@ -340,6 +340,11 @@ h2.big {
 	   hero's -0.02em because these run at roughly two thirds the size. */
 	line-height: 1.08;
 	letter-spacing: -0.015em;
+	/* Stage C, section 6: at 390 and 360 several section headings dropped a
+	   single short word onto their own last line. Balancing the block makes
+	   every break read as chosen. Chrome only balances blocks of six lines or
+	   fewer, which is every heading on the site. */
+	text-wrap: balance;
 }
 
 h2.big.center {
@@ -1468,6 +1473,21 @@ footer.site .wordmark {
 	font-weight: 400;
 	line-height: 1;
 	letter-spacing: -0.02em;
+}
+
+/* Stage C, section 6: at 390px and below the hero wraps to four lines, and at
+   line-height 1.0 Newsreader's descenders (the g in "light") sit 1px past the
+   line box and press against the cap line below. 1.04 is still inside the
+   brief's 0.98-1.04 hero band and buys the descenders room. Balancing the two
+   sentence blocks also stops the last line falling to a single orphan word. */
+@media (max-width: 560px) {
+	.page-home .hero h1 {
+		line-height: 1.04;
+	}
+
+	.page-home .hero h1 .hline {
+		text-wrap: balance;
+	}
 }
 
 /* Replaces the old <br />, so each line is an element the hero sequence can

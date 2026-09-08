@@ -2267,3 +2267,91 @@ The remaining inline type styles are four `fontWeight: 500` spans in
 - Journal card rules verified untouched by grep, so the 4.98:1 tag contrast and
   10.10:1 title contrast are unchanged. `.post h3` now inherits 400, which
   changes perceived weight but not the measured ratio.
+
+---
+
+## WARM EDITORIAL TYPOGRAPHY, STAGE C: THE SEVEN-WIDTH RESPONSIVE REVIEW
+
+Brief section 6. Reviewed 1440, 1280, 1180, 1024, 768, 390 and 360 across
+`/index.html`, `/estimate.html` and `/journal-blackout.html` against the ten
+checks the section lists, using a new `/tmp/respqa.py` driven at the gzipped
+production `dist` on port 4310.
+
+### The first run said 58 failures. Fifty-six were the script, not the site.
+
+Two measurement bugs, both proven wrong by `/tmp/verifyfail.py` before anything
+was edited:
+
+1. **"header phone runs 3 lines", once per width.** The phone is
+   `<a class="header-phone">` wrapping an inline `<svg>` plus a `<span>`.
+   `Range.getClientRects()` over the whole element returns a rect for the SVG
+   *and* two overlapping rects for the same text run, so rounding their tops
+   produced three distinct values. A text-node-only TreeWalker returns exactly
+   one rect: 110.53px wide at 1440, 102.91px at 390. The phone number has
+   always been one clear line. `lines()` now walks text nodes and merges rects
+   by line-box centre.
+2. **"form type below 15px", 49 instances.** Every one was a field `LABEL` at
+   13.5px, uppercase, 0.08em tracking, Instrument Sans, `--ink-soft`. Those are
+   the brief's "small uppercase labels", which it explicitly allows to run
+   smaller. The editable controls measure **18px**, comfortably past the 16px
+   iOS focus-zoom threshold. The check now holds `input`/`textarea`/`select` to
+   16px and labels to a 12px legibility floor.
+
+Eleventh time a QA script has lied before the site did. Verify the script.
+
+### Two real defects, both fixed
+
+**Hero descenders at 390 and 360.** At 43px with `line-height: 1.0` the ink
+below the baseline needed 12px and the line box gave 11px. Nothing was actually
+clipped - the overflow-ancestor probe came back null - but the `g` in "light"
+pressed against the cap line of the sentence below, which is what the brief
+means by cropped punctuation and descenders. Mobile hero leading is now
+**1.04**, still inside the brief's 0.98-1.04 hero band, scoped to
+`max-width: 560px` so the desktop hero keeps the 1.0 that measured well in
+stage B.
+
+Cost: the mobile hero grew **781 -> 788px at 390** and **764 -> 771px at 360**,
+7px, under 1%. Section 6 only asks that the hero not become substantially
+taller, and it is still shorter than the 1013px it was before stage B.
+
+**Orphaned last lines at 390 and 360.** The section heading "A few rooms we're
+proud of." broke with "of." alone on a final line at 9-10% of the column.
+
+The handover had this pinned on `.project-head h3`. Measurement says otherwise:
+the element is **`h2.big.center`**. Balance was applied to the wrong selector
+first, measured, found ineffective, and reverted. `text-wrap: balance` now sits
+on **`h2.big`**, which is every major section heading on every page, and on
+`.page-home .hero h1 .hline` inside the mobile block so the two hero sentences
+balance rather than dropping "too." alone.
+
+### Result
+
+`/tmp/respqa.py` **PASS 826, FAIL 0**, no judgement notes left.
+
+| width | hero h | h1 fs / line-height / tracking / weight | h1 lines | CLS |
+|---|---|---|---|---|
+| 1440 | 980 | 72.5 / 72.5px / -1.45px / 400 | 3 | 0.0012 |
+| 1280 | 980 | 72.5 / 72.5px / -1.45px / 400 | 3 | 0.0000 |
+| 1180 | 980 | 72.5 / 72.5px / -1.45px / 400 | 3 | 0.0003 |
+| 1024 | 902 | 69.43 / 69.43px / -1.389px / 400 | 2 | 0.0004 |
+| 768 | 780 | 52.07 / 52.07px / -1.041px / 400 | 2 | 0.0000 |
+| 390 | 788 | 43 / 44.72px / -0.86px / 400 | 4 | 0.0001 |
+| 360 | 771 | 43 / 44.72px / -0.86px / 400 | 4 | 0.0015 |
+
+**CLS is 0.0000-0.0015 at every width**, against a 0.014 baseline and a 0.02
+gate. Section 7's "no noticeable CLS from font loading" is satisfied and
+measured, not assumed - the single preloaded roman file and the matched
+fallback metrics do their job. Zero horizontal overflow anywhere. No nav label
+wraps. Headings clear of clipping at all seven widths.
+
+### Verification
+
+- `bun run lint` 0 violations. `bun run build` passes, 8 routes prerendered,
+  both prerender guards pass.
+- `/tmp/probe11.py` body text **10308**, unchanged. No copy moved.
+- `/tmp/fontqa.py` **85 PASS 0 FAIL**. `/tmp/glyphqa.py` Instrument Sans covers
+  all 80 rendered characters.
+- `/tmp/h1flash.py` ALL PASS. `/tmp/flashprobe.py` no flashes.
+  `/tmp/motionqa.py` no stuck reveals. `/tmp/fastscroll.py` TOTAL BROKEN: 0.
+- `/tmp/overflow360.py` zero overflow on all 8 routes. `/tmp/parasize.py`
+  body copy still uniform.
