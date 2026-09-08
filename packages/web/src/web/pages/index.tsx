@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { SiteHeader, SiteFooter } from "../components/site-chrome";
 import { ContactForm } from "../components/contact-form";
 import { Faq, type FaqEntry } from "../components/faq";
+import { BeforeAfter } from "../components/before-after";
 import { CONTACT } from "../components/brand";
 import { usePageMotion, useHomeMotion } from "../hooks/use-motion";
 
@@ -557,28 +558,7 @@ export default function HomePage() {
 							<div className="kicker">Before &amp; after</div>
 							<h3>A bare arched window, finally dressed.</h3>
 						</div>
-						<div className="ba" data-reveal-group>
-							<figure data-reveal>
-								<span className="ba-tag">Before</span>
-								<img
-									className="ba-img"
-									src="/assets/ba-before.jpg"
-									alt="The arched dining room window before, left almost bare"
-									loading="lazy"
-									decoding="async"
-								/>
-							</figure>
-							<figure data-reveal>
-								<span className="ba-tag">After</span>
-								<img
-									className="ba-img"
-									src="/assets/ba-after.jpg"
-									alt="The same window after, with full custom sheer drapery"
-									loading="lazy"
-									decoding="async"
-								/>
-							</figure>
-						</div>
+						<BeforeAfter />
 						<p className="ba-cap soft" data-reveal>
 							The same dining room. A tall arched window left almost bare, given full custom sheer
 							drapery that softens the afternoon light and finally frames the architecture, without

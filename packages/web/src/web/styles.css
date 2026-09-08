@@ -653,6 +653,172 @@ ul.inline li {
 	text-align: center;
 }
 
+/* ---------------------------------------------------------------------------
+   V1.2 section 11: the before/after comparison frame.
+
+   Scoped entirely to .cmp. The .ba primitive above is shared with the landing
+   page (.page-lp .ba), which keeps its static pair, and .cmp is also what the
+   homepage falls back to before mount, under reduced motion, and with no JS.
+   Because .ba-img and .ba-tag are both scoped UNDER .ba in the rules above,
+   their visual treatment has to be restated here rather than inherited.
+   --------------------------------------------------------------------------- */
+
+.cmp {
+	margin-top: 14px;
+}
+
+.cmp-frame {
+	position: relative;
+	/* Same 3/4 portrait as each photograph in the static pair.
+	   NOT the same section height, though: the static pair is two 3/4 images
+	   side by side, and one 3/4 frame is a different box. Measured #projects
+	   height, static vs interactive: 1202 -> 1295px at 1440 (+7.8%), and
+	   1571 -> 1095px at 390 (-30.3%, because the static pair stacks on mobile).
+	   That reflow is paid for at hydration, and it is free: #projects sits
+	   7461px (desktop) / 11013px (mobile) below the fold at load, so the
+	   measured CLS contribution is 0.00000 at 390 and nil at 1440. */
+	aspect-ratio: 3 / 4;
+	max-width: 560px;
+	margin: 0 auto;
+	overflow: hidden;
+	border: 1px solid var(--hairline);
+	background: var(--bg-alt);
+	/* The handle is dragged, so kill the browser's own drag/selection gestures
+	   across the frame. touch-action lets vertical page scrolling through while
+	   the range input still receives horizontal drags. */
+	touch-action: pan-y;
+	user-select: none;
+}
+
+.cmp .cmp-img {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	filter: var(--elpa-grade);
+	/* The border lives on the frame, not on each image. */
+	border: none;
+	-webkit-user-drag: none;
+}
+
+.cmp-after {
+	position: absolute;
+	inset: 0;
+	/* clip-path comes from the inline style, driven by the range input. */
+	will-change: clip-path;
+}
+
+.cmp-tag {
+	position: absolute;
+	top: 12px;
+	z-index: 3;
+	background: rgba(46, 44, 41, 0.82);
+	color: var(--surface);
+	font-size: 12.5px;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	padding: 6px 14px;
+	pointer-events: none;
+}
+
+/* Both labels are permanent and never move, whatever the divider does. */
+.cmp-tag-before {
+	left: 12px;
+}
+
+.cmp-tag-after {
+	right: 12px;
+}
+
+.cmp-handle {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	z-index: 2;
+	width: 1px;
+	background: rgba(253, 251, 246, 0.9);
+	transform: translateX(-0.5px);
+	pointer-events: none;
+}
+
+.cmp-grip {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 44px;
+	height: 44px;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	background: rgba(253, 251, 246, 0.92);
+	border: 1px solid var(--hairline);
+	box-shadow: 0 2px 10px rgba(46, 44, 41, 0.18);
+}
+
+/* The two chevrons, drawn in CSS so the grip needs no asset. */
+.cmp-grip::before,
+.cmp-grip::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	width: 7px;
+	height: 7px;
+	border-top: 1.5px solid var(--accent);
+	border-right: 1.5px solid var(--accent);
+}
+
+.cmp-grip::before {
+	left: 12px;
+	transform: translateY(-50%) rotate(-135deg);
+}
+
+.cmp-grip::after {
+	right: 12px;
+	transform: translateY(-50%) rotate(45deg);
+}
+
+/* The real control: a native range input stretched over the whole frame, so
+   pointer drags, touch drags and the keyboard all work without custom code.
+   It is transparent because .cmp-handle is the thing the reader sees. */
+.cmp-range {
+	position: absolute;
+	inset: 0;
+	z-index: 4;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	opacity: 0;
+	appearance: none;
+	-webkit-appearance: none;
+	background: transparent;
+	cursor: ew-resize;
+}
+
+/* A near-zero-width thumb keeps the pointer and the divider in step: a wide
+   thumb insets the track at both ends and the seam then lags the cursor. */
+.cmp-range::-webkit-slider-thumb {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 1px;
+	height: 100%;
+}
+
+.cmp-range::-moz-range-thumb {
+	width: 1px;
+	height: 100%;
+	border: none;
+	border-radius: 0;
+}
+
+/* The input is invisible, so its focus ring would be too. Show focus on the
+   grip instead, which is the control the reader actually perceives. */
+.cmp-frame:focus-within .cmp-grip {
+	outline: 2px solid var(--accent);
+	outline-offset: 3px;
+}
+
 /* ---------- FAQ accordion (keyboard operable) ---------- */
 
 .faq-item {
