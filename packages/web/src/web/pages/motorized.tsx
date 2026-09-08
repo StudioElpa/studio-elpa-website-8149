@@ -125,7 +125,7 @@ export default function MotorizedPage() {
 						<div className="note">
 							Most companies sell you the shades and then leave the electrical up to you: find your
 							own electrician, get on their schedule, and hope everyone shows up in the right
-							order. Not here. The wiring is handled by our licensed, insured partner,{" "}
+							order. Not here. The wiring is handled by our licensed, insured electrical partner,{" "}
 							<BalticLink />, scheduled and managed by us. You never have to find or coordinate an
 							electrician. One point of contact, wired and working before we leave.
 						</div>

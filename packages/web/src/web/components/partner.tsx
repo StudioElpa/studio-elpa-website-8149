@@ -20,7 +20,7 @@ export const BALTIC_URL = "https://balticelectrical.com/";
 /** The business name, linked. Renders inline inside a sentence. */
 export function BalticLink() {
 	return (
-		<a href={BALTIC_URL} target="_blank" rel="noopener">
+		<a className="partner-link" href={BALTIC_URL} target="_blank" rel="noopener">
 			Baltic Electrical
 		</a>
 	);

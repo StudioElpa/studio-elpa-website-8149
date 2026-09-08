@@ -2515,3 +2515,177 @@ frame by design. For header shots use `/tmp/hdrshot.py` or the existing
   full) and **§8 the typography overhaul** (payload table, the four synthetic-face
   defects, glyph coverage, the Lighthouse table, the 7-width responsive table,
   every deliberate deviation, and the "nothing else moved" evidence).
+
+================================================================================
+§8 BALTIC ELECTRICAL NAMING AND LINKING PASS
+================================================================================
+
+User instruction: name and link Baltic Electrical consistently in EVERY
+electrical reference, including the Motorized section copy and the remaining
+unnamed mentions. Use "our licensed, insured electrical partner, Baltic
+Electrical" linked to https://balticelectrical.com/ (new tab, rel="noopener").
+It should read the same way everywhere, no unnamed references left.
+
+This closes long-standing open items 30 and 31.
+
+THE CANONICAL PHRASE, now identical in all eight places:
+  "our licensed, insured electrical partner, Baltic Electrical"
+always rendered through <BalticLink /> from components/partner.tsx, so the href,
+target and rel can never drift between mentions.
+
+SIX CODE EDITS
+1. index.tsx SERVICE_SIGNATURE.body - converted from a plain string to a JSX
+   fragment so it can carry <BalticLink />. Safe because SERVICE_SIGNATURE is a
+   standalone object literal rendered once as <p>{SERVICE_SIGNATURE.body}</p>,
+   NOT part of the mapped SERVICES_PRIMARY array.
+2. index.tsx ONE ROOF dark band - "our licensed, insured partner" became "our
+   licensed, insured electrical partner, <BalticLink />".
+3. index.tsx §10 trade spec-list row 3 - bold label changed from "A licensed,
+   insured electrical partner." to "Electrical, handled for you.", and the
+   sentence now carries the canonical phrase. THE LABEL CHANGE IS REQUIRED:
+   without it the bullet states the same credential twice in one sentence pair.
+   This edits approved §10 copy - flagged to the user so they can overrule.
+4. motorized.tsx section copy - "our licensed, insured partner" became the
+   canonical phrase. THIS is the "Motorized section copy" the user meant.
+5. blackout.tsx - new BalticLink import; the "Wiring handled for you" benefit
+   list now names and links Baltic. This list sits in a DARK band.
+6. founder.tsx - new BalticLink import; "a trusted, licensed and insured
+   electrical partner" became the canonical phrase. Light .page-article ground.
+
+Mentions went from 5 to 8. Verified with rg -n "BalticLink" on the pages dir:
+index.tsx 56, 165 (FAQ), 461, 533; motorized.tsx 32 (FAQ), 129;
+blackout.tsx 155; founder.tsx 70.
+
+FOUR ELECTRICAL REFERENCES DELIBERATELY LEFT UNNAMED
+Naming Baltic in any of these would be factually wrong, not consistent:
+  a. The two FAQ QUESTIONS ("Do I need to hire my own electrician?"). Questions,
+     not statements about who does the work. Their answers name Baltic.
+  b. The descriptions of THE BAD ALTERNATIVE at other companies ("find your own
+     electrician", "an electrician you have to find and schedule yourself").
+     These describe someone else's electrician, by design.
+  c. "you never have to find or coordinate an electrician" / "while a client
+     hunts for an electrician". Same reason.
+  d. index.tsx:120, the LIST OF THINGS WE MEASURE ("Sun exposure, ceiling
+     height, window dimensions, furniture, electrical, safety").
+Full rg -n -i "electric" audit re-run after the edits; reads exactly as intended.
+
+THE MOTORIZED HERO SUPPORT COPY CONTAINS NO ELECTRICAL REFERENCE AT ALL
+Verified by reading motorized.tsx:60-110. There was nothing there to attribute,
+so the Motorized requirement is satisfied by the section-copy edit at line 128
+instead. Stated plainly in the report so it does not read as a miss.
+
+A REAL ACCESSIBILITY DEFECT THIS PASS FOUND AND FIXED
+The handover assumed the dark-band mention would "inherit correctly" because the
+ONE ROOF mention had been verified before. MEASUREMENT DISPROVED THAT (lesson 7
+again: do not trust an assumption over a measurement). Two of the eight mentions
+sit on the dark ink band rgb(57,41,27):
+  - index.tsx ONE ROOF band
+  - blackout.tsx benefit list
+The olive --accent #6D7204 that links use on light grounds measures only 2.69:1
+there, far below AA 4.5. There was NO dark-band link colour rule in styles.css
+at all - only a .band.dark a:focus-visible rule - so the link simply inherited
+the global olive.
+
+FIX: <BalticLink /> gained a partner-link class, and a new rule at the very end
+of styles.css renders it in --dark-kick (#C9A67E, 6.13:1) with an underline on
+dark bands. The underline also gives the link a non-colour affordance against
+the surrounding cream body copy. Scoped to .partner-link so buttons and other
+links inside dark bands keep their own treatment. Placed last in the file so
+source order cannot be beaten by an equal-specificity rule (lesson 6).
+
+Candidate on-dark colours measured against rgb(57,41,27):
+  --dark-head #faf7f2  13.04:1
+  --dark-body #e8e1d4  10.72:1
+  --dark-kick #c9a67e   6.13:1   <- chosen, reads as an accent
+  --dark-mute #a89f92   5.33:1
+  --accent    #6d7204   2.69:1   FAIL
+
+Light-ground links keep the site's existing olive-without-underline convention.
+Changing that sitewide is a design decision, not an accessibility fix, so it was
+left alone and noted.
+
+/tmp/balticcontrast.py (NEW) reads each link's computed colour and walks up to
+the first non-transparent background, then applies the AA threshold with the
+large-text exemption. Final: 8 links measured, 0 below AA.
+  --bg cream #F5F1EA    --accent      4.60:1  pass
+  --surface  #FAF7F2    --accent      4.84:1  pass
+  dark ink   #39291B    --dark-kick   6.13:1  pass
+
+QA SCRIPT WORK
+/tmp/balticqa.py was rewritten: 18 checks on 2 routes became 43 checks on 4
+routes (index, motorized, blackout, founder), adding a canonical-phrase
+assertion, a "no unnamed partner phrasing left" regex, a per-route brand-embargo
+check and a sitewide count assertion. Result: 43 checks, 0 failed, sitewide
+linked mentions 8.
+
+/tmp/tradeqa.py EXPECTED row 2 was updated for the new §10 label before the run.
+That was a script fix, not a site fix. Result: OVERALL PASS.
+
+ONE QA FINDING WAS A SCRIPT DEFECT, NOT A SITE DEFECT - the fourteenth this
+project. The canonical-phrase check first failed on /index.html at 3 of 4. Cause:
+it matched against innerText, which reflects RENDERED line breaks, and the §10
+mention's link wraps to the next visual line at 1440px, putting a newline where
+the source has a space. textContent showed the correct string. /tmp/canonprobe.py
+proved it by dumping both textContent and innerText around each mention. The
+check now matches whitespace-normalised textContent.
+
+A SECOND SELF-INFLICTED TRAP WORTH REMEMBERING: writing a JS comment containing
+a literal \n inside balticqa.py's Python triple-quoted JS string turned it into a
+real newline at runtime, splitting the comment mid-line and throwing
+"SyntaxError: Unexpected identifier 'the'". Never put an escape sequence in a JS
+comment embedded in a Python string.
+
+FULL BATTERY, ALL GREEN
+  bun run lint            0 violations
+  bun run build           passes, 8 routes prerendered, both guards pass
+  probe11                 body text 10369 (was 10308 - THE BASELINE MOVED, the
+                          pass adds real words; report the new number, never
+                          claim "unchanged")
+  balticqa                43 / 0, sitewide count 8
+  balticcontrast          8 links, 0 below AA
+  tradeqa                 OVERALL PASS
+  respqa                  826 PASS / 0 FAIL, no regression
+  faqqa                   642 / 642
+  journalqa               258 / 0
+  qa2                     14 images, 0 broken, 0 page errors
+  qa_copy                 clean, brand embargo holds
+  qa_booking              10 CTAs, 0 misconfigured
+  overflow360             0 overflow at 360px
+  motionqa, h1flash       clean
+  brand audit in dist     CLEAN (source hits are the known comments only:
+                          estimate-engine.ts:9, :62, partner.tsx:12-13)
+  em-dash scan, 8 routes  0
+  partner-link rule confirmed present in the built CSS in dist
+
+DOCS
+  QA-NOTE.md - corrected BOTH stale "10,308 unchanged baseline" claims, and
+  added a full "§9 Naming and linking Baltic Electrical in every electrical
+  reference" section: the eight mentions table, the four deliberate non-edits
+  with reasons, the two changes worth a veto, the accessibility defect with the
+  contrast table, the QA table, and the script-defect finding.
+
+SCREENSHOTS REGENERATED
+/tmp/screens.py re-run after the pass, since the Motorized Shading service
+signature copy changed. Actual output dimensions in CSS px (the dimensions
+recorded in the §7 notes were stale - the section clips are full-section, not
+one-viewport):
+  hero-desktop        1440x981     hero-mobile390     390x788
+  service-desktop     1440x1967    service-mobile390  390x2400
+  process-desktop     1440x1249    process-mobile390  390x2141
+  contact-desktop     1440x1299    contact-mobile390  390x2163
+  footer-desktop      1440x549     footer-mobile390   390x811
+All written at device_scale_factor=2 into /home/user/screens-typography/.
+
+VISUAL CONFIRMATION OF THE DARK-BAND LINK
+/tmp/darklinkshot.py (NEW) crops the containing paragraph of each dark-band
+Baltic mention and montages the two into /tmp/dl-sheet.png. Eyeballed: warm tan
+--dark-kick, underlined, clearly legible against the dark ink band on both the
+homepage ONE ROOF band and the blackout benefit list, and it reads as a link
+rather than as emphasis.
+
+DESIGN.MD
+New "## Inline links" section records the light-ground treatment (olive, no
+underline, 4.60/4.84:1), the dark-band treatment (--dark-kick plus underline,
+6.13:1), why --accent must never be used on dark, where the rule lives and why
+it is last in the file, and the rule that named trade partners always render
+through <BalticLink />.

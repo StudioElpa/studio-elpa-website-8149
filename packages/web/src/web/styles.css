@@ -3675,3 +3675,26 @@ footer.lp .wordmark {
 		gap: 5px;
 	}
 }
+
+/* ============================================================================
+   NAMED PARTNER LINK (Baltic Electrical)
+   Measured, not assumed: the olive --accent (#6D7204) reads 4.60:1 on --bg and
+   4.84:1 on --surface, both clearing WCAG AA, but only 2.69:1 on the dark ink
+   band (#39291B). Two of the eight mentions sit in dark bands (the ONE ROOF
+   band on the homepage and the blackout page's benefit list), so dark grounds
+   use --dark-kick (6.13:1) plus an underline, which also gives the link a
+   non-colour affordance against the surrounding cream body copy.
+   Scoped to .partner-link so buttons and other links inside dark bands keep
+   their own treatment. Placed last in the file so source order cannot be beaten
+   by an equal-specificity rule.
+   ============================================================================ */
+.band.dark .partner-link {
+	color: var(--dark-kick);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+}
+
+.band.dark .partner-link:hover {
+	color: var(--dark-head);
+}

@@ -243,7 +243,7 @@ the final tree:
 |---|---|
 | `bun run lint` | **0 violations** |
 | `bun run build` | **passes**, 8 routes prerendered, both build guards pass |
-| `/tmp/probe11.py` | body text **10,308 chars, unchanged baseline** |
+| `/tmp/probe11.py` | body text **10,308 chars** at the V1 lock (now 10,369 after the §9 Baltic naming pass) |
 | `/tmp/respqa.py` (7 widths × 3 routes) | **826 PASS / 0 FAIL** |
 | `/tmp/faqqa.py` (§15) | **642 / 642** |
 | `/tmp/footerqa.py` (§16) | **97 / 97** |
@@ -424,7 +424,9 @@ still inside the brief's 0.98–1.04 hero band. Desktop keeps 1.0.
 
 ### Nothing else moved
 
-Body text is **byte-identical at 10,308 characters**. `.env` is byte-identical to
+Body text was **byte-identical at 10,308 characters** at the end of the typography
+overhaul. It later moved to **10,369** in the §9 Baltic naming pass, which added
+real words. `.env` is byte-identical to
 its backup. All 10 booking CTAs intact and correctly configured. The href audit is
 clean. No copy, integration, URL or functional change.
 
@@ -490,6 +492,125 @@ start below the sticky header, so the header is out of frame by design.
   checklist's em dash, because the site holds a strict no-em-dash rule. This is an
   internal CRM record title only. Say the word if you'd rather match the checklist
   exactly — it is one line.
+
+---
+
+## §9 Naming and linking Baltic Electrical in every electrical reference
+
+The brief: name and link the electrical partner consistently in **every** electrical
+reference, including the Motorized section copy and the remaining unnamed mentions,
+so it reads the same way everywhere with no unnamed references left.
+
+The canonical phrase is now, in all eight places:
+
+> our licensed, insured electrical partner, **Baltic Electrical**
+
+always rendered through `<BalticLink />` from `components/partner.tsx`, so the href,
+`target="_blank"` and `rel="noopener"` can never drift between mentions.
+
+### The eight mentions
+
+| File | Where |
+|---|---|
+| `pages/index.tsx` | Motorized Shading service signature copy |
+| `pages/index.tsx` | homepage FAQ answer |
+| `pages/index.tsx` | ONE ROOF dark band |
+| `pages/index.tsx` | §10 trade spec sheet, row 3 |
+| `pages/motorized.tsx` | page FAQ answer |
+| `pages/motorized.tsx` | "the wiring is handled" section copy |
+| `pages/blackout.tsx` | "Wiring handled for you" benefit list (dark band) |
+| `pages/founder.tsx` | founder narrative |
+
+Mentions went from **5 to 8**. `blackout.tsx` and `founder.tsx` each needed a new
+`BalticLink` import. `SERVICE_SIGNATURE.body` in `index.tsx` was converted from a
+plain string to a JSX fragment so it could carry the link; that object is standalone
+and rendered once, so no other consumer was affected.
+
+### Four electrical references were deliberately left unnamed
+
+Naming Baltic in any of these would be factually wrong, not consistent:
+
+1. **The two FAQ questions** ("Do I need to hire my own electrician?"). They are
+   questions, not statements about who does the work; the answers name Baltic.
+2. **The descriptions of the bad alternative at other companies** ("find your own
+   electrician", "an electrician you have to find and schedule yourself"). These
+   describe someone else's electrician, by design.
+3. **"you never have to find or coordinate an electrician"** and "while a client
+   hunts for an electrician". Same reason.
+4. **The list of things we measure** ("Sun exposure, ceiling height, window
+   dimensions, furniture, electrical, safety"), where "electrical" is a survey item.
+
+This is a deliberate decision, not an oversight.
+
+### Two changes worth your veto
+
+- **The §10 spec-list bold label changed** from "A licensed, insured electrical
+  partner." to **"Electrical, handled for you."** Without it the bullet would state
+  the same credential twice in one sentence pair. This edits approved §10 copy, so
+  overrule it if you'd rather keep the original label and accept the repetition.
+- **The motorized hero support copy contains no electrical reference at all**
+  (verified by reading it). There was nothing there to attribute, so the Motorized
+  requirement is satisfied by the section copy instead.
+
+### A real accessibility defect this pass found and fixed
+
+Two of the eight mentions sit on the dark ink band (`#39291B`): the homepage ONE
+ROOF band and the blackout benefit list. The olive `--accent` (`#6D7204`) that links
+use on light grounds measures only **2.69:1** there, well below AA. It was assumed
+the dark path would inherit correctly; **measurement disproved that**, and there was
+no dark-band link colour rule in the stylesheet at all.
+
+Fix: `<BalticLink />` gained a `partner-link` class and dark bands now render it in
+`--dark-kick` (**6.13:1**) with an underline, which also gives the link a
+non-colour affordance against the surrounding cream body copy. Scoped to
+`.partner-link` so buttons and other dark-band links keep their own treatment, and
+placed last in `styles.css` so source order cannot be beaten.
+
+Measured with `/tmp/balticcontrast.py`, which reads each link's computed colour and
+walks up to the first non-transparent background:
+
+| ground | colour | ratio | AA |
+|---|---|---|---|
+| `--bg` cream `#F5F1EA` | `--accent` | 4.60:1 | pass |
+| `--surface` `#FAF7F2` | `--accent` | 4.84:1 | pass |
+| dark ink `#39291B` | `--dark-kick` | 6.13:1 | pass |
+
+**8 links measured, 0 below AA.**
+
+Light-ground links keep the site's existing olive-without-underline convention;
+changing that sitewide is a design decision, not an accessibility fix.
+
+### QA
+
+| Script | Result |
+|---|---|
+| `bun run lint` | **0 violations** |
+| `bun run build` | **passes**, 8 routes prerendered, both guards pass |
+| `/tmp/balticqa.py` (rewritten: 4 routes) | **43 checks, 0 failed**, sitewide count 8 |
+| `/tmp/balticcontrast.py` (new) | **8 links, 0 below AA** |
+| `/tmp/tradeqa.py` (§10) | **OVERALL PASS** with the new label |
+| `/tmp/probe11.py` | body text **10,369** (was 10,308 — the pass adds words) |
+| `/tmp/respqa.py` | **826 PASS / 0 FAIL**, no regression |
+| `/tmp/faqqa.py` | **642 / 642** |
+| `/tmp/journalqa.py` | **258 / 0** |
+| `/tmp/qa2.py` | 14 images, 0 broken, 0 page errors |
+| `/tmp/qa_copy.py` | clean, brand embargo holds |
+| `/tmp/qa_booking.py` | 10 CTAs, 0 misconfigured |
+| `/tmp/overflow360.py` | 0 overflow |
+| `/tmp/motionqa.py`, `/tmp/h1flash.py` | clean |
+| brand audit, `dist` | **clean** |
+| em-dash scan, 8 routes | **0** |
+
+`balticqa.py` was extended from 18 checks on 2 routes to 43 checks on 4 routes,
+adding a canonical-phrase assertion, an "no unnamed partner phrasing left" regex and
+a per-route brand-embargo check.
+
+**One QA finding was a script defect, not a site defect** — the fourteenth this
+project. The canonical-phrase check first failed on `/index.html` at 3 of 4. Cause:
+the check matched against `innerText`, which reflects **rendered** line breaks, and
+the §10 mention's link wraps to the next visual line at 1440px, putting a newline
+where the source has a space. `textContent` showed the correct string. The check now
+matches whitespace-normalised `textContent`.
 
 ---
 

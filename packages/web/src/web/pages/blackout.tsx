@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { LandingHeader, LandingFooter } from "../components/site-chrome";
 import { Faq, type FaqEntry } from "../components/faq";
 import { CONTACT } from "../components/brand";
+import { BalticLink } from "../components/partner";
 import { usePageMotion } from "../hooks/use-motion";
 
 /* Copy ported verbatim from the original blackout.html. The dark-band list used
@@ -150,7 +151,8 @@ export default function BlackoutPage() {
 								<b>Cord-free and child-safe</b>, the safest choice in a bedroom or nursery.
 							</li>
 							<li>
-								<b>Wiring handled for you</b> through our licensed, insured electrical partner.
+								<b>Wiring handled for you</b> through our licensed, insured electrical partner,{" "}
+								<BalticLink />.
 							</li>
 						</ul>
 					</div>

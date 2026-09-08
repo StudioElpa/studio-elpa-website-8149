@@ -104,6 +104,21 @@ file **and** the codepoint inside the declared range.
   44px tap-target floor.
 - All hover/focus transitions are CSS, never GSAP.
 
+## Inline links
+
+- **Light grounds:** olive `--accent`, no underline. Measured **4.60:1** on `--bg` and
+  **4.84:1** on `--surface`, both clearing WCAG AA for body text.
+- **Dark bands:** `--accent` only reaches **2.69:1** on the dark ink band (`#39291B`), so it
+  must never be used there. Dark grounds use `--dark-kick` (**6.13:1**) **plus an underline**,
+  which also gives the link a non-colour affordance against the cream body copy.
+- This is implemented as `.band.dark .partner-link` at the very end of `styles.css` — scoped
+  to the named-partner link so buttons and other dark-band links keep their own treatment,
+  and placed last so source order cannot be beaten by an equal-specificity rule.
+- **Named trade partners always render through `<BalticLink />`** (`components/partner.tsx`),
+  never as hand-written anchors, so the href, `target="_blank"` and `rel="noopener"` cannot
+  drift between mentions. The phrase is always "our licensed, insured electrical partner,
+  Baltic Electrical".
+
 ## Layout
 
 - Container max-width 1080px, 40px gutters (24px on mobile).

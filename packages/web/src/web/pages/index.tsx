@@ -49,7 +49,13 @@ const SERVICE_SIGNATURE = {
 	alt: "Motorized shades lowered evenly across a wide wall of glass",
 	title: "Motorized Shading",
 	sig: "Our signature is motorized custom drapery: European fabric that moves on a schedule, on quiet, reliable motors, ready for smart-home integration.",
-	body: "The luxury of never touching a cord. Quiet, reliable motors for the windows you can't reach, whole walls of glass, and cord-free child safety, with the wiring handled by our licensed, insured electrical partner.",
+	body: (
+		<>
+			The luxury of never touching a cord. Quiet, reliable motors for the windows you can't
+			reach, whole walls of glass, and cord-free child safety, with the wiring handled by our
+			licensed, insured electrical partner, <BalticLink />.
+		</>
+	),
 	tags: "Child-safe · smart-home · big glass",
 };
 
@@ -452,7 +458,8 @@ export default function HomePage() {
 							<p>
 								We keep it all coordinated under one roof. Our own installers hang every treatment,
 								and the electrical that motorization needs is handled by our licensed, insured
-								partner, <BalticLink />, scheduled and managed by us. No chasing a third party,
+								electrical partner, <BalticLink />, scheduled and managed by us. No chasing a
+								third party,
 								no <em>"that's not our department,"</em> and no gap between the person who designed
 								your project and the people who finish it. One point of contact, from the first
 								conversation to the last shade raised on your schedule.
@@ -522,9 +529,9 @@ export default function HomePage() {
 										every day, never subcontracted.
 									</li>
 									<li>
-										<b>A licensed, insured electrical partner.</b> The electrical is handled by{" "}
-										<BalticLink />, so motorized projects don't stall while a client hunts for an
-										electrician; we coordinate it for you.
+										<b>Electrical, handled for you.</b> The electrical is handled by our licensed,
+										insured electrical partner, <BalticLink />, so motorized projects don't stall
+										while a client hunts for an electrician; we coordinate it for you.
 									</li>
 									<li>
 										<b>Proactive communication.</b> You'll always know where things stand.

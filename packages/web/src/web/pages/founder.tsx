@@ -1,4 +1,5 @@
 import { BackHeader, ThinFooter } from "../components/site-chrome";
+import { BalticLink } from "../components/partner";
 import { usePageMotion } from "../hooks/use-motion";
 
 /* Copy ported verbatim from the original founder.html. */
@@ -65,8 +66,9 @@ export default function FounderPage() {
 							That's why I think of us as consultants first, and salespeople never. I want the
 							whole process to feel considered and, honestly, easy: the first conversation, the
 							European fabrics, the craftsmanship, the hardware, the motorization, the
-							installation. We keep the work close, with our own installers and a trusted, licensed
-							and insured electrical partner, because you shouldn't have to coordinate five people
+							installation. We keep the work close, with our own installers and our licensed,
+							insured electrical partner, <BalticLink />, because you shouldn't have to coordinate
+							five people
 							to finish one beautiful room. And when we work alongside your designer, their vision
 							is something we protect.
 						</p>
