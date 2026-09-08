@@ -2459,18 +2459,28 @@ what is actually listening.
 reveal, then does `scrollIntoView` + `page.screenshot(clip=box)` per section
 (never `locator.screenshot()`, per the `.hero-frame` timeout lesson).
 
-| file | size |
-|---|---|
-| `hero-desktop.png` | 1440x981 |
-| `service-desktop.png` | 1440x1967 |
-| `process-desktop.png` | 1440x1249 |
-| `contact-desktop.png` | 1440x1299 |
-| `footer-desktop.png` | 1440x549 |
-| `hero-mobile390.png` | 390x788 |
-| `service-mobile390.png` | 390x2400 (capped) |
-| `process-mobile390.png` | 390x2141 |
-| `contact-mobile390.png` | 390x2163 |
-| `footer-mobile390.png` | 390x811 |
+Actual file dimensions, from `identify` (CSS px is half of each, since the clips
+were captured at `device_scale_factor=2`):
+
+| file | pixels | CSS px |
+|---|---|---|
+| `hero-desktop.png` | 2880x1630 | 1440x815 |
+| `service-desktop.png` | 2880x1616 | 1440x808 |
+| `process-desktop.png` | 2880x1616 | 1440x808 |
+| `contact-desktop.png` | 2880x1616 | 1440x808 |
+| `footer-desktop.png` | 2880x1096 | 1440x548 |
+| `hero-mobile390.png` | 780x1542 | 390x771 |
+| `service-mobile390.png` | 780x1526 | 390x763 |
+| `process-mobile390.png` | 780x1526 | 390x763 |
+| `contact-mobile390.png` | 780x1520 | 390x760 |
+| `footer-mobile390.png` | 780x1620 | 390x810 |
+
+All ten were eyeballed via two `montage` contact sheets. Correct in every frame:
+Newsreader 400 headings, Instrument Sans body and CTAs, olive `--accent` buttons,
+the footer wordmark rendered as live Newsreader 500 text, no synthetic weights, no
+clipped descenders, and the mobile hero wrapping to four balanced lines. The one
+cosmetic nit visible is the known mismatched mobile hero CTA widths, deliberately
+left unchanged.
 
 Section clips start below the sticky header, so the header and logo are out of
 frame by design. For header shots use `/tmp/hdrshot.py` or the existing
