@@ -78,16 +78,19 @@ def serve(dist: str):
 
 
 def unblock_paint(html: str, dist: str) -> str:
-    """Take the two render-blocking stylesheets off the critical path.
+    """Take the render-blocking stylesheet off the critical path.
 
-    1. The built stylesheet (about 40 kB, 9 kB gzipped) becomes an inline
-       <style>, which removes a whole round trip before first paint.
-    2. The Google Fonts stylesheet loads asynchronously via rel=preload plus
-       an onload swap, with a <noscript> fallback. The font URL already has
-       display=swap, so headings paint in the fallback face and swap in
-       Cormorant when it lands, instead of holding the paint for ~760 ms.
+    The built stylesheet (about 40 kB, 9 kB gzipped) becomes an inline
+    <style>, which removes a whole round trip before first paint.
+
+    There used to be a second branch here that de-blocked the Google Fonts
+    stylesheet with a rel=preload plus onload swap, because that third-party
+    request held the paint for roughly 760 ms. The fonts are self-hosted now,
+    declared in @font-face inside this very stylesheet, so there is no
+    external font request left to de-block. Every face uses font-display:
+    swap, so headings still paint immediately in the fallback face.
     """
-    # 1. inline the local stylesheet
+    # inline the local stylesheet
     match = re.search(r'<link rel="stylesheet"[^>]*href="(/assets/[^"]+\.css)"[^>]*>', html)
     if match:
         css_path = os.path.join(dist, match.group(1).lstrip("/"))
@@ -95,18 +98,6 @@ def unblock_paint(html: str, dist: str) -> str:
             with open(css_path, encoding="utf-8") as fh:
                 css = fh.read()
             html = html.replace(match.group(0), f"<style>{css}</style>")
-
-    # 2. de-block the font stylesheet
-    fonts = re.search(r'<link href="(https://fonts\.googleapis\.com/[^"]+)" rel="stylesheet">', html)
-    if fonts:
-        url = fonts.group(1)
-        html = html.replace(
-            fonts.group(0),
-            f'<link rel="preload" as="style" href="{url}">'
-            f'<link rel="stylesheet" href="{url}" media="print" '
-            f'onload="this.media=\'all\';this.onload=null">'
-            f'<noscript><link rel="stylesheet" href="{url}"></noscript>',
-        )
 
     return html
 

@@ -36,11 +36,17 @@
 			imagesizes="(max-width: 860px) 100vw, 1000px"
 			fetchpriority="high"
 		/>
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<!-- Fonts are self-hosted from /fonts, so there is no third-party font
+		     request and no preconnect to warm. Only the Newsreader roman file is
+		     preloaded: it is the one the hero headline needs. The italic and the
+		     sans are fetched by the stylesheet on their own schedule, and every
+		     face declares font-display: swap so text is visible throughout. -->
 		<link
-			href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap"
-			rel="stylesheet"
+			rel="preload"
+			as="font"
+			type="font/woff2"
+			href="/fonts/newsreader-var-latin.woff2"
+			crossorigin
 		/>
 	</head>
 	<body>

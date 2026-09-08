@@ -4,7 +4,9 @@
  *
  * Only logo.png and logo-mark.png exist today, both dark-on-light. Per Aviva:
  * on light grounds use the real logo as-is; on dark grounds do NOT recolor or
- * force it — set the wordmark in cream Cormorant Garamond instead.
+ * force it — set the wordmark as cream text instead. That text is Newsreader
+ * since the Warm Editorial typography pass; it is a temporary editorial
+ * treatment and does not reproduce the official logo.
  *
  * When the designer supplies an SVG and a reversed lockup:
  *   - swap the <img src> in <Logo> for the SVG

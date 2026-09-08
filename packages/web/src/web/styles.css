@@ -1,6 +1,61 @@
 @import "tailwindcss";
 
 /* ============================================================================
+   WEBFONTS - "Warm Editorial" direction
+   Newsreader (display / editorial serif) + Instrument Sans (body / interface).
+   Both families are SIL Open Font License 1.1. The upstream OFL WOFF2 builds
+   are self-hosted from /fonts; there is no runtime Google Fonts request.
+
+   Each file is a variable font instanced down to only the axes and weight
+   range the site uses, so no unused weight ships and no weight is synthesised:
+     newsreader-var-latin.woff2       wght 400-500, opsz pinned 24  (36.8 kB)
+     newsreader-italic-latin.woff2    wght 400,     opsz pinned 18  (22.3 kB)
+     instrument-sans-var-latin.woff2  wght 400-600, wdth pinned 100 (26.5 kB)
+
+   The sans is built from the upstream full TTF rather than Google's latin
+   slice because the site renders arrows the slice omits. See the unicode-range
+   note on that face.
+   ============================================================================ */
+
+@font-face {
+	font-family: "Newsreader";
+	font-style: normal;
+	font-weight: 400 500;
+	font-display: swap;
+	src: url("/fonts/newsreader-var-latin.woff2") format("woff2");
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+		U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+		U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+	font-family: "Newsreader";
+	font-style: italic;
+	font-weight: 400;
+	font-display: swap;
+	src: url("/fonts/newsreader-italic-latin.woff2") format("woff2");
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+		U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+		U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+	font-family: "Instrument Sans";
+	font-style: normal;
+	font-weight: 400 600;
+	font-display: swap;
+	src: url("/fonts/instrument-sans-var-latin.woff2") format("woff2");
+	/* U+2190-2193 is deliberately wider than the stock latin range: the site
+	   renders left and right arrows in "Back to site" and "Read the story"
+	   links. Newsreader has no arrow glyphs at all upstream, so this face is
+	   the one that must carry them, and the range has to admit them or the
+	   browser would skip the file and fall back to a system font. */
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+		U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+		U+2190-2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ============================================================================
    STUDIO ELPA
    Ported from the original hand-built site. Brand tokens are exactly the ones
    in the Runnable V1 brief, Section 4.
@@ -34,8 +89,11 @@
 	--dark-rule: #45413b;
 	--dark-mute: #a89f92;
 
-	--serif: "Cormorant Garamond", Georgia, serif;
-	--sans: "Jost", "Helvetica Neue", sans-serif;
+	/* Instrument Sans sits in the serif stack on purpose: Newsreader ships no
+	   arrow glyphs, so anything Newsreader cannot draw falls through to a face
+	   that is still self-hosted rather than to whatever the OS supplies. */
+	--serif: "Newsreader", "Instrument Sans", Georgia, "Times New Roman", serif;
+	--sans: "Instrument Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	--elpa-grade: saturate(0.82) contrast(0.96) brightness(1.04) sepia(0.14);
 }
 
@@ -69,6 +127,21 @@ h4 {
 
 p {
 	margin-bottom: 18px;
+}
+
+/* Emphasis inside body copy. Instrument Sans is self-hosted as a roman face
+   only, so an <em> in a sans paragraph was getting a synthetic slant. The
+   brief wants italics to be an editorial moment anyway, so emphasis is set in
+   Newsreader Italic 400, which is a real face. The 1.04em bump compensates for
+   Newsreader's smaller x-height so the emphasised words do not look shrunken
+   mid-sentence. Elements already set in the serif inherit it unchanged. */
+em,
+i,
+cite {
+	font-family: var(--serif);
+	font-style: italic;
+	font-weight: 400;
+	font-size: 1.04em;
 }
 
 a {
@@ -1117,7 +1190,10 @@ nav.main a:not(.nav-cta).active::after {
 	font-size: 12.5px !important;
 	letter-spacing: 0.14em !important;
 	text-transform: uppercase;
-	font-weight: 700;
+	/* Instrument Sans is self-hosted at wght 400-600. 700 here asked for a
+	   weight the face cannot supply, so the browser synthesised the bold. 600
+	   is the brief's button weight and is a real instance. */
+	font-weight: 600;
 	padding: 12px 22px;
 	background: var(--accent);
 	border: 1px solid var(--accent);
@@ -1297,7 +1373,11 @@ footer.site .base a {
 .wordmark {
 	font-family: var(--serif);
 	color: var(--dark-head);
-	font-weight: 600;
+	/* Newsreader is self-hosted at wght 400-500, so the old 600 was rendering
+	   as a synthetic bold. 500 is a real instance and reads as a wordmark
+	   without going heavy. This remains a temporary editorial treatment; it
+	   does not reproduce the official logo. */
+	font-weight: 500;
 	line-height: 1;
 	display: inline-block;
 }
@@ -2645,9 +2725,16 @@ footer.lp .wordmark {
 }
 
 .page-article .footnote {
-	font-size: 14.5px;
+	/* The source note was italic in a sans that has no italic face, so it was
+	   being slanted synthetically. Keeping the italic intent but moving it to
+	   Newsreader Italic 400, a real face. 15.5px because the serif reads
+	   smaller than Instrument Sans at the same nominal size. */
+	font-family: var(--serif);
+	font-size: 15.5px;
+	line-height: 1.6;
 	color: var(--ink-soft);
 	font-style: italic;
+	font-weight: 400;
 	border-top: 1px solid var(--hairline);
 	padding-top: 18px;
 	margin-top: 44px;

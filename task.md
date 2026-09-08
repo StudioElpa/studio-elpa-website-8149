@@ -2019,3 +2019,121 @@ dist pass proves they ship in the static HTML. Not a copy loss.
 
 `bun run lint` 0 violations; `/tmp/probe11.py` renders; `bun run build` passes
 including the section 15 prerender guard, 8 routes written.
+
+---
+
+## WARM EDITORIAL TYPOGRAPHY, STAGE A: SELF-HOSTED FONTS
+
+Newsreader replaces Cormorant Garamond and Instrument Sans replaces Jost,
+sitewide. This supersedes the V1 and V1.2 instruction to preserve the existing
+typography direction, and supersedes V1 locked decision 5 for the footer
+wordmark. The user approved all three named consequences: FAQ questions move to
+the sans, the footer wordmark becomes Newsreader, and CTA letter-spacing comes
+down.
+
+### Payload, measured not assumed
+
+Before, the latin subsets Google actually served for the eight declared faces:
+
+| face | bytes |
+|---|---|
+| Cormorant Garamond 400 / 500 / 600 | 37640 each |
+| Cormorant Garamond 400 italic | 23660 |
+| Jost 300 / 400 / 500 / 600 | 26576 each |
+| **total** | **242884 (237.2 kB)** |
+
+All 32 subset files together would have been 659.2 kB, but only the latin slice
+is ever fetched for this site.
+
+After, three self-hosted files:
+
+| file | axes | bytes |
+|---|---|---|
+| newsreader-var-latin.woff2 | wght 400-500, opsz pinned 24 | 37712 |
+| newsreader-italic-latin.woff2 | wght 400, opsz pinned 18, static | 22860 |
+| instrument-sans-var-latin.woff2 | wght 400-600, wdth pinned 100 | 27156 |
+| **total** | | **87728 (85.7 kB)** |
+
+**64% smaller, and no third-party request at all.**
+
+### Why variable fonts, and why opsz is pinned
+
+Both families come back from the upstream API as variable fonts, so the honest
+self-hosted set is three files rather than the six faces the brief lists. Live
+weight ranges are what prevent synthetic bold: a request for 500 or 600 lands on
+a real instance instead of being smeared by the browser.
+
+The `opsz` axis is what costs bytes. Keeping it live cost 86.2 kB for the
+Newsreader roman alone; pinning it took the same file to 36.8 kB. Pinned at 24
+for the roman because Newsreader here is display type (hero, section headings,
+titles), and at 18 for the italic because italics run at text sizes.
+
+Newsreader keeps wght 400-500 rather than 400 alone, which costs about 15 kB,
+because the stylesheet declares `font-weight: 500` on serif in roughly ten
+places including the global `h1-h4` rule. The brief's "500 only if visually
+necessary" is satisfied by tuning individual rules, not by dropping the range
+and letting the browser clamp.
+
+### Four real defects the QA found
+
+1. `.nav-cta` asked for **700**. Instrument Sans is hosted at 400-600, so that
+   was a synthetic bold on every page's header CTA. Now 600, the brief's button
+   weight.
+2. `.wordmark` asked for **600** against a 400-500 Newsreader. Also synthetic.
+   Now 500.
+3. `<em>` in body copy inherited the sans, which has **no italic face**, so
+   emphasis was being slanted synthetically. Now Newsreader Italic 400 with a
+   1.04em bump to compensate for the smaller x-height. This is what the brief
+   wants anyway: italics as an editorial moment.
+4. `.page-article .footnote` was itself italic in the sans. Same synthetic
+   slant. Now Newsreader Italic 400 at 15.5px, keeping the italic intent.
+
+### The arrow glyphs
+
+`/tmp/glyphqa.py` compares every character the eight built routes render against
+each font's cmap. It found the site renders U+2190 and U+2192 in seven places
+("← Back to site", "Read the story →", and four more).
+
+**Newsreader has no arrow glyphs at all** - not in Google's latin slice, not in
+the upstream full 564-glyph TTF. Instrument Sans does. All seven arrows were
+measured to render in sans context, so the sans is the face that must carry
+them, and two things were needed:
+
+- the file rebuilt from the **upstream full TTF** rather than Google's latin
+  slice, subset to latin plus U+2190-2193. Built lean (`--no-hinting`,
+  `--desubroutinize`, explicit layout features) it came out at 27.2 kB, which is
+  *smaller* than Google's 28.3 kB slice while carrying four glyphs more.
+- the declared `unicode-range` widened to admit U+2190-2193. Without that the
+  browser gates the file out for those characters no matter what it contains.
+
+Belt and braces, `--serif` now lists `"Instrument Sans"` before Georgia, so
+anything Newsreader cannot draw falls through to a face that is still
+self-hosted rather than to whatever the OS supplies.
+
+### Google Fonts removed
+
+Three `<link>`s deleted from `index.html`: two preconnects and the stylesheet.
+Replaced by a single `rel=preload as=font crossorigin` for
+`newsreader-var-latin.woff2`, the file the hero headline needs, per the brief's
+"preload only the Newsreader file needed by the hero heading".
+
+`prerender.py`'s `unblock_paint()` lost its second branch entirely. That branch
+existed to de-block the third-party font stylesheet with a `rel=preload` plus
+`onload` swap, worth about 760 ms of hero stall. There is no external font
+request left to de-block. Branch 1, inlining the built stylesheet, is untouched,
+and the `@font-face` blocks now ride along inside that inlined CSS.
+
+### Verification
+
+- `bun run lint` 0 violations, `bun run build` passes, 8 routes prerendered.
+- `/tmp/probe11.py` body text length **10308, identical to the section 16
+  baseline**, so no copy moved.
+- `/tmp/fontqa.py` **85 PASS 0 FAIL** across all 8 routes against the gzipped
+  prerendered dist on 4310: no third-party font request, every `/fonts/*.woff2`
+  200 with `font/woff2`, all three faces declared and the two roman faces
+  loaded, no synthetic bold or italic anywhere, no page or console errors.
+- `/tmp/glyphqa.py` Instrument Sans covers all 80 rendered characters.
+- Zero `fonts.googleapis` or `fonts.gstatic` strings in built html, css or js.
+
+`"ID Grotesk Trial"` shows up once per route in the family census. That is the
+template's "Made with Runable" badge, not site copy. Left alone.
