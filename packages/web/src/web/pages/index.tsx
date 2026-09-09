@@ -270,7 +270,20 @@ export default function HomePage() {
 							{PILLARS.map((p) => {
 								const inner = (
 									<>
-										<img className="pimg" src={`/assets/${p.img}`} alt={p.alt} />
+										{/* Below the fold on every screen size, and four of them at
+										    ~75 kB each. Eager, they were downloading in parallel with
+										    the hero and pushing the largest paint out on a throttled
+										    connection. The 4/3 aspect-ratio in styles.css reserves the
+										    box, so deferring them costs no layout shift. */}
+										<img
+											className="pimg"
+											src={`/assets/${p.img}`}
+											alt={p.alt}
+											width={1000}
+											height={750}
+											loading="lazy"
+											decoding="async"
+										/>
 										<h3>{p.title}</h3>
 									</>
 								);

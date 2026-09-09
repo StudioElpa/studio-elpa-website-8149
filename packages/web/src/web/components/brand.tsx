@@ -129,6 +129,10 @@ export function FooterLogo({ height, className = "footer-logo" }: FooterLogoProp
 			alt="Studio Elpa, window treatments and home textiles"
 			width={LOGO_FOOTER_W}
 			height={LOGO_FOOTER_H}
+			/* The footer is the last thing on every page, so this never needs to
+			   compete with the hero for bandwidth. */
+			loading="lazy"
+			decoding="async"
 			style={height ? { height, width: "auto" } : undefined}
 		/>
 	);

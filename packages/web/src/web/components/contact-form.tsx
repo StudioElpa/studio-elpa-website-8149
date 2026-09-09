@@ -1,13 +1,20 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CONTACT } from "./brand";
-import { useSubmitLead, readUtm } from "../queries/leads";
 
 /**
  * The original form had bare <label> elements next to their inputs with no
  * htmlFor, no validation feedback beyond the browser default, and reported
  * failure through alert(). Same fields, same names, same copy — now labelled,
  * announced, and inline.
+ *
+ * The markup stays eager on purpose: it is real crawlable content, it is in the
+ * prerendered HTML, and its height is what keeps CLS at zero. Only the network
+ * machinery is deferred — ../queries/leads pulls the @orpc client stack, which
+ * nothing on first paint needs, so it is loaded on first focus and awaited on
+ * submit. Same dynamic-import shape as lib/home-gsap.ts.
  */
+
+type LeadsModule = typeof import("../queries/leads");
 
 const TYPES = [
 	"A homeowner",
@@ -34,8 +41,16 @@ export function ContactForm({ sourcePage }: { sourcePage: string }) {
 	const [errors, setErrors] = useState<Errors>({});
 	const [failed, setFailed] = useState(false);
 	const [sent, setSent] = useState(false);
+	const [pending, setPending] = useState(false);
 
-	const submit = useSubmitLead();
+	/* One in-flight promise, reused. Warmed on first focus so that by the time
+	   anyone has finished typing their name the module is already resident, and
+	   submit is not waiting on a round trip for the code itself. */
+	const leads = useRef<Promise<LeadsModule> | null>(null);
+	function warmLeads() {
+		leads.current ??= import("../queries/leads");
+		return leads.current;
+	}
 
 	function set<K extends keyof typeof values>(key: K, value: string) {
 		setValues((v) => ({ ...v, [key]: value }));
@@ -51,7 +66,7 @@ export function ContactForm({ sourcePage }: { sourcePage: string }) {
 		return next;
 	}
 
-	function onSubmit(e: React.FormEvent) {
+	async function onSubmit(e: React.FormEvent) {
 		e.preventDefault();
 		setFailed(false);
 
@@ -63,13 +78,24 @@ export function ContactForm({ sourcePage }: { sourcePage: string }) {
 			return;
 		}
 
-		submit.mutate(
-			{ ...values, sourcePage, submittedAt: new Date().toISOString(), ...readUtm() },
-			{
-				onSuccess: (res) => (res.ok ? setSent(true) : setFailed(true)),
-				onError: () => setFailed(true),
-			},
-		);
+		setPending(true);
+		try {
+			const { submitLeadDirect, readUtm } = await warmLeads();
+			const res = await submitLeadDirect({
+				...values,
+				sourcePage,
+				submittedAt: new Date().toISOString(),
+				...readUtm(),
+			});
+			if (res.ok) setSent(true);
+			else setFailed(true);
+		} catch {
+			/* A failed chunk fetch and a failed submission read the same to the
+			   visitor, and the fallback copy already points them at email. */
+			setFailed(true);
+		} finally {
+			setPending(false);
+		}
 	}
 
 	if (sent) {
@@ -83,7 +109,7 @@ export function ContactForm({ sourcePage }: { sourcePage: string }) {
 	}
 
 	return (
-		<form onSubmit={onSubmit} noValidate>
+		<form onSubmit={onSubmit} onFocus={warmLeads} noValidate>
 			<div className="field">
 				<label id="cf-name-l" htmlFor="cf-name">Your name</label>
 				<input
@@ -188,9 +214,9 @@ export function ContactForm({ sourcePage }: { sourcePage: string }) {
 				type="submit"
 				className="btn btn-dark"
 				style={{ width: "100%" }}
-				disabled={submit.isPending}
+				disabled={pending}
 			>
-				{submit.isPending ? "Sending…" : "Send it over"}
+				{pending ? "Sending…" : "Send it over"}
 			</button>
 
 			<p className="reassure" role={failed ? "alert" : undefined}>
