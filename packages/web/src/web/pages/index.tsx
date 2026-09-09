@@ -78,11 +78,12 @@ const SERVICES_PRIMARY = [
 		href: "/drapery.html",
 	},
 	{
-		/* Shares lp-bedroom.jpg with the /blackout.html and /european-fabrics.html
-		   heroes. The alt describes what the photograph actually shows, which is a
-		   bright room with the drapery drawn back, not a darkened one. */
-		img: "lp-bedroom.jpg",
-		alt: "Floor-to-ceiling drapery drawn back from garden doors in a South Florida bedroom.",
+		/* The client's own darkened-nursery photograph, shared with the
+		   /blackout.html hero. It replaced lp-bedroom.jpg, which showed a bright
+		   room with the drapery drawn back and so illustrated the opposite of what
+		   this card is selling. */
+		img: "blackout.jpg",
+		alt: "Blackout drapery in a nursery at night, blocking the light with only a faint glow around the edges.",
 		title: "Blackout Shades and Drapery",
 		body: "True dark, not a dimmer version of the room. Fitted tight to the glass or layered behind drapery so the light has nowhere to slip through, and by day the room still feels bright.",
 		tags: "Bedrooms · nurseries · real darkness",

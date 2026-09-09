@@ -64,7 +64,7 @@ export default function BlackoutPage() {
 				<section className="hero night">
 					<div
 						className="bgimg"
-						style={{ backgroundImage: "url('/assets/lp-bedroom.jpg')" }}
+						style={{ backgroundImage: "url('/assets/blackout.jpg')" }}
 						data-parallax
 					/>
 					<div className="wrap">
