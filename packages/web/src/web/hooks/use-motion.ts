@@ -12,8 +12,11 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
  *   load, or reduced motion is on, the copy is already in its final readable
  *   state. The prerender step depends on this: it snapshots with reduced
  *   motion emulated, so no hidden state is ever baked into the static HTML.
- * - The hero heading and hero copy are never animated. They are the LCP
- *   candidates and the brief forbids delaying them.
+ * - NOTHING in the hero is animated: heading, subcopy, CTAs and illustration
+ *   all render in place with no entrance animation and no parallax, by client
+ *   instruction. The heading is the LCP candidate and the brief forbids
+ *   delaying it. The hero's only motion is the video clip in
+ *   components/hero-motion.tsx.
  * - Calm values only: 0.5-0.8s, ease-out, ~0.07s stagger, travel under 24px.
  * - play-once. No scrub-driven text, no reverse-on-scroll-up jitter.
  */

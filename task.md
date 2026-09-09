@@ -3447,3 +3447,133 @@ search rules out a framing offset: after normalising colour, best fit is scale 1
 plus genuine differences in the two renders' linework and floor shadows**, not a transform
 anyone can correct away. Raised with the client rather than silently colour-correcting their
 artwork.
+
+## §17 PHASE 4 (PULLED FORWARD): THE FULL SERVICE PAGE SET
+
+Client instruction, this turn: keep Custom Drapery, Motorized and Blackout (enhance, do
+not rebuild), and build dedicated pages for the whole remaining service list, using the
+brand voice and the per-service differentiator angles from brief §6. No duplicates, and
+cross-link service pages to their matching geo pages and Journal guides.
+
+### 17.1 Status board
+
+Committed before this work: d775b22 (Phase 2 pages + spec-list fix + hero swap).
+
+Seven new page components WRITTEN (not yet routed, not yet built):
+
+| File | Route | Hero art (reused) |
+|---|---|---|
+| smart-home-window-treatments.tsx | /smart-home-window-treatments.html | project-1.jpg |
+| specialty-shaped-windows.tsx | /specialty-shaped-windows.html | art-motor.jpg |
+| drapery-hardware.tsx | /drapery-hardware.html | art-hardware.jpg |
+| european-fabrics.tsx | /european-fabrics.html | lp-bedroom.jpg |
+| flame-retardant-drapery.tsx | /flame-retardant-drapery.html | ba-after.jpg |
+| hospitality-window-treatments.tsx | /hospitality-window-treatments.html | art-drapery.jpg |
+| custom-home-textiles.tsx | /custom-home-textiles.html | project-2.jpg |
+
+All seven copy roller-solar-shades.tsx's structure exactly. All copy is mine.
+
+### 17.2 Remaining steps
+
+1. DONE site-routes.json: the seven added, schema "service", serviceType, breadcrumb.
+   13 -> 20 routes.
+2. DONE app.tsx: seven lazy() consts and seven <Route>s.
+3. DONE Homepage: Decorative Hardware now links /drapery-hardware.html, and a new
+   SERVICES_REST link list (".svc-rest", heading "More from the studio") carries the
+   seven services past the six cards. This also finally links /blackout.html from the
+   homepage. Six cards stay cards; everything past them is a link list.
+4. DONE drapery.tsx / motorized.tsx / blackout.tsx each gained a "Where this goes next"
+   block immediately before their FAQ. Not rebuilt.
+5. DONE lib/seo-data.ts hasOfferCatalog is now DERIVED from the route registry
+   (ROUTES.filter(r => r.schema === "service")), 13 services each with name + url. It
+   can no longer fall behind the pages.
+6. OPEN Geo cross-links are still NOT possible: no geo page exists (that is Phase 3).
+   Every service page cross-links services + Journal only. KNOWN GAP, must be closed in
+   Phase 3 by retrofitting geo links into all THIRTEEN service pages.
+7. DONE Full QA battery, lint, build. See 17.5.
+8. OPEN commit + deliver, then Phase 3.
+
+### 17.3 Decisions taken without asking
+
+- Slugs are shortened where the full service name is unwieldy:
+  /specialty-shaped-windows.html, /european-fabrics.html, /flame-retardant-drapery.html,
+  /hospitality-window-treatments.html. Reversible.
+- "Decorative Hardware" (homepage card wording) and "Drapery Hardware" (brief's service
+  name) are the same service. The page is /drapery-hardware.html and covers both the
+  decorative and the concealed-track sides.
+- Every hero image is a REUSED photograph. There is no new photography and no stock or
+  AI imagery is permitted, so seven pages share art with the homepage and each other.
+  Flagged as an open item.
+- The FR page claims NO certification of our own. It describes the standard an inspector
+  asks about and says we pass on the mill's documentation. Every compliance sentence is
+  flagged for Aviva's sign-off before go-live.
+
+### 17.4 Hero: all entrance motion removed (client instruction)
+
+Instruction: remove the GSAP load/entrance animation on the hero, the headline stagger,
+the fade/rise on load and any parallax. Headline, subcopy and CTAs render in place
+immediately. "The only motion in the hero is the video." Scroll reveals elsewhere on the
+page were to be left alone.
+
+The inherited note claiming the stagger and parallax were already gone was WRONG. All
+three tweens were still in motion/home-gsap.ts and were measured before removal.
+
+- motion/home-gsap.ts: deleted the [data-hero] h1 .hline stagger, the [data-hero-art] img
+  opacity+filter reveal, and the [data-hero-art] scroll parallax. What remains is ONLY
+  the discovery-process progress line (scaleY scrub) and the per-step is-active toggle.
+  Nothing in this module may query [data-hero] or [data-hero-art] again.
+- pages/index.tsx: removed data-hero-art and the <span class="hero-sweep">. Kept the two
+  .hline spans (they carry the line break and a real text-wrap: balance rule) and kept
+  data-hero on .inner (ten other pages use the attribute).
+- styles.css: removed .hero-frame's 24s hero-breathe loop and its keyframes, the whole
+  .hero-sweep rule and its keyframes, and the now-pointless reduced-motion no-ops for
+  both. The .hero-video reduced-motion display:none stays.
+- hooks/use-motion.ts: the motion contract now states that NOTHING in the hero animates.
+
+JUDGEMENT CALL, disclosed to the client: the explicit list was entrance-only, but the
+next sentence said the only motion is the video, so the two ambient CSS loops (24s
+breathing zoom, 34s sunlight sweep) were ALSO removed. One revert away:
+git show d775b22:packages/web/src/web/styles.css
+
+### 17.5 Hero: v3 clip that freezes on its last frame
+
+Instruction: replace the hero video, freeze on the last frame, cache-bust.
+
+Measured before encoding. The new master begins where the old clip ended and carries on
+into a brighter, fully open room; its final frame matches the clean still hero.jpg to
+within ~2 levels per channel (new last RGB 214.9/208.6/202.0 vs still 212.7/208.8/202.8).
+The old seam was 64 blue levels off. Contact sheet: /tmp/hero3/sheet_new.png.
+
+- Encodes from hero-reversed-shades-up_Hy1Upv.mp4 (1920x1080, 24fps, 10.04s) at 1600x900:
+  hero-motion-v3.mp4 886,331 B (crf 25, faststart), hero-motion-v3.webm 601,439 B
+  (crf 36). Both video-only. Encode RMSE vs source last frame: mp4 0.0108, webm 0.0288.
+  The build optimizer cuts the dist mp4 to 453,763 B; proven faithful (RMSE 0.0168,
+  luma 209.87). The WebM is untouched and is what Chrome actually fetches.
+- hero-poster-v2.jpg -> hero-poster-v3.jpg (bytes unchanged, byte-identical to hero.jpg)
+  so the whole hero asset set carries one version and any cached poster is busted.
+- components/hero-motion.tsx rewritten (104 lines): the ending/gone states, the 600ms
+  FADE_OUT_MS constant, the timeout effect and the onEnded handler are GONE. The clip
+  keeps .on forever and holds its last decoded frame at opacity 1. styles.css lost the
+  .hero-video.out rule.
+- The crossfade-seam question is CLOSED: the dissolve no longer runs at all, and the
+  frame it would have dissolved to now matches the still anyway.
+- Trade, disclosed: a paused <video> stays in the document holding a decoded frame, and
+  the served WebM grew 543,054 -> 601,439 B.
+
+QA after both hero changes:
+  lint 0/84 . build exit 0, 20 routes, sitemap 20 urls (/tmp/build-herofreeze.log)
+  herostaticqa.py 65/0 (NEW, permanent guard for the static hero)
+  herofreezeqa.py 48/0 (NEW, permanent guard for the freeze + the v3 asset set;
+    replaces heroswapqa.py and heroviewqa.py, which asserted the old crossfade contract)
+  motionqa.py green . h1flash.py ALL PASS . earlyreveal.py PASS . qa_a11y.py clean/20
+  respqa.py 840/0 (CLS 0.0000-0.0015) . specqa 72/0 . blindspaceqa 220/0 . teamqa 99/0
+  aeoqa.py 1095/1095 . qa.py clean . qa_copy.py clean . qa_booking.py 40 CTAs/0 bad
+  balticqa.py 73/0, 11 mentions . overflow360.py 0 overflow on 20 routes at 360px
+  probe11.py body text 11096 (new baseline, grew with .svc-rest)
+
+Retired as .obsolete (they asserted motion the client removed): heroqa.py, heroseq.py,
+sweepab.py, sweepab2.py, heroshot.py, heroseam.py, heroswapqa.py, heroviewqa.py.
+heroplay.py repointed to -v3.
+
+STILL NOT MEASURED: Lighthouse. Last median 81, before Phase 2. Seven routes, a new hero
+clip and all the hero motion changes have landed since.

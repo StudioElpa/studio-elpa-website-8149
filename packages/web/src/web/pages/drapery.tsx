@@ -186,6 +186,24 @@ export default function DraperyPage() {
 				</section>
 
 				<section className="block">
+					<div className="wrap narrow" data-reveal>
+						<div className="kicker">Where this goes next</div>
+						<h2 className="big">Drapery is one layer of the room.</h2>
+						<p className="lede">
+							The panel is only half of it. What it hangs from decides how it moves, which is why{" "}
+							<Link to="/drapery-hardware.html">drapery hardware</Link> gets its own page, and the
+							cloth itself is a decision of its own, covered under{" "}
+							<Link to="/european-fabrics.html">European fabrics and textiles</Link>. For the detail
+							that sets the character of a panel more than anything else, our Journal piece on{" "}
+							<a href="/drapery-headers.html">drapery headers</a> walks through all nine. Drapery
+							layers well over <Link to="/roller-solar-shades.html">roller and solar shades</Link>{" "}
+							or a <Link to="/roman-shades.html">Roman shade</Link>, and when the panels should draw
+							themselves, <Link to="/motorized.html">motorized drapery</Link> is the next step.
+						</p>
+					</div>
+				</section>
+
+				<section className="block">
 					<div className="wrap narrow">
 						<div className="center" data-reveal>
 							<div className="kicker">Good questions</div>

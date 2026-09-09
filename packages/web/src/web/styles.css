@@ -1659,11 +1659,10 @@ footer.lp .footer-logo {
 	filter: sepia(0.3) saturate(0.86) brightness(1.03) contrast(0.93);
 }
 
-/* Breathing zoom (V1.1 item 3). 24s, 1.0 -> 1.04 and back on a smooth loop.
-   Transform only, so it stays on the compositor and cannot trigger layout.
-   It lives here rather than on the <img> because the <img> is GSAP's reveal
-   target: a CSS animation outranks inline style, so sharing one element would
-   let this rule silently eat the reveal. */
+/* The frame carried a 24s breathing zoom (V1.1 item 3) until the client asked
+   for a hero with no motion but the video clip. The animation and its
+   @keyframes are gone; the frame now exists only for the max-width and the
+   edge feather mask below. Do not reintroduce a loop here. */
 .hero-frame {
 	position: relative;
 	display: block;
@@ -1674,7 +1673,6 @@ footer.lp .footer-logo {
 	   because it would cut the boy and the dog out of the artwork. */
 	max-width: 860px;
 	margin: 0 auto;
-	animation: hero-breathe 24s ease-in-out infinite alternate;
 
 	/* Feather all four edges so the illustration melts into the page instead
 	   of sitting in a box. Two gradients intersected: masked-out pixels go
@@ -1722,44 +1720,25 @@ footer.lp .footer-logo {
 	-webkit-mask-composite: source-in;
 }
 
-@keyframes hero-breathe {
-	from {
-		transform: scale(1);
-	}
-	to {
-		transform: scale(1.04);
-	}
-}
-
-/* Warm light sweep (V1.1 item 3): sunlight drifting through the glass walls.
-   A wide, skewed, low opacity band that crosses the illustration once every
-   34s. The frame's mask feathers its leading and trailing edges.
-
-   The sweep crosses the whole illustration rather than one window because the
-   artwork has glass down BOTH flanks with a corridor between them, so there is
-   no single pane to pin light to.
-
-   On plus-lighter rather than soft-light, chosen by measurement, not taste:
-   over a near-white cream ground soft-light barely shifts anything. At 0.55 it
-   moved 99% of pixels by 4/255 or less, which is invisible. overlay and normal
-   blending were also tested and were indistinguishable from no sweep at all.
-   plus-lighter is the only mode that reads on this ground. Opacity is then
-   held at 0.20: from 0.30 up the band starts washing the mullions out of the
-   right-hand window, and the pencil detail has to survive the light. */
 /* V2 section 9: the motion clip sits exactly on top of the still, inside the
-   frame so it inherits the same feather mask and the same breathing loop. It
-   starts transparent and is faded in by the .on class only once the browser
-   reports canplay, so a slow connection shows the still rather than a black
-   box. The element is mounted client-side after idle and is never mounted under
-   reduced motion, so this opacity:0 can never strand text in the prerendered
-   HTML: there is no text, and there is no video in the snapshot. */
+   frame so it inherits the same feather mask. It starts transparent and is
+   faded in by the .on class only once the browser reports canplay, so a slow
+   connection shows the still rather than a black box. The element is mounted
+   client-side after idle and is never mounted under reduced motion, so this
+   opacity:0 can never strand text in the prerendered HTML: there is no text,
+   and there is no video in the snapshot.
+
+   The clip FREEZES ON ITS LAST FRAME: .on is never removed, so the video holds
+   at opacity 1 for good and the still underneath is only ever the pre-roll and
+   the no-JS/reduced-motion state. The old .hero-video.out fade-out rule was
+   deleted with the fade itself. */
 .hero-video {
 	position: absolute;
 	inset: 0;
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	/* The same grade the still carries, so the fade reads as a dissolve
+	/* The same grade the still carries, so the fade-in reads as a dissolve
 	   rather than a colour jump halfway through. */
 	filter: sepia(0.3) saturate(0.86) brightness(1.03) contrast(0.93);
 	opacity: 0;
@@ -1771,60 +1750,11 @@ footer.lp .footer-logo {
 	opacity: 1;
 }
 
-/* The clip plays once, never loops. On `ended` the component swaps .on for
-   .out, so the base opacity:0 above takes over and dissolves the video back to
-   the still underneath. Only the duration is overridden here, which is why this
-   rule deliberately does not restate opacity: at equal specificity (0,2,0) it
-   would otherwise race .on depending on source order. Keep this in sync with
-   FADE_OUT_MS in components/hero-motion.tsx. */
-.hero-video.out {
-	transition-duration: 600ms;
-}
-
-.hero-sweep {
-	position: absolute;
-	top: -8%;
-	left: 0;
-	width: 46%;
-	height: 116%;
-	pointer-events: none;
-	transform: translateX(-60%) skewX(-12deg);
-	background: linear-gradient(
-		to right,
-		rgba(255, 244, 214, 0) 0%,
-		rgba(255, 241, 203, 0.5) 42%,
-		rgba(255, 246, 222, 0.72) 55%,
-		rgba(255, 244, 214, 0) 100%
-	);
-	mix-blend-mode: plus-lighter;
-	opacity: 0.2;
-	animation: hero-sweep 34s linear infinite;
-}
-
-@keyframes hero-sweep {
-	from {
-		transform: translateX(-60%) skewX(-12deg);
-	}
-	to {
-		transform: translateX(280%) skewX(-12deg);
-	}
-}
-
-/* The global reduced-motion block sets animation-duration to 0.01ms and
-   iteration-count to 1, which would SNAP both loops above to their final
-   keyframe and leave the hero permanently at scale(1.04) with the sweep parked
-   mid-frame. The brief asks for final states and no transforms, so both are
-   switched off outright and the sweep is removed from the page entirely. */
+/* The hero has no CSS loops left to neutralise: the breathing zoom and the
+   light sweep were removed outright when the client asked for a static hero,
+   so the reduced-motion overrides they needed went with them. Only the clip
+   still needs handling. */
 @media (prefers-reduced-motion: reduce) {
-	.hero-frame {
-		animation: none !important;
-		transform: none !important;
-	}
-
-	.hero-sweep {
-		display: none !important;
-	}
-
 	/* Belt and braces: the component already refuses to mount the clip under
 	   reduced motion, so this only catches a preference flipped after load. */
 	.hero-video {
@@ -2127,6 +2057,54 @@ footer.lp .footer-logo {
 	color: var(--ink-soft);
 	line-height: 1.6;
 	margin: 0;
+}
+
+/* The remaining service pages, as a quiet link list rather than more cards.
+   Nine photographic cards would bury the primary categories, so everything
+   past the six above is surfaced here, one line each. */
+.svc-rest {
+	margin-top: 44px;
+	padding-top: 26px;
+	border-top: 1px solid var(--hairline);
+}
+
+.svc-rest h4 {
+	font-family: var(--sans);
+	font-size: 13px;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: var(--ink-soft);
+	font-weight: 400;
+	margin: 0 0 16px;
+}
+
+.svc-rest-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 34px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.svc-rest-list li {
+	margin: 0;
+	padding: 0;
+}
+
+.svc-rest-list a {
+	font-family: var(--sans);
+	font-size: 15px;
+	color: var(--ink);
+	text-decoration: none;
+	border-bottom: 1px solid var(--hairline);
+	padding-bottom: 2px;
+}
+
+.svc-rest-list a:hover,
+.svc-rest-list a:focus-visible {
+	color: var(--accent);
+	border-bottom-color: var(--accent);
 }
 
 /* Replaces the oversized full-width olive button with an editorial line. */

@@ -161,6 +161,26 @@ export default function BlackoutPage() {
 				</section>
 
 				<section className="block">
+					<div className="wrap narrow" data-reveal>
+						<div className="kicker">Where this goes next</div>
+						<h2 className="big">Darkness is a specification, not a fabric.</h2>
+						<p className="lede">
+							The long version of the reasoning on this page is our Journal piece on{" "}
+							<a href="/journal-blackout.html">the case for real darkness</a>. In practice blackout
+							usually arrives as a roller inside the opening with{" "}
+							<Link to="/drapery.html">custom drapery</Link> over it, or as a{" "}
+							<Link to="/roman-shades.html">Roman shade</Link> where a flat roller would look too
+							plain. For the daytime half of the same window, see{" "}
+							<Link to="/roller-solar-shades.html">roller and solar shades</Link>. When the room
+							should darken on a schedule,{" "}
+							<Link to="/motorized.html">motorized shades and drapery</Link> handle it, and the side
+							channels and pockets that kill the light leak sit under{" "}
+							<Link to="/drapery-hardware.html">drapery hardware</Link>.
+						</p>
+					</div>
+				</section>
+
+				<section className="block">
 					<div className="wrap narrow">
 						<div className="center" data-reveal>
 							<div className="kicker">Good questions</div>

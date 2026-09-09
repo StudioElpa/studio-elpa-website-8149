@@ -1054,3 +1054,105 @@ artwork is the client's call. See open item 11.
     which contradicts your instruction to crossfade to the clean art and is lower
     fidelity than the master; **(d)** re-render the clip from the clean artwork so its
     last frame is literally the still. **(d) is the only one that is genuinely seamless.**
+
+---
+
+## §17 The full service page set, the static hero, and the v3 clip that freezes
+
+### The seven new service pages
+
+Thirteen services now have a page each. The new seven are
+`/smart-home-window-treatments.html`, `/specialty-shaped-windows.html`,
+`/drapery-hardware.html`, `/european-fabrics.html`, `/flame-retardant-drapery.html`,
+`/hospitality-window-treatments.html` and `/custom-home-textiles.html`. The registry went
+13 to 20 routes, each with a unique title and description, one `<h1>`, real crawlable body
+text, a canonical URL, breadcrumbs, and a soft CTA.
+
+`hasOfferCatalog` is now **derived from the route registry** rather than hand-maintained,
+so it lists all thirteen services with URLs and can never fall behind the pages again.
+
+On the homepage, six services stay as cards and everything past them is a link list under
+**"More from the studio"**. That is my call, not yours — say if you want a different
+treatment. It also fixed two real defects: the Decorative Hardware card was a dead link,
+and `/blackout.html` was not linked from the homepage at all.
+
+`drapery.html`, `motorized.html` and `blackout.html` each gained a "Where this goes next"
+block. They were not rebuilt.
+
+**All copy on all ten new service pages is mine**, as are the registry titles and
+descriptions. The flame-retardant page claims no certification of our own and describes
+only what the mill documents; **every compliance sentence needs Aviva's sign-off before
+go-live.**
+
+**The seven new pages cross-link services and Journal but NOT geo pages, because no geo
+page exists yet.** Phase 3 must retrofit geo links into all thirteen.
+
+### The hero is now completely static
+
+You asked for the entrance animation, the headline stagger, the fade/rise and any parallax
+to go. The note I inherited said the stagger and parallax were already removed. **That was
+wrong** — all three tweens were still live, and I measured them before deleting them. The
+headline, subcopy and CTAs now paint in place at opacity 1 with no transform, early and
+late, on desktop and mobile. Scroll reveals on the rest of the page are untouched, and
+GSAP still loads on the homepage to drive the process progress line.
+
+**One judgement call you should overrule if I read it wrong.** Your explicit list was
+entrance motion, but the next sentence said *the only motion in the hero is the video*, so
+I also removed the two ambient CSS loops: the 24-second breathing zoom on the frame and
+the 34-second sunlight sweep across it. A half-measure would have satisfied neither
+reading. Both are one revert away.
+
+### The v3 clip freezes on its last frame
+
+The new master genuinely does end where the still begins: its final frame measures
+**RGB (214.9, 208.6, 202.0)** against the clean still's **(212.7, 208.8, 202.8)** — inside
+two levels per channel, against the 64-level blue gap the previous clip had.
+
+The clip is now **played once and left frozen**. The 600 ms crossfade, the `onEnded`
+handler and the unmount are gone; the `<video>` keeps its `.on` class at opacity 1 forever
+and holds the last decoded frame. Verified in a real browser on both the dev server and
+the prerendered build: the element reports `ended`, `paused`, `currentTime` parked at
+`duration`, still mounted four seconds later, never carrying the old fade class.
+
+Assets are versioned by filename, so caches are busted: `/assets/hero-motion-v3.mp4`
+(886 kB source, 454 kB after the build optimizer, proven faithful) and
+`/assets/hero-motion-v3.webm` (601 kB, what Chrome actually fetches). The poster was
+renamed to `/assets/hero-poster-v3.jpg` even though its bytes did not change, so the whole
+hero set carries one version.
+
+**Two trades to state plainly.** The served WebM grew from **543 kB to 601 kB** with this
+cut. And a paused `<video>` now stays in the document permanently holding a decoded frame
+instead of unmounting and freeing the decoder.
+
+**Old URLs that now 404 in production:** `/assets/hero-motion.mp4`, `/assets/hero-motion.webm`,
+`/assets/hero-poster.jpg` and the interim `-v2` names. Intended, but it is a URL break.
+
+### QA
+
+`lint` 0 violations across 84 files. `build` exit 0, 20 routes, sitemap 20 urls.
+`herostaticqa.py` **65/0** and `herofreezeqa.py` **48/0** are new permanent guards; they
+replace eight scripts that asserted the motion and the crossfade you removed.
+`motionqa.py`, `h1flash.py`, `earlyreveal.py`, `qa_a11y.py` (20 routes), `respqa.py`
+**840/0** with CLS 0.0000-0.0015, `aeoqa.py` **1095/1095**, `qa.py`, `qa_copy.py`,
+`qa_booking.py` 40 CTAs / 0 misconfigured, `balticqa.py` **73/0** with 11 linked mentions,
+and `overflow360.py` 0 overflow on all 20 routes at 360px — all green.
+
+**Lighthouse has NOT been re-measured.** The last median was 81, before Phase 2. Seven
+routes, a new hero clip and every hero motion change have landed since, so treat 81 as
+stale rather than current.
+
+### Open items, updated
+
+- **Item 11 (the crossfade seam) is CLOSED.** The dissolve no longer runs, and the frame it
+  would have dissolved to matches the still anyway. The four options are withdrawn and
+  `hero-seam-evidence.png` is obsolete.
+- **Item 10 (hero video weight) restated: the served clip is now 601 kB**, not 682 kB.
+  The levers are unchanged — ship the still alone, delay the video request until after the
+  hero image paints, or re-encode harder.
+- **New:** should the still `<img>` stay? It now only ever shows as pre-roll, under reduced
+  motion, or if the video fails. It must stay as the LCP element, but the poster
+  (`hero-poster-v3.jpg`, byte-identical to `hero.jpg`) is arguably redundant weight.
+- **New:** confirm the seven shortened slugs, and confirm that "Decorative Hardware" and
+  "Drapery Hardware" are one service.
+- **New:** photography for all ten new service pages. Every one reuses homepage art. There
+  is no arched-window photo, no restaurant photo and no fabric close-up.

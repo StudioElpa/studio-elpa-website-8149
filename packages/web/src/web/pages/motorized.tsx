@@ -189,6 +189,25 @@ export default function MotorizedPage() {
 				</section>
 
 				<section className="block">
+					<div className="wrap narrow" data-reveal>
+						<div className="kicker">Where this goes next</div>
+						<h2 className="big">The motor is the means, not the point.</h2>
+						<p className="lede">
+							What you live with is the treatment itself. Most motorized work here is{" "}
+							<Link to="/drapery.html">custom drapery</Link> or{" "}
+							<Link to="/roller-solar-shades.html">roller and solar shades</Link>, and in a bedroom
+							the specification changes again for <Link to="/blackout.html">blackout</Link>. If the
+							shades should answer to the same system as the lighting and the climate, see{" "}
+							<Link to="/smart-home-window-treatments.html">smart-home window treatments</Link>.
+							Arched and angled openings follow their own rules on{" "}
+							<Link to="/specialty-shaped-windows.html">specialty-shaped windows</Link>, and the
+							concealed track a motorized panel rides on is covered under{" "}
+							<Link to="/drapery-hardware.html">drapery hardware</Link>.
+						</p>
+					</div>
+				</section>
+
+				<section className="block">
 					<div className="wrap narrow">
 						<div className="center" data-reveal>
 							<div className="kicker">Good questions</div>

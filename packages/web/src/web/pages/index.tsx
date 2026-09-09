@@ -103,11 +103,24 @@ const SERVICES_MORE = [
 		img: "art-hardware.jpg",
 		alt: "A decorative metal drapery rod, bracket, and finial",
 		title: "Decorative Hardware",
-		/* No page yet, so no link. An empty href renders no anchor. */
 		body: "The jewelry of the window. The right rod, bracket, or finial pulls the whole look together, matched to the fabric, the room, and the way the drapery moves.",
 		tags: "Bronze · brass · matte black",
-		href: "",
+		href: "/drapery-hardware.html",
 	},
+];
+
+/* The rest of the service set. Nine cards in the grid above would bury the
+   primary categories, so the remaining pages are surfaced as a compact link
+   list underneath. Strings only, because this array is mapped (see the note
+   on SERVICES_PRIMARY). */
+const SERVICES_REST = [
+	{ label: "Blackout Shades and Drapery", href: "/blackout.html" },
+	{ label: "Smart-Home Window Treatments", href: "/smart-home-window-treatments.html" },
+	{ label: "Specialty-Shaped Windows", href: "/specialty-shaped-windows.html" },
+	{ label: "European Fabrics and Textiles", href: "/european-fabrics.html" },
+	{ label: "Flame-Retardant Window Treatments", href: "/flame-retardant-drapery.html" },
+	{ label: "Hospitality and Restaurant Projects", href: "/hospitality-window-treatments.html" },
+	{ label: "Custom Home Textiles", href: "/custom-home-textiles.html" },
 ];
 
 const STEPS = [
@@ -206,11 +219,12 @@ export default function HomePage() {
 				<section className="hero" id="home">
 					<div className="inner" data-hero>
 						<div className="kicker">Custom Window Treatments · South Florida</div>
-						{/* Two block spans rather than a <br />, so the GSAP sequence can settle
-						    the headline line by line (brief section 3). They are authored here
-						    rather than split from the DOM at runtime, so the prerendered HTML
-						    already contains them and hydration sees identical markup. The h1
-						    still holds the whole sentence for assistive tech. */}
+						{/* Two block spans rather than a <br />, so the line break is authored in
+						    the markup and the prerendered HTML already contains it. They once
+						    existed so GSAP could settle the headline line by line; that stagger
+						    was removed on client instruction and the spans stay purely for the
+						    line break and the 560px text-wrap: balance rule. Nothing animates
+						    them. The h1 still holds the whole sentence for assistive tech. */}
 						<h1>
 							<span className="hline">The light was always beautiful.</span>{" "}
 							<span className="hline">Now the room is, too.</span>
@@ -227,12 +241,13 @@ export default function HomePage() {
 								Get a quick estimate
 							</Link>
 						</div>
-						<div className="hero-art" data-hero-art>
-							{/* Three separate elements so three motions never fight over one
-							    transform matrix: .hero-art drifts (GSAP parallax),
-							    .hero-frame breathes (CSS, 24s loop) and carries the edge
-							    feather, and the <img> itself does the one-time reveal (GSAP,
-							    opacity only once it has cleared its props). */}
+						<div className="hero-art">
+							{/* The wrapper and the frame used to carry three motions between them
+							    (GSAP parallax on .hero-art, a 24s CSS breathing loop on
+							    .hero-frame, a one-time GSAP reveal on the <img>). All three are
+							    gone on client instruction: the only motion in the hero is the
+							    video clip below. .hero-frame now exists solely for the max-width
+							    and the edge feather mask. */}
 							<div className="hero-frame">
 								<img
 									src="/assets/hero-1120.jpg"
@@ -255,10 +270,9 @@ export default function HomePage() {
 								/>
 								{/* V2 section 9. Mounted after idle, over the still, never under
 								    reduced motion. The <img> above stays the LCP element. */}
-								<HeroMotion poster="/assets/hero-poster.jpg" />
-								{/* Sunlight drifting through the glass. Decorative only, so it is
-								    hidden from assistive tech and cannot take pointer events. */}
-								<span className="hero-sweep" aria-hidden="true" />
+								<HeroMotion poster="/assets/hero-poster-v3.jpg" />
+								{/* The decorative 34s sunlight sweep that used to sit here was
+								    removed with the rest of the hero motion. */}
 							</div>
 						</div>
 					</div>
@@ -519,6 +533,18 @@ export default function HomePage() {
 									) : null}
 								</div>
 							))}
+						</div>
+
+						{/* Everything else we make, one line each. */}
+						<div className="svc-rest" data-reveal>
+							<h4>More from the studio</h4>
+							<ul className="svc-rest-list">
+								{SERVICES_REST.map((s) => (
+									<li key={s.href}>
+										<Link to={s.href}>{s.label}</Link>
+									</li>
+								))}
+							</ul>
 						</div>
 
 						<p className="svc-close" data-reveal>

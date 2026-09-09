@@ -78,6 +78,83 @@
 			"priority": "0.8"
 		},
 		{
+			"path": "/smart-home-window-treatments.html",
+			"aliases": [],
+			"title": "Smart-Home Window Treatments and Integration · Studio Elpa",
+			"description": "Shades and drapery that answer to the same system as your lighting and climate. Scenes, keypads and app control, planned early enough to be wired properly.",
+			"schema": "service",
+			"serviceType": "Smart home window treatment integration and programming",
+			"breadcrumb": "Smart-Home Window Treatments",
+			"changefreq": "monthly",
+			"priority": "0.8"
+		},
+		{
+			"path": "/specialty-shaped-windows.html",
+			"aliases": [],
+			"title": "Specialty-Shaped Window Treatments · Studio Elpa",
+			"description": "Arches, angles, trapezoids and round tops covered without a compromise. Templated on site, built to the opening, and finished so the shape still reads.",
+			"schema": "service",
+			"serviceType": "Specialty and custom-shaped window treatment fabrication and installation",
+			"breadcrumb": "Specialty-Shaped Windows",
+			"changefreq": "monthly",
+			"priority": "0.8"
+		},
+		{
+			"path": "/drapery-hardware.html",
+			"aliases": [],
+			"title": "Drapery Hardware, Rods, Tracks and Finials · Studio Elpa",
+			"description": "Decorative rods and rings, concealed ceiling tracks and recessed pockets. Hardware chosen for the weight of the fabric and the way the panel has to move.",
+			"schema": "service",
+			"serviceType": "Drapery hardware specification and installation",
+			"breadcrumb": "Drapery Hardware",
+			"changefreq": "monthly",
+			"priority": "0.7"
+		},
+		{
+			"path": "/european-fabrics.html",
+			"aliases": [],
+			"title": "European Fabrics and Textiles for Window Treatments · Studio Elpa",
+			"description": "Belgian linens, Italian sheers and European velvets, chosen for how they hang and how they hold up to Florida light. Seen in your own rooms before you commit.",
+			"schema": "service",
+			"serviceType": "European fabric sourcing and specification",
+			"breadcrumb": "European Fabrics",
+			"changefreq": "monthly",
+			"priority": "0.7"
+		},
+		{
+			"path": "/flame-retardant-drapery.html",
+			"aliases": [],
+			"title": "Flame-Retardant Window Treatments for Commercial Rooms · Studio Elpa",
+			"description": "Rated drapery and shades that satisfy an inspector without looking institutional. Mill documentation supplied, fabrication and installation handled by one team.",
+			"schema": "service",
+			"serviceType": "Flame-retardant drapery and shade fabrication and installation",
+			"breadcrumb": "Flame-Retardant Window Treatments",
+			"changefreq": "monthly",
+			"priority": "0.8"
+		},
+		{
+			"path": "/hospitality-window-treatments.html",
+			"aliases": [],
+			"title": "Hospitality and Restaurant Window Treatments · Studio Elpa",
+			"description": "Window treatments for restaurants, hotels and clubs, installed around service hours by a team that keeps the room open and the schedule honest.",
+			"schema": "service",
+			"serviceType": "Hospitality and restaurant window treatment design and installation",
+			"breadcrumb": "Hospitality Window Treatments",
+			"changefreq": "monthly",
+			"priority": "0.8"
+		},
+		{
+			"path": "/custom-home-textiles.html",
+			"aliases": [],
+			"title": "Custom Home Textiles, Bedding and Pillows · Studio Elpa",
+			"description": "Headboards, bedding, pillows and table linens from the same workroom and the same European fabrics as your window treatments, so the whole room agrees.",
+			"schema": "service",
+			"serviceType": "Custom home textile design and fabrication",
+			"breadcrumb": "Custom Home Textiles",
+			"changefreq": "monthly",
+			"priority": "0.7"
+		},
+		{
 			"path": "/estimate.html",
 			"aliases": [],
 			"title": "Estimate Your Window Treatments · Studio Elpa",

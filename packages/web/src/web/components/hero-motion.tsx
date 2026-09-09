@@ -9,13 +9,18 @@ import { useEffect, useState } from "react";
  * about the first paint changes, which is the whole point of "must not delay
  * LCP" in the brief.
  *
- * The clip plays EXACTLY ONCE and is not looped. The reversed clip the client
- * supplied opens dark, raises the shades, and settles on the bright open room,
- * which is the same composition as the static illustration underneath, so the
- * handoff is a dissolve between two near-identical frames rather than a cut.
- * On `ended` the video crossfades out over 600ms to reveal that still, then
- * unmounts and frees the decoder. The resting state of the hero is therefore
- * the still, permanently.
+ * The clip plays EXACTLY ONCE, is not looped, and now FREEZES ON ITS LAST
+ * FRAME by client instruction. It opens with the shades part way down, raises
+ * them, and settles on the bright open room; that final frame is the resting
+ * state of the hero from then on. Nothing fades out and nothing unmounts, so
+ * there is no dissolve back to the still and therefore no crossfade seam: the
+ * measured colour gap that made the old handoff visible cannot occur when the
+ * handoff never happens. The still underneath is what shows before the clip is
+ * ready, under reduced motion, and if the video ever fails to load.
+ *
+ * The trade for freezing is that the <video> element stays in the document
+ * with its decoded last frame, rather than being torn down to free the
+ * decoder. It is paused at that point, so it costs no ongoing decode work.
  *
  * Reduced motion is a real no-op, not a shortened animation: the <video> is
  * never mounted at all, so the still is what the visitor sees. That also keeps
@@ -28,8 +33,15 @@ import { useEffect, useState } from "react";
  * by the muted attribute.
  */
 
-const MP4 = "/assets/hero-motion.mp4";
-const WEBM = "/assets/hero-motion.webm";
+/* Versioned filenames, not query strings. Browsers and intermediary caches
+   kept serving the old bytes from the original URL when the clip was first
+   replaced; a `?v=` suffix is honoured inconsistently by caches and by some
+   CDNs, so the file itself is renamed on every re-cut. v3 is the clip that
+   starts with the shades part way down and ends on the open room, and it is
+   the cut the hero freezes on. Any future re-cut bumps the suffix again rather
+   than overwriting these files. */
+const MP4 = "/assets/hero-motion-v3.mp4";
+const WEBM = "/assets/hero-motion-v3.webm";
 
 interface HeroMotionProps {
 	/**
@@ -42,14 +54,9 @@ interface HeroMotionProps {
 	poster: string;
 }
 
-/** Must match the .hero-video.out transition-duration in styles.css. */
-const FADE_OUT_MS = 600;
-
 export function HeroMotion({ poster }: HeroMotionProps) {
 	const [mounted, setMounted] = useState(false);
 	const [playing, setPlaying] = useState(false);
-	const [ending, setEnding] = useState(false);
-	const [gone, setGone] = useState(false);
 
 	useEffect(() => {
 		const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -72,19 +79,11 @@ export function HeroMotion({ poster }: HeroMotionProps) {
 		};
 	}, []);
 
-	// Once the fade-out has run, the video is removed for good and the still
-	// underneath is the resting state.
-	useEffect(() => {
-		if (!ending) return;
-		const t = window.setTimeout(() => setGone(true), FADE_OUT_MS);
-		return () => window.clearTimeout(t);
-	}, [ending]);
+	if (!mounted) return null;
 
-	if (!mounted || gone) return null;
-
-	// .on fades the clip in over 1200ms; .out overrides the duration to 600ms
-	// and lets the base opacity:0 dissolve it back to the still.
-	const className = ending ? "hero-video out" : playing ? "hero-video on" : "hero-video";
+	// .on fades the clip in over 1200ms and is never removed again: the clip
+	// holds its last frame at full opacity once it ends.
+	const className = playing ? "hero-video on" : "hero-video";
 
 	return (
 		// biome-ignore lint/a11y/useMediaCaption: silent decorative clip, no speech
@@ -98,7 +97,6 @@ export function HeroMotion({ poster }: HeroMotionProps) {
 			aria-hidden="true"
 			tabIndex={-1}
 			onCanPlay={() => setPlaying(true)}
-			onEnded={() => setEnding(true)}
 		>
 			<source src={WEBM} type="video/webm" />
 			<source src={MP4} type="video/mp4" />

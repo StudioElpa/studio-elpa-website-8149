@@ -18,6 +18,13 @@ const Blackout = lazy(() => import("./pages/blackout"));
 const RollerSolar = lazy(() => import("./pages/roller-solar-shades"));
 const RomanShades = lazy(() => import("./pages/roman-shades"));
 const NaturalWoven = lazy(() => import("./pages/natural-woven-shades"));
+const SmartHome = lazy(() => import("./pages/smart-home-window-treatments"));
+const SpecialtyShaped = lazy(() => import("./pages/specialty-shaped-windows"));
+const DraperyHardware = lazy(() => import("./pages/drapery-hardware"));
+const EuropeanFabrics = lazy(() => import("./pages/european-fabrics"));
+const FlameRetardant = lazy(() => import("./pages/flame-retardant-drapery"));
+const Hospitality = lazy(() => import("./pages/hospitality-window-treatments"));
+const HomeTextiles = lazy(() => import("./pages/custom-home-textiles"));
 const Estimate = lazy(() => import("./pages/estimate"));
 const Founder = lazy(() => import("./pages/founder"));
 const JournalBlackout = lazy(() => import("./pages/journal-blackout"));
@@ -44,6 +51,13 @@ function App() {
           <Route path="/roller-solar-shades.html" component={RollerSolar} />
           <Route path="/roman-shades.html" component={RomanShades} />
           <Route path="/natural-woven-shades.html" component={NaturalWoven} />
+          <Route path="/smart-home-window-treatments.html" component={SmartHome} />
+          <Route path="/specialty-shaped-windows.html" component={SpecialtyShaped} />
+          <Route path="/drapery-hardware.html" component={DraperyHardware} />
+          <Route path="/european-fabrics.html" component={EuropeanFabrics} />
+          <Route path="/flame-retardant-drapery.html" component={FlameRetardant} />
+          <Route path="/hospitality-window-treatments.html" component={Hospitality} />
+          <Route path="/custom-home-textiles.html" component={HomeTextiles} />
           <Route path="/estimate.html" component={Estimate} />
           <Route path="/founder.html" component={Founder} />
           <Route path="/journal-blackout.html" component={JournalBlackout} />

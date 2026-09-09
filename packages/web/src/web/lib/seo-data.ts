@@ -15,7 +15,7 @@
  */
 
 import { CONTACT } from "../components/brand";
-import { ORIGIN, canonical, type SiteRoute } from "./routes";
+import { ORIGIN, ROUTES, canonical, type SiteRoute } from "./routes";
 
 /**
  * The cities and ZIPs Studio Elpa serves, ordered by the priority in the
@@ -91,16 +91,14 @@ const WEBSITE_ID = `${ORIGIN}/#website`;
  * subtype for made-to-measure work installed in the home.
  */
 function identityGraph() {
-	const services = [
-		"Custom drapery",
-		"Roman shades",
-		"Roller and solar shades",
-		"Woven wood shades",
-		"Motorized shades and drapery",
-		"Blackout window treatments",
-		"Drapery hardware",
-		"Home textiles",
-	];
+	/* Derived from the route registry rather than hand-listed, so the catalog
+	   can never fall behind the pages again: every route with schema "service"
+	   is a service we really offer and really have a page for, and its `url`
+	   gives an assistant somewhere to send a reader. */
+	const services = ROUTES.filter((r) => r.schema === "service").map((r) => ({
+		name: r.serviceType ?? r.breadcrumb ?? r.title,
+		url: canonical(r.path),
+	}));
 
 	return [
 		{
@@ -133,7 +131,7 @@ function identityGraph() {
 				name: "Window treatments and home textiles",
 				itemListElement: services.map((s) => ({
 					"@type": "Offer",
-					itemOffered: { "@type": "Service", name: s },
+					itemOffered: { "@type": "Service", name: s.name, url: s.url },
 				})),
 			},
 		},
