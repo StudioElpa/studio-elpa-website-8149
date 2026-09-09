@@ -155,6 +155,18 @@
 			"priority": "0.7"
 		},
 		{
+			"path": "/custom-drapery-palm-beach.html",
+			"aliases": [],
+			"title": "Custom Drapery in Palm Beach · Studio Elpa",
+			"description": "Made-to-measure drapery for Palm Beach homes: European fabrics, floor-length panels cut for tall island windows, and one team from the first measurement to the last panel hung.",
+			"schema": "service",
+			"serviceType": "Custom drapery design, fabrication and installation in Palm Beach, Florida",
+			"breadcrumb": "Custom Drapery in Palm Beach",
+			"areaServed": [{ "city": "Palm Beach", "zips": ["33480"] }],
+			"changefreq": "monthly",
+			"priority": "0.8"
+		},
+		{
 			"path": "/estimate.html",
 			"aliases": [],
 			"title": "Estimate Your Window Treatments · Studio Elpa",

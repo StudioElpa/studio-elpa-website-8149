@@ -23,6 +23,17 @@ export type SiteRoute = {
 	serviceType?: string;
 	/** Label used in the BreadcrumbList. Omitted on the homepage. */
 	breadcrumb?: string;
+	/**
+	 * Geo pages only: narrows the Service's `areaServed` to the places that
+	 * page is actually about. Without it a service page claims the whole
+	 * thirty-city footprint, which is right for /drapery.html and wrong for
+	 * "Custom Drapery in Palm Beach". Cities named here must also exist in
+	 * AREA_SERVED, so the studio never claims a place sitewide it does not
+	 * claim locally.
+	 */
+	areaServed?: { city: string; zips: string[] }[];
+	/** Geo pages only: the parent city page a neighborhood page sits under. */
+	parent?: string;
 	/** Article pages only. */
 	headline?: string;
 	datePublished?: string;

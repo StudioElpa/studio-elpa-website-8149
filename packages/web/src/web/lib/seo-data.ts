@@ -60,15 +60,22 @@ export const AREA_SERVED: { city: string; region: "FL"; zips: string[] }[] = [
 	{ city: "Islamorada", region: "FL", zips: ["33036"] },
 ];
 
-/** `areaServed` as schema.org `City` nodes, each carrying its postal codes. */
-function areaServedNodes() {
-	return AREA_SERVED.map((a) => ({
+/**
+ * `areaServed` as schema.org `City` nodes, each carrying its postal codes.
+ *
+ * Defaults to the whole footprint, which is right for the sitewide business
+ * node and for a service page that really does cover all thirty cities. A geo
+ * page passes its own short list instead, so "Custom Drapery in Palm Beach"
+ * claims Palm Beach rather than restating the entire territory.
+ */
+function areaServedNodes(list: { city: string; region?: "FL"; zips: string[] }[] = AREA_SERVED) {
+	return list.map((a) => ({
 		"@type": "City",
 		name: a.city,
 		address: {
 			"@type": "PostalAddress",
 			addressLocality: a.city,
-			addressRegion: a.region,
+			addressRegion: a.region ?? "FL",
 			addressCountry: "US",
 			postalCode: a.zips.join(", "),
 		},
@@ -146,21 +153,36 @@ function identityGraph() {
 	];
 }
 
-/** Home > [section] > page. Omitted on the homepage, which is the root. */
+/**
+ * Home > [parent city page] > page. Omitted on the homepage, which is the
+ * root. A neighborhood page declares its parent city page so the trail
+ * reflects the real hierarchy rather than flattening every geo page to depth
+ * two.
+ */
 function breadcrumb(route: SiteRoute) {
 	if (!route.breadcrumb) return null;
+	const trail = [
+		{ "@type": "ListItem", position: 1, name: "Home", item: canonical("/index.html") },
+	];
+	const parent = route.parent ? ROUTES.find((r) => r.path === route.parent) : undefined;
+	if (parent?.breadcrumb) {
+		trail.push({
+			"@type": "ListItem",
+			position: trail.length + 1,
+			name: parent.breadcrumb,
+			item: canonical(parent.path),
+		});
+	}
+	trail.push({
+		"@type": "ListItem",
+		position: trail.length + 1,
+		name: route.breadcrumb,
+		item: canonical(route.path),
+	});
 	return {
 		"@type": "BreadcrumbList",
 		"@id": `${canonical(route.path)}#breadcrumbs`,
-		itemListElement: [
-			{ "@type": "ListItem", position: 1, name: "Home", item: canonical("/index.html") },
-			{
-				"@type": "ListItem",
-				position: 2,
-				name: route.breadcrumb,
-				item: canonical(route.path),
-			},
-		],
+		itemListElement: trail,
 	};
 }
 
@@ -185,7 +207,7 @@ function pageNode(route: SiteRoute) {
 			description: route.description,
 			url,
 			provider: { "@id": BUSINESS_ID },
-			areaServed: areaServedNodes(),
+			areaServed: areaServedNodes(route.areaServed),
 		};
 	}
 
