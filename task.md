@@ -3741,3 +3741,72 @@ broken), qa_a11y (20 routes, faded=0) all clean.
 - Confirm 170px is what "small" meant. It is below the 180-210px band given for the previous
   revision.
 - Reconcile `overflow360.py` with `respqa.py`.
+
+## §20 Roller -> Motorized Shades consolidation (PLAN LOCKED, NOT YET EXECUTED)
+
+Tree is clean at 21b80c7. Nothing below has been applied yet. Recon IS done and the four
+client decisions ARE settled, so this can be executed without re-deriving anything.
+
+### 20.1 The client's four answers
+1. **Dead URL: keep a thin stub** at `/roller-solar-shades.html` - canonical to
+   `/motorized.html` plus an instant client redirect. NOT a hard 404.
+2. **Keep "solar shades"** as a distinct fabric term inside the merged page. Solar/screen
+   names a fabric (openness factor, glare control with view retention), not the roller
+   mechanism, so their own "specific product" exemption covers it.
+3. **Rename everywhere**: "Motorized Shading" -> "Motorized Shades" across H1, title, meta,
+   registry, breadcrumb, nav label, grid card. JSON-LD offer is registry-derived so it
+   follows automatically - do not hand-edit `hasOfferCatalog`.
+4. Signature confirmed at 170px. No change needed.
+
+### 20.2 Mechanism confirmed by reading source (do not re-check)
+`SiteRoute` already has `noindex?: boolean` (`lib/routes.ts`), and `write_sitemap` in
+`vite/prerender.py:155` skips any route carrying it. So the stub STAYS in the registry:
+it still gets prerendered (the static file exists at the old URL, carrying the canonical)
+but is excluded from the sitemap. Correct shape for a redirect stub - resolvable, not
+advertised. **Route count stays 20; sitemap count goes 20 -> 19.** Update the build-log
+expectation accordingly.
+
+### 20.3 Execution order (lesson 41: registry first)
+1. `lib/site-routes.json` - roller entry becomes the stub: add `"noindex": true`, retitle to
+   something honest like "Roller and Solar Shades is now Motorized Shades", drop
+   `serviceType` (it is no longer a service offer, and this list feeds `hasOfferCatalog`, so
+   leaving it would advertise a phantom 14th service). Retitle the motorized entry's
+   `breadcrumb` to "Motorized Shades". Its `title` is ALREADY "Motorized Shades and Drapery",
+   so the title needs no change.
+2. `pages/roller-solar-shades.tsx` - reduce to a stub: `<PageSeo>` + canonical + immediate
+   client redirect to `/motorized.html`, plus one crawlable line of text for the human who
+   lands there. Keep the `<Route>` in `app.tsx` (URL must still resolve). **The `<BalticLink/>`
+   on this page disappears, so balticqa's hard-coded 11 becomes 10.**
+3. `pages/motorized.tsx` - merge the strongest roller copy in, keeping "solar shades" as a
+   term; swap hero art to `/assets/art-roller.jpg`; rename to "Motorized Shades".
+   `art-motor.jpg` becomes unused - note it, do not delete.
+4. Repoint the **8 inbound links** and reword each anchor off "roller":
+   `hospitality-window-treatments.tsx:173`, `flame-retardant-drapery.tsx:180`,
+   `specialty-shaped-windows.tsx:168`, `smart-home-window-treatments.tsx:172`,
+   `natural-woven-shades.tsx:170`, `roman-shades.tsx:167`, `blackout.tsx:174`,
+   `drapery.tsx:199`. Also prose-only "roller" mentions with no link:
+   `roman-shades.tsx:34`, `blackout.tsx:170,172`, `motorized.tsx:171`,
+   `journal-blackout.tsx:88`, and the stale source comment
+   `smart-home-window-treatments.tsx:12`.
+5. `pages/index.tsx` - remove the roller card from `SERVICES_PRIMARY` (~75-80: `img
+   art-roller.jpg`, `alt`, `title "Roller Shades"`, `href`). Grid must still read as six
+   cards. Check the `.svc-rest` link list too.
+6. `lib/estimate-engine.ts` - **11 hits, and this is a fork the client did not anticipate.**
+   The internal keys (`roller_lf`, `roller_bo`, `daynight`) are invisible code identifiers -
+   KEEP them, renaming is churn with real regression risk and zero user benefit. But the
+   **rendered labels** are user-facing copy on `estimate.html` and the client's rule covers
+   them: `"Roller shade . light-filtering / sheer"`, `"Roller shade . blackout"`,
+   `"Day-night double roller"`, `"Roller, light-filtering"`, `"Roller, blackout"`, and the
+   `"Roller, day-night, honeycomb..."` blurb at :94 all need "roller" removed per their
+   "just say shades" rule. **My call, reversible, must be disclosed.** Lines 8 and 39-43 also
+   sit near the unconfirmed pricing that still needs Aviva's sign-off - do not touch prices.
+7. QA scripts that WILL fail and must be updated (lesson 43 - grep /tmp for the old name):
+   `balticqa.py` (11 -> 10), `qa2.py` (asserted homepage href list contains
+   `/roller-solar-shades.html`), `probe11.py` (body-text baseline 11096 moves), `menuqa.py`
+   (nav entry), `svcqa.py` (the six-card grid), `aeoqa.py` (registry-driven, will shift on
+   its own), `footerqa.py` (unaffected).
+8. Then: `bun run lint`, `bun run build` (expect 20 routes / **sitemap 19**), restart BOTH
+   servers per the rituals, then `respqa` + `ovprobe` at 360, `aeoqa`, `qa`, `qa_copy`,
+   `qa2`, `qa_a11y`, `balticqa`, `svcqa`, `menuqa`, `herostaticqa`, `herofreezeqa`. Then a
+   final `rg -in roller packages/web/src` and confirm the only survivors are the intended
+   `estimate-engine.ts` keys and the stub's own copy.
