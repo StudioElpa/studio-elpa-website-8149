@@ -85,7 +85,7 @@ export default function JournalBlackoutPage() {
 								<h4>Clean lines, absolute opacity</h4>
 								<p>
 									If your aesthetic leans toward clean lines and uncluttered surfaces, a custom
-									blackout roller or Roman shade provides a crisp, architectural finish. Framed
+									blackout shade or Roman shade provides a crisp, architectural finish. Framed
 									within the window casing, it disappears into the room's geometry, offering
 									absolute opacity without visual weight.
 								</p>

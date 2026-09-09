@@ -49,7 +49,7 @@ const PILLARS = [
 const SERVICE_SIGNATURE = {
 	img: "art-motor.jpg",
 	alt: "Motorized shades lowered evenly across a wide wall of glass",
-	title: "Motorized Shading",
+	title: "Motorized Shades",
 	sig: "Our signature is motorized custom drapery: European fabric that moves on a schedule, on quiet, reliable motors, ready for smart-home integration.",
 	body: (
 		<>
@@ -61,7 +61,10 @@ const SERVICE_SIGNATURE = {
 	tags: "Child-safe · smart-home · big glass",
 };
 
-/* The two other primary categories, given full editorial cards. */
+/* The other primary categories, given full editorial cards. Roller Shades was
+   removed here in V2: it is no longer a standalone service, its content lives
+   inside Motorized Shades (the signature treatment above). That leaves one card,
+   so the grid gets `.svc-solo` rather than a hole beside it. */
 const SERVICES_PRIMARY = [
 	{
 		img: "art-drapery-linen.jpg",
@@ -70,14 +73,6 @@ const SERVICES_PRIMARY = [
 		body: "The softest thing you can add to a room. Made to measure in European fabrics, chosen for how they fall, age, and handle light, down to the header, lining, and stack-back.",
 		tags: "Softening · warmth · framing windows",
 		href: "/drapery.html",
-	},
-	{
-		img: "art-roller.jpg",
-		alt: "A roller shade lowered part-way, holding back bright afternoon light",
-		title: "Roller Shades",
-		body: "Clean light control that knows when to disappear. A solar screen keeps your view while taming the Florida sun; a dimout gives rest and privacy; a blackout makes a bedroom truly dark.",
-		tags: "Glare · heat · views kept",
-		href: "/roller-solar-shades.html",
 	},
 ];
 
@@ -478,13 +473,18 @@ export default function HomePage() {
 								{/* Rendered once, so a Link inline here is safe. The mapped
 								    cards below use an href string instead (see SERVICES_PRIMARY). */}
 								<p className="svc-golink">
-									<Link to="/motorized.html">See Motorized Shading →</Link>
+									<Link to="/motorized.html">See Motorized Shades →</Link>
 								</p>
 							</div>
 						</div>
 
-						{/* The other two primary categories. */}
-						<div className="svc" data-reveal-group>
+						{/* The other primary categories. One card since the V2 roller
+						    consolidation, so the two-column grid collapses to a centered
+						    single column and the card keeps its own proportions. */}
+						<div
+							className={SERVICES_PRIMARY.length === 1 ? "svc svc-solo" : "svc"}
+							data-reveal-group
+						>
 							{SERVICES_PRIMARY.map((s) => (
 								<div className="card" key={s.title} data-reveal>
 									<img

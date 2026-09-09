@@ -49,7 +49,11 @@ export function PageSeo({ path }: { path: string }) {
 		setMeta("name", "description", route.description);
 		setMeta("property", "og:title", route.title);
 		setMeta("property", "og:description", route.description);
-		setMeta("property", "og:url", canonical(route.path));
+		// Consolidation stubs point their canonical (and og:url, which crawlers
+		// read as the same claim) at the page that absorbed them.
+		const canonicalPath = route.canonicalTo ?? route.path;
+
+		setMeta("property", "og:url", canonical(canonicalPath));
 		setMeta("property", "og:type", route.schema === "article" ? "article" : "website");
 
 		let link = head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
@@ -59,7 +63,7 @@ export function PageSeo({ path }: { path: string }) {
 			link.setAttribute("data-seo", "page");
 			head.appendChild(link);
 		}
-		link.href = canonical(route.path);
+		link.href = canonical(canonicalPath);
 
 		if (route.noindex) setMeta("name", "robots", "noindex, follow");
 

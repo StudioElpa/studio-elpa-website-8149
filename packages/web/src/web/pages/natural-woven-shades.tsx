@@ -167,8 +167,7 @@ export default function NaturalWovenShadesPage() {
 							A woven shade and <Link to="/drapery.html">custom drapery</Link> is one of the most
 							reliable pairings we install: texture inside the opening, softness on the wall around
 							it. Where sun and heat are the real complaint, a{" "}
-							<Link to="/roller-solar-shades.html">solar shade</Link> does that work better and can
-							sit behind the weave. If the room is for sleeping, read why{" "}
+							solar shade does that work better and can sit behind the weave. If the room is for sleeping, read why{" "}
 							<Link to="/blackout.html">blackout</Link> is its own specification, and consider{" "}
 							<Link to="/motorized.html">motorization</Link> on anything above reach. For a more
 							tailored fabric look in the same space, compare{" "}

@@ -8,7 +8,13 @@ import { usePageMotion } from "../hooks/use-motion";
 
 /* Copy ported verbatim from the original motorized.html, with one edit: the
    "Battery or hardwired" line used an em dash, which the brief bans, so it is
-   a colon now. */
+   a colon now.
+
+   V2 consolidation: roller and solar shades are no longer a standalone service.
+   Their unique content moved in here, in FABRICS below plus three of their FAQs,
+   because the fabric choice and the motor are one specification, not two.
+   "Solar shades" survives as a FABRIC term by client decision (it names an
+   openness factor, not a mechanism); the word "roller" does not. */
 
 const CARDS = [
 	{
@@ -22,6 +28,24 @@ const CARDS = [
 	{
 		title: "Cord-free child safety",
 		body: "No cords anywhere is the safest configuration for homes with children and pets, and it looks cleaner, too.",
+	},
+];
+
+/* Absorbed from the retired roller and solar shades page. The angle is the
+   specific South Florida problem these fabrics solve: heat and glare on big
+   glass without giving up the view. */
+const FABRICS = [
+	{
+		title: "Solar screens keep the view",
+		body: "An open weave cuts glare and solar heat while you still see the water, the garden, the street. The tighter the weave, the more privacy and the less view, and choosing that number is most of the job.",
+	},
+	{
+		title: "Dimout for the in-between rooms",
+		body: "Living rooms, offices, guest rooms. Enough privacy after dark and enough softness by day, without committing the room to full blackness.",
+	},
+	{
+		title: "Blackout where sleep happens",
+		body: "In bedrooms and nurseries we fit tight to the glass, or layer with drapery, so light has nowhere to slip around the edges.",
 	},
 ];
 
@@ -45,6 +69,18 @@ const FAQS: FaqEntry[] = [
 		a: "Both are options. Battery is simpler for existing homes; hardwired is cleaner for new construction or renovations. We help you pick and handle it.",
 	},
 	{
+		q: "What openness factor should I choose?",
+		a: "It depends on which direction the window faces and what you want to keep. A 3 percent weave holds a view well and still cuts most of the glare. A 1 percent gives you more privacy and less view. West-facing walls of glass usually want the tighter weave. We look at the room and the hour you actually use it before we specify anything.",
+	},
+	{
+		q: "Will a solar shade give me privacy at night?",
+		a: "No. After dark the lit side becomes the visible side, so a solar screen reads the other way around. Where a room needs both daytime view and nighttime privacy, we pair a solar shade with a dimout fabric or with drapery.",
+	},
+	{
+		q: "Do shades work on very wide windows?",
+		a: "Up to a point. Past a certain width a single shade gets heavy and can track unevenly, so we split the opening into matched panels and align the seams with the mullions. On tall or wide glass we almost always motorize, because a shade nobody can reach is a shade nobody uses.",
+	},
+	{
 		q: "Is the first call really free?",
 		a: "Yes, and there's no obligation. A relaxed 30-minute conversation to understand your windows and see if we're the right fit.",
 	},
@@ -65,17 +101,18 @@ export default function MotorizedPage() {
 				<section className="hero">
 					<div
 						className="bgimg"
-						style={{ backgroundImage: "url('/assets/art-motor.jpg')" }}
+						style={{ backgroundImage: "url('/assets/art-roller.jpg')" }}
 						data-parallax
 					/>
 					<div className="wrap">
 						<div className="inner" data-hero>
-							<div className="kicker">Motorized Shading · South Florida</div>
+							<div className="kicker">Motorized Shades · South Florida</div>
 							<h1>The luxury of never touching a cord.</h1>
 							<p>
-								Quiet, reliable shades that rise with your morning and close on schedule. For the
-								windows you can't reach, walls of glass, and a home that's cord-free and
-								child-safe.
+								Quiet, reliable shades that rise with your morning and close on schedule. Solar
+								screens that hold your view while cutting glare and heat, dimout for privacy,
+								blackout for sleep. For the windows you can't reach, walls of glass, and a home
+								that's cord-free and child-safe.
 							</p>
 							<div className="btn-row">
 								<a
@@ -117,6 +154,49 @@ export default function MotorizedPage() {
 								</div>
 							))}
 						</div>
+					</div>
+				</section>
+
+				{/* Absorbed from the retired roller and solar shades page. The motor
+				    moves it; the fabric decides what the light does. */}
+				<section className="block">
+					<div className="wrap center narrow" data-reveal>
+						<div className="kicker">Why it matters here</div>
+						<h2 className="big">South Florida sun is not a decorating problem.</h2>
+						<p className="lede">
+							It is a heat problem, a glare problem, and a fading problem. Afternoon sun through a
+							wall of glass warms a room the air conditioning then has to fight, throws enough
+							glare that you close the room off entirely, and over a few seasons it takes the
+							color out of rugs, art and upholstery. The right fabric is the quiet piece of
+							engineering that stops all three, without asking you to give up the reason you
+							bought the house.
+						</p>
+					</div>
+				</section>
+
+				<section className="block">
+					<div className="wrap">
+						<div className="center" data-reveal>
+							<div className="kicker">The fabric does the light control</div>
+							<h2 className="big center">Three ways to handle the light.</h2>
+						</div>
+						<div className="three" data-reveal-group style={{ marginTop: 22 }}>
+							{FABRICS.map((c) => (
+								<div className="card" key={c.title} data-reveal>
+									<h3>{c.title}</h3>
+									<p>{c.body}</p>
+								</div>
+							))}
+						</div>
+					</div>
+				</section>
+
+				<section className="block band">
+					<div className="wrap center">
+						<p className="pull" data-reveal>
+							The right shade is the one you forget about. It handles the worst hour of the day and
+							then gets out of the way of the view.
+						</p>
 					</div>
 				</section>
 
@@ -168,7 +248,7 @@ export default function MotorizedPage() {
 							<h2 className="big">The hardware can disappear into the architecture.</h2>
 							<p className="lede">
 								A motorized shade is only ever as clean as the opening it lives in. Where the
-								ceiling or the window reveal allows it, we specify a recess so the roller, the
+								ceiling or the window reveal allows it, we specify a recess so the tube, the
 								fabric roll, and the motor sit out of the line of sight.
 							</p>
 						</div>
@@ -193,10 +273,9 @@ export default function MotorizedPage() {
 						<div className="kicker">Where this goes next</div>
 						<h2 className="big">The motor is the means, not the point.</h2>
 						<p className="lede">
-							What you live with is the treatment itself. Most motorized work here is{" "}
-							<Link to="/drapery.html">custom drapery</Link> or{" "}
-							<Link to="/roller-solar-shades.html">roller and solar shades</Link>, and in a bedroom
-							the specification changes again for <Link to="/blackout.html">blackout</Link>. If the
+							What you live with is the treatment itself. Most motorized work here is either the
+							shades above or <Link to="/drapery.html">custom drapery</Link>, and in a bedroom the
+							specification changes again for <Link to="/blackout.html">blackout</Link>. If the
 							shades should answer to the same system as the lighting and the climate, see{" "}
 							<Link to="/smart-home-window-treatments.html">smart-home window treatments</Link>.
 							Arched and angled openings follow their own rules on{" "}

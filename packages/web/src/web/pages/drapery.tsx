@@ -196,9 +196,10 @@ export default function DraperyPage() {
 							<Link to="/european-fabrics.html">European fabrics and textiles</Link>. For the detail
 							that sets the character of a panel more than anything else, our Journal piece on{" "}
 							<a href="/drapery-headers.html">drapery headers</a> walks through all nine. Drapery
-							layers well over <Link to="/roller-solar-shades.html">roller and solar shades</Link>{" "}
-							or a <Link to="/roman-shades.html">Roman shade</Link>, and when the panels should draw
-							themselves, <Link to="/motorized.html">motorized drapery</Link> is the next step.
+							layers well over a solar or dimout shade or a{" "}
+							<Link to="/roman-shades.html">Roman shade</Link>, and when the panels should draw
+							themselves, <Link to="/motorized.html">motorized drapery and shades</Link> is the next
+							step.
 						</p>
 					</div>
 				</section>

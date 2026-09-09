@@ -9,7 +9,7 @@ import { usePageMotion } from "../hooks/use-motion";
 /* V2 service page. The angle here is deliberately NOT "motorized" again: that is
    /motorized.html. This page is about integration, the layer above the motor, and
    about the planning that has to happen before drywall. Structure follows
-   roller-solar-shades.tsx so every service page reads the same way. */
+   blackout.tsx so every service page reads the same way. */
 
 const CARDS = [
 	{
@@ -168,9 +168,7 @@ export default function SmartHomeWindowTreatmentsPage() {
 							If you are weighing whether to motorize at all, start with{" "}
 							<Link to="/motorized.html">motorized drapery and shades</Link>, which covers the
 							motors, the noise, and what it costs to reach the windows you cannot. Integration
-							suits{" "}
-							<Link to="/roller-solar-shades.html">roller and solar shades</Link> on big west-facing
-							glass better than anything else, and it is what makes{" "}
+							suits solar shades on big west-facing glass better than anything else, and it is what makes{" "}
 							<Link to="/blackout.html">blackout</Link> in a bedroom genuinely effortless. If the
 							house is still on paper, so is the best moment to talk:{" "}
 							<Link to="/drapery.html">custom drapery</Link> pockets and motor pockets both need

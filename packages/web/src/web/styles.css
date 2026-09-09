@@ -1943,6 +1943,18 @@ footer.lp .footer-logo {
 	margin-top: 46px;
 }
 
+/* Since the V2 roller consolidation this tier holds a single card. A lone card
+   in a two-column grid would leave an empty half, and stretching it full width
+   would repeat the full-width feature block directly above it. So: one centered
+   column at roughly the width the card had before, which keeps the 16/11 image
+   crop and the type scale exactly as they were. */
+.svc.svc-solo {
+	grid-template-columns: minmax(0, 1fr);
+	max-width: 620px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .svc .card {
 	background: var(--surface);
 	border: 1px solid var(--hairline);

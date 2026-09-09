@@ -27,6 +27,13 @@ export type SiteRoute = {
 	headline?: string;
 	datePublished?: string;
 	noindex?: boolean;
+	/**
+	 * Consolidation stubs only: the path this URL's canonical should point at.
+	 * Defaults to the route's own path. Used by the retired
+	 * /roller-solar-shades.html stub so its ranking signals fold into
+	 * /motorized.html instead of pointing back at a noindex page.
+	 */
+	canonicalTo?: string;
 	changefreq: string;
 	priority: string;
 };

@@ -170,8 +170,7 @@ export default function HospitalityWindowTreatmentsPage() {
 							The rating, which is covered on{" "}
 							<Link to="/flame-retardant-drapery.html">flame-retardant drapery</Link>. The glare,
 							which on a west-facing terrace is usually solved by{" "}
-							<Link to="/roller-solar-shades.html">roller and solar shades</Link> rather than by
-							fabric alone. And whether anything moves on its own, which matters more in a room with
+							a solar shade rather than by fabric alone. And whether anything moves on its own, which matters more in a room with
 							no spare staff:{" "}
 							<Link to="/motorized.html">motorized drapery and shades</Link>. The making itself is
 							on <Link to="/drapery.html">custom drapery</Link>, and the cloth on{" "}

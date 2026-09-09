@@ -177,7 +177,7 @@ export default function FlameRetardantDraperyPage() {
 							<Link to="/drapery.html">custom drapery</Link> and{" "}
 							<Link to="/drapery-hardware.html">drapery hardware</Link>. Where glare on a west-facing
 							dining room is the real problem,{" "}
-							<Link to="/roller-solar-shades.html">solar shades</Link> often do more than fabric can.
+							<Link to="/motorized.html">solar shades</Link> often do more than fabric can.
 						</p>
 					</div>
 				</section>

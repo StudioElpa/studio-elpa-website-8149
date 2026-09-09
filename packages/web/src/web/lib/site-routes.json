@@ -28,8 +28,8 @@
 			"title": "Motorized Shades and Drapery · Studio Elpa",
 			"description": "Quiet, reliable motorized shades and drapery, wired and programmed properly. Our licensed, insured electrical partner handles the power so you never have to find an electrician.",
 			"schema": "service",
-			"serviceType": "Motorized window treatment design, wiring and installation",
-			"breadcrumb": "Motorized Window Treatments",
+			"serviceType": "Motorized shade and drapery design, wiring and installation",
+			"breadcrumb": "Motorized Shades",
 			"changefreq": "monthly",
 			"priority": "0.9"
 		},
@@ -47,13 +47,13 @@
 		{
 			"path": "/roller-solar-shades.html",
 			"aliases": [],
-			"title": "Roller and Solar Shades for Florida Sun · Studio Elpa",
-			"description": "Solar screens that hold your view while cutting glare and heat, dimout for privacy, blackout for sleep. Made to measure, fitted clean, and motorized when you want the room to run itself.",
-			"schema": "service",
-			"serviceType": "Roller and solar shade design, fabrication and installation",
-			"breadcrumb": "Roller and Solar Shades",
-			"changefreq": "monthly",
-			"priority": "0.9"
+			"title": "Now Motorized Shades · Studio Elpa",
+			"description": "Roller and solar shades are now part of Motorized Shades at Studio Elpa. This page redirects to the current one.",
+			"schema": "page",
+			"noindex": true,
+			"canonicalTo": "/motorized.html",
+			"changefreq": "yearly",
+			"priority": "0.1"
 		},
 		{
 			"path": "/roman-shades.html",

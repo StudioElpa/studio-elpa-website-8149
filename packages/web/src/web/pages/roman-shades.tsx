@@ -31,7 +31,7 @@ const FAQS: FaqEntry[] = [
 	},
 	{
 		q: "Can a Roman shade block light properly?",
-		a: "It can get close with the right lining. A blackout lining stops light through the fabric, but a Roman hangs slightly off the glass, so a little light still finds the edges. For a bedroom that has to be genuinely dark we either fit an inside-mount roller behind it or layer with drapery, and we will tell you which before you order.",
+		a: "It can get close with the right lining. A blackout lining stops light through the fabric, but a Roman hangs slightly off the glass, so a little light still finds the edges. For a bedroom that has to be genuinely dark we either fit an inside-mount shade behind it or layer with drapery, and we will tell you which before you order.",
 	},
 	{
 		q: "Are they safe with children and pets?",
@@ -164,8 +164,7 @@ export default function RomanShadesPage() {
 						<p className="lede">
 							Roman shades layer well. Pair them with{" "}
 							<Link to="/drapery.html">custom drapery</Link> when a wall needs softening, or with{" "}
-							<Link to="/roller-solar-shades.html">solar shades</Link> where the sun is the real
-							problem and the Roman is there for warmth. On tall or awkward openings,{" "}
+							solar shades where the sun is the real problem and the Roman is there for warmth. On tall or awkward openings,{" "}
 							<Link to="/motorized.html">motorization</Link> makes them usable every day rather
 							than once a week. If you are still weighing how the top of a window should look, our
 							guide to <a href="/drapery-headers.html">drapery headers</a> is a useful companion

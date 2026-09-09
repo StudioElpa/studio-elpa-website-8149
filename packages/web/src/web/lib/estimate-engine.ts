@@ -36,11 +36,11 @@ interface PriceRow {
 
 export const P: Record<string, PriceRow> = {
 	// Charts 2 → 7
-	roller_lf: { label: "Roller shade · light-filtering / sheer", lo: [158, 192, 365], hi: [301, 378, 722] },
+	roller_lf: { label: "Shade · light-filtering / sheer", lo: [158, 192, 365], hi: [301, 378, 722] },
 	// Charts 3 → 10
-	roller_bo: { label: "Roller shade · blackout", lo: [166, 209, 390], hi: [393, 573, 1037] },
+	roller_bo: { label: "Shade · blackout", lo: [166, 209, 390], hi: [393, 573, 1037] },
 	// Double Chart 1 → ~5
-	daynight: { label: "Day-night double roller", lo: [517, 708, 1250], hi: [700, 950, 1650] },
+	daynight: { label: "Day-night double shade", lo: [517, 708, 1250], hi: [700, 950, 1650] },
 	// Groups 1 → 4
 	honeycomb: { label: "Honeycomb shade", lo: [293, 419, 745], hi: [381, 545, 969] },
 	// Groups 3 → 4
@@ -91,7 +91,7 @@ export const GOALS = [
 ] as const;
 
 export const PRODUCTS = [
-	{ v: "shades", b: "Shades", s: "Roller, day-night, honeycomb, clean and architectural." },
+	{ v: "shades", b: "Shades", s: "Solar, day-night, honeycomb, clean and architectural." },
 	{ v: "drapery", b: "Drapery", s: "Custom curtains, tailored to the millimeter." },
 	{
 		v: "both",
@@ -115,8 +115,8 @@ export const ROOMS = [
 ] as const;
 
 const SHADE_TYPES: Array<[string, string]> = [
-	["roller_lf", "Roller, light-filtering"],
-	["roller_bo", "Roller, blackout"],
+	["roller_lf", "Solar or light-filtering"],
+	["roller_bo", "Blackout"],
 	["daynight", "Day-night (zebra)"],
 	["honeycomb", "Honeycomb (insulating)"],
 	["sheershade", "Sheer shading (soft vanes)"],

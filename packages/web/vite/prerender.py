@@ -194,7 +194,11 @@ def head_defects(route: str, html: str) -> list[str]:
 
     link = CANONICAL_RE.search(html)
     href = HREF_RE.search(link.group(0)) if link else None
-    want = f"{ORIGIN}{meta['path']}"
+    # Most routes self-canonical. A consolidation stub (an old URL kept alive
+    # only to redirect) deliberately canonicals somewhere else via the
+    # registry's optional canonicalTo, so its ranking signals fold into the
+    # surviving page instead of pointing at a noindexed dead end.
+    want = f"{ORIGIN}{meta.get('canonicalTo', meta['path'])}"
     if not href or href.group(1) != want:
         problems.append(f"{route}: canonical is {href.group(1) if href else '(none)'}, expected {want}")
 
@@ -242,6 +246,13 @@ def main() -> int:
                 viewport={"width": 1280, "height": 900},
             )
             page = ctx.new_page()
+            # Consolidation stubs (e.g. /roller-solar-shades.html) redirect to the
+            # page that absorbed them on mount. Without this flag the prerenderer
+            # would follow that redirect and write the TARGET page's html into the
+            # stub's file: a full duplicate at a dead URL, with no redirect left in
+            # the snapshot to move a real visitor along. The stub reads this flag
+            # and renders its static self instead.
+            page.add_init_script("window.__PRERENDER__ = true;")
             errors: list[str] = []
             page.on("pageerror", lambda e: errors.append(str(e)))
 

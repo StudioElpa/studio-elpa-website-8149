@@ -4024,3 +4024,62 @@ preserve.
 
 `index.tsx` also carries uncommitted Workstream B edits, so this went in via `git add -p`
 staging only the Custom Drapery hunk. Workstream B stays unstaged and unfinished.
+
+---
+
+## §23 WORKING PLAN: three-part request (roller consolidation, hero size, footer swap)
+
+Client asked for three changes in one go. Order of execution follows their numbering.
+
+### 23.1 Roller -> Motorized (finishes §20)
+Registry was already half-done in the tree. Steps and status:
+- [x] registry: roller entry is a noindex stub, motorized breadcrumb renamed
+- [x] NEW: `canonicalTo` field added to `SiteRoute` + honoured by `PageSeo` for canonical
+      AND og:url. PageSeo used to self-canonical, which for a redirect stub would have
+      pointed ranking signals back at a noindex page. Stub now canonicals to /motorized.html.
+- [x] prerender guard: prerender.py uses `page.goto(..., networkidle)` then snapshots
+      outerHTML, so a naive `location.replace` in the stub would make the PRERENDERER follow
+      the redirect and write MOTORIZED's html into dist/roller-solar-shades.html - a full
+      duplicate at the dead URL, and no redirect script in the snapshot, so a real visitor
+      would sit on motorized content at the old URL forever. Fix: prerender.py sets
+      `window.__PRERENDER__` via add_init_script; the stub only redirects when it is absent.
+      Deliberately NOT `navigator.webdriver`, which would also suppress the redirect in my
+      own Playwright QA and make it untestable.
+- [x] stub roller-solar-shades.tsx (loses BalticLink: balticqa 11 -> 10)
+- [x] motorized.tsx: fold in the 3 roller cards (solar/dimout/blackout), the 3 useful roller
+      FAQs, hero art -> art-roller.jpg, keep "solar shades" as a fabric term
+- [x] 8 inbound links + prose mentions repointed and reworded off "roller"
+- [x] index.tsx: drop roller card. **CONSEQUENCE: `.svc` is `repeat(2, 1fr)`, so Custom
+      Drapery would sit alone in a 2-col grid with a hole beside it.** Not silently
+      re-ranking the catalogue: lone card gets a single-column modifier so it reads as
+      intentional. Alternative (promote Blackout up from SERVICES_MORE to keep a two-card
+      row) is a brand-hierarchy call -> SURFACE TO CLIENT, do not decide alone.
+- [x] estimate-engine.ts: rendered labels only, keys `roller_lf`/`roller_bo`/`daynight` stay
+- [x] QA scripts updated + suites green:
+      - prerender.py canonical validator taught `canonicalTo` (was the build blocker)
+      - aeoqa.py likewise: "canonical is self" now honours canonicalTo. 1088/1088
+      - NEW /tmp/stubqa.py proves a REAL browser at the old URL lands on
+        /motorized.html with the absorbed content, while dist/roller-solar-shades.html
+        still holds the stub's own HTML. Both halves of the __PRERENDER__ contract.
+      - balticqa: dropped the stub from ROUTES entirely. Crawling a redirect counted
+        motorized's 2 mentions twice (total read 12). Sitewide now 4+2+1+1+1+1 = 10. 63/0
+      - qa/qa_copy/qa_a11y: stub removed from the content route lists
+      - svcqa: TITLES drops "Roller Shades", "Motorized Shading" -> "Motorized Shades".
+        All 5 titles now resolve; the old "Motorized Shading 0" drift is fixed.
+      - qa_copy FACTS: "licensed and insured" -> "licensed, insured". PRE-EXISTING
+        drift, not caused by this work: the copy never used the "and" form, so that
+        fact check had been silently reporting ABSENT.
+      - green: respqa 833/0, herostaticqa 65/0, herofreezeqa 48/0, ovprobe@360,
+        menuqa, qa, qa2, probe11
+      - Playwright's bundled chromium is absent in this sandbox; QA scripts launch
+        system Chrome via executable_path, same as prerender.py.
+
+### 23.2 Hero size
+Image dominant, contained, ~1240-1300px wide, taller framing, no distortion. Headline and
+both CTAs stay but lose relative weight. Freeze-on-last-frame and reserved dimensions must
+survive (see §17 static hero + v3 freeze clip).
+
+### 23.3 Footer swap
+REACH US block (phone, email, Serving South Florida, reply line) moves UP beside the logo
+into the note's current slot. Handwritten note becomes the closing element, bottom-right.
+Keep "Begin a conversation" and the note's visually-hidden text (§21).

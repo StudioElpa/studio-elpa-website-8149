@@ -164,8 +164,7 @@ export default function SpecialtyShapedWindowsPage() {
 						<div className="kicker">Where this goes next</div>
 						<h2 className="big">Shaped openings usually want two layers.</h2>
 						<p className="lede">
-							The shape gets solved with a fitted shade;{" "}
-							<Link to="/roller-solar-shades.html">a solar or dimout roller</Link> under the rake,
+							The shape gets solved with a fitted shade; a solar or dimout fabric under the rake,
 							or a fixed panel in the arch. The room gets finished with{" "}
 							<Link to="/drapery.html">custom drapery</Link> on the rectangle below, which is also
 							what softens the light gaps a shaped edge leaves. Anything above head height is worth{" "}
