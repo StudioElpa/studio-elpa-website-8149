@@ -205,26 +205,35 @@ export function SiteFooter() {
 			<div className="wrap">
 				<div className="f-top">
 					<FooterLogo />
-					{/* .f-top is a two-column grid, so the statement and the signature must
-					    share ONE grid item or the signature drops into column 1 under the
-					    lockup instead of under the line it signs. Hence this wrapper. */}
+					{/* .f-top is a two-column grid, so the note and its crawlable text must
+					    share ONE grid item or each would blockify into its own column.
+					    Hence this wrapper. */}
 					<div className="f-voice">
 						{/* The brand line, client-supplied verbatim. "Life touched by beautiful
 						    textiles" is the brand line, so Phase 3 must carry this exact
-						    statement and the signature below it onto the service and geo
-						    footers too. */}
-						<p className="f-line">
-							Come with us, into a life touched by beautiful textiles.
-						</p>
+						    statement and the sign-off onto the service and geo footers too.
+						    It is now artwork: the client supplied the whole statement plus the
+						    heart and the "Aviva" sign-off as one handwritten image, replacing
+						    the typeset line and the separate signature that stood here before.
+						    The sentence therefore survives as real text ONLY via this alt and
+						    the hidden <p> below, so neither may be dropped. */}
 						<img
-							className="f-signature"
-							src="/assets/signature-aviva.png"
-							alt="Aviva"
-							width={170}
-							height={77}
+							className="f-note"
+							src="/assets/footer-note-aviva.png"
+							alt="Come with us, into a life touched by beautiful textiles. Aviva"
+							width={580}
+							height={242}
 							loading="lazy"
 							decoding="async"
 						/>
+						{/* Client asked for the statement in the alt AND in a hidden paragraph.
+						    Verbatim that makes a screen reader announce the sentence twice, so
+						    the paragraph is aria-hidden: crawlers and AI parse the raw DOM and
+						    still see it, assistive tech reads it once from the alt. Reversible
+						    the other way (alt="" plus a non-aria-hidden p) if they prefer. */}
+						<p className="f-line visually-hidden" aria-hidden="true">
+							Come with us, into a life touched by beautiful textiles.
+						</p>
 					</div>
 				</div>
 				<div className="f-mid">

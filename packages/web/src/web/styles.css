@@ -1369,48 +1369,32 @@ footer.site .f-top {
 	border-bottom: 1px solid #3d3a35;
 }
 
-/* The serif face, size and 42ch measure live on .f-voice, not here, so the
-   statement and the signature beneath it share ONE measure by construction.
-   That is what lets the signature right-align to the end of the statement at
-   every viewport instead of guessing an offset. .f-line is the only element
-   using this treatment and it is always inside .f-voice. */
-footer.site .f-line {
-	line-height: 1.4;
-	color: var(--dark-head);
-	margin: 0 0 4px;
-	text-wrap: balance;
-}
-
-/* The statement and the signature that signs it are one grid item, so the
-   signature sits under the line rather than under the lockup. */
+/* The statement, the heart and the "Aviva" sign-off are now ONE piece of
+   supplied artwork (.f-note), so this wrapper no longer carries a serif face
+   or a 42ch measure: there is no typeset line left to give a measure to. It
+   stays because .f-top is a grid, which would otherwise blockify the note and
+   its hidden crawlable text into two separate grid items. min-width:0 keeps
+   the item from refusing to shrink below the image's intrinsic width.
+   .f-line itself needs no rule here any more: it is visually-hidden, and a
+   footer.site-scoped rule would outrank .visually-hidden on margin. */
 footer.site .f-voice {
 	min-width: 0;
-	font-family: var(--serif);
-	font-size: clamp(21px, 2.4vw, 27px);
-	/* fit-content, not max-content: fit-content is min(max-content, available),
-	   so the box hugs the sentence on wide screens (keeping the sign-off pinned
-	   to the end of the line) and collapses to the column on narrow ones. An
-	   earlier attempt used width:max-content with max-width:min(42ch,100%) and
-	   overflowed 360px by 12px, because that 100% resolves against the grid
-	   area and ignores this item's own 24px left offset. Measured, not assumed. */
-	width: fit-content;
-	max-width: 42ch;
 }
 
-/* Aviva's handwritten sign-off (V2). Cream artwork on transparent ground, so
-   it needs no treatment on the dark footer. Width is capped rather than set
-   so it can shrink on narrow screens; height stays auto so the 2.22:1 ratio
-   of the supplied artwork is never distorted. The width/height attributes on
-   the element reserve the box against the lazy load. */
-footer.site .f-signature {
+/* Aviva's handwritten note (V2): the whole brand statement plus the heart and
+   the sign-off in one cream-on-transparent image, so it needs no treatment on
+   the dark footer. Deliberately NOT clamp(520px, 40vw, 620px): a px floor above
+   the viewport width overflows a 360px screen unconditionally. width plus
+   max-width:100% shrinks correctly instead, and the width/height attributes on
+   the element hold the 2.4:1 box against the lazy load. margin-left:auto pushes
+   it to the right of .f-top's 1fr track so it balances the lockup in the auto
+   track on the left, which is what the client asked for. */
+footer.site .f-note {
 	display: block;
-	width: 170px;
-	max-width: 55%;
+	width: 580px;
+	max-width: 100%;
 	height: auto;
-	/* margin-left: auto pushes the sign-off to the right edge of .f-voice's
-	   42ch measure, so it reads as a signature at the end of the statement
-	   rather than a left-aligned third line. */
-	margin: 14px 0 0 auto;
+	margin-left: auto;
 }
 
 footer.site .f-mid {
@@ -3648,6 +3632,14 @@ footer.lp .wordmark {
 
 	footer.site .f-top {
 		gap: 14px;
+	}
+
+	/* .f-top is one stacked column here, so the desktop margin-left:auto would
+	   right-align the note under a left-aligned lockup. Between 580px and 860px
+	   the image is still narrower than the column, so this reset is load-bearing
+	   rather than cosmetic; below 580px max-width:100% makes it moot anyway. */
+	footer.site .f-note {
+		margin-left: 0;
 	}
 
 	.page-home .wrap,

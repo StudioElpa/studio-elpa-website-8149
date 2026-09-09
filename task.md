@@ -3810,3 +3810,127 @@ expectation accordingly.
    `qa2`, `qa_a11y`, `balticqa`, `svcqa`, `menuqa`, `herostaticqa`, `herofreezeqa`. Then a
    final `rg -in roller packages/web/src` and confirm the only survivors are the intended
    `estimate-engine.ts` keys and the stub's own copy.
+
+## §21 The footer handwritten NOTE replaces both the typeset line and the signature (DONE)
+
+Client instruction: replace BOTH the typeset brand statement `<p class="f-line">` AND the
+separate handwritten signature image with ONE supplied artwork that already contains the
+whole statement, a heart, and the "Aviva" sign-off. Same place, but bigger and pushed right
+so it balances the cream lockup on the left. Cream on transparent, made for the dark footer.
+
+### §21.1 What shipped
+
+- `components/site-chrome.tsx`: `.f-voice` now holds `<img class="f-note">` plus a
+  visually-hidden `<p class="f-line visually-hidden" aria-hidden="true">`. The `.f-voice`
+  wrapper STAYS: `.f-top` is a grid and would otherwise blockify the image and the hidden
+  paragraph into two separate grid items (lesson 39).
+- `styles.css`: `footer.site .f-line` and `footer.site .f-signature` DELETED.
+  `footer.site .f-voice` reduced to `min-width: 0` (the serif face, the clamp font-size and
+  the 42ch measure existed only to give the typeset sentence a measure; there is no typeset
+  sentence left). New `footer.site .f-note { display:block; width:580px; max-width:100%;
+  height:auto; margin-left:auto }`, plus a `margin-left: 0` reset inside the 860px block.
+- Asset: `/assets/footer-note-aviva.png`, 1240x517.
+
+### §21.2 The asset, and why it is a CROP not the raw file
+
+The supplied master is 5096x4051. `identify -trim` reports 4957x3953, ratio 1.258 -- and
+that ratio is an ARTIFACT. Alpha histogram: only 1.56% of pixels are fully opaque, and the
+64-127 band (0.19%) is antialias fringe plus a few stray pen dots scattered from y=43 to
+y=3994, spread far too thinly to read as a visible veil.
+
+Real ink is `alpha >= 128`: bbox 4955x2042 at (71,788), ratio **2.4265**.
+
+Sizing the raw file at 580px wide would have reserved 461px of height for ~239px of
+handwriting -- ~45% dead space, which would have defeated the client's own no-layout-shift
+requirement. So the shipped asset is the raw file cropped to the `alpha>=128` bbox with a
+20px pad, then LANCZOS-resized to 1240px wide. It is a CROP, not a threshold: original alpha
+values are untouched inside the box, so no stroke edge is hardened.
+
+Row-mass filtering (`rows>=3`, then `rows>=15` at `alpha>64`) both FAILED to isolate the ink.
+That failure is what proved the faint material is broad haze rather than discrete specks.
+
+### §21.3 Quantization tested and REJECTED
+
+`-colors 32/64/128` gave 18-22 kB, a 7x saving. Rejected: composited over the real footer ink
+`rgb(57,41,27)`, all three showed `maxdiff 100` with 20,000-23,000 pixels off by more than 2
+levels -- real antialias damage on stroke edges, and cream-on-dark is the highest-contrast
+case where it shows. Evidence in `/tmp/fsh/q*.png` and `/tmp/fsh/comp_*.png`.
+
+The bare RMSE figure (~2631) is a FALSE SIGNAL: ImageMagick compares meaningless RGB inside
+fully-transparent regions. Never judge a transparent asset without compositing first.
+
+### §21.4 The build optimizer did the job instead -- measured, not assumed
+
+`148,011 -> 52,590 B` in `dist`, **64.5% smaller**, and it is faithful: composited on the real
+ink, RMSE 38.62 (0.059%) with only **133 pixels** differing by >2 levels out of 641,080
+(0.02%). Compare the rejected hand-quantization at 20,000-23,000 pixels. Served weight 51,864.
+
+Honest disclosure: the old signature shipped at 10,529 B optimized, so the footer artwork got
+~42 kB heavier. It is below the fold and lazy-loaded, so it should not touch LCP.
+
+### §21.5 The aria-hidden decision (MINE, disclosed, reversible)
+
+The client asked for the statement in the `alt` AND in a visually-hidden `<p>`. Verbatim that
+makes a screen reader announce the sentence twice. Resolution: honour their exact `alt`
+string, and mark the hidden `<p>` `aria-hidden="true"` -- crawlers and AI parse the raw DOM
+and still see it, assistive tech reads it once. The alternative, if they prefer, is `alt=""`
+plus a non-aria-hidden paragraph. One attribute either way.
+
+The sentence now survives as real text ONLY via that alt plus the hidden paragraph, so
+neither may ever be dropped. A source comment in `site-chrome.tsx` says so.
+
+### §21.6 The clamp() I deliberately did NOT write
+
+`width: clamp(520px, 40vw, 620px)` was the obvious reading of "roughly 520-620px wide". It
+overflows a 360px viewport unconditionally, because a px floor above the viewport width
+cannot shrink. `width: 580px; max-width: 100%` with `height: auto` shrinks correctly and
+still reserves the box from the width/height attributes. This is the same class of bug as the
+`min(42ch,100%)` overflow in §19.
+
+### §21.7 Measured geometry (`/tmp/sigshot.py`, dist on 4310)
+
+| viewport | note w | ratio | track | alignment | clearance |
+|---|---|---|---|---|---|
+| 1440 | 580.0 | 2.399 | 696.7 | right-pinned, gap-to-right 0 | 220px |
+| 1024 | 580.0 | 2.399 | 640.7 | right-pinned, gap-to-right 0 | 40px |
+| 768  | 580.0 | 2.399 | 720.0 | stacked, left-aligned | 164px |
+| 390  | 342.0 | 2.399 | 342.0 | fills column | 24px |
+| 360  | 312.0 | 2.399 | 312.0 | fills column | 24px |
+
+1024 and 900 were tested explicitly because `.f-top` is an `auto 1fr` grid and 580px is wider
+than the 1fr track at mid widths. `max-width: 100%` absorbs it. No overflow anywhere.
+
+### §21.8 QA
+
+- `/tmp/footerqa.py` REWRITTEN to the new contract: **466/466** across 8 viewports. Asserts
+  the note src/attrs/natural size/ratio, the exact alt string, `width == min(580, track)`,
+  right-pinned on desktop and left-aligned when stacked, the hidden paragraph's verbatim copy
+  via `textContent`, its `aria-hidden`, its <=2px clipped box, and the ABSENCE of
+  `.f-signature` and `signature-aviva.png`. The old assertions were inverted, not dropped.
+- `/tmp/sigshot.py` repointed at `.f-note`, now shooting 5 widths including 1024 and 768.
+- `ovprobe` 360: docSw == vw == 360 on both servers, only the intentional `-9999` skip link.
+  `respqa` 840/0. `qa_a11y` faded=0, no reduced-motion errors. `qa2` 18 images, 0 broken.
+- `bun run lint` clean; `bun run build` green, 20 routes, sitemap 19.
+
+### §21.9 Two QA assertions I wrote WRONG, and the corrections
+
+Both initially failed. Neither was a site regression; both were defective assertions, and
+both are worth keeping as lessons rather than quietly deleting:
+
+1. **`note lazy-loaded` read back `eager`.** The script forces `i.loading = 'eager'` on every
+   image to defeat headless lazy-loading (lesson 45), then read the attribute back -- it was
+   measuring its own write. Fixed by capturing `loading` BEFORE the override.
+2. **`statement is NOT visible live text` failed.** My assertion over-generalized lesson 19.
+   `innerText` excludes `display:none` and `visibility:hidden` text, but the clip-based
+   `.visually-hidden` pattern deliberately keeps a real 1px layout box so the text stays in
+   the accessibility tree -- so `innerText` DOES contain it. Invisibility is proved
+   geometrically (position:absolute, <=2px box, overflow:hidden), never from innerText.
+
+### §21.10 Consequences
+
+- `/assets/signature-aviva.png` is now UNUSED. Kept on disk, not deleted, same treatment as
+  `about.jpg`. It still returns 200 in dist because it is still in `public/`.
+- `footer.site .f-line` is gone from CSS on purpose: a `footer.site`-scoped rule would
+  outrank `.visually-hidden` (0,2,1 vs 0,1,0) and reintroduce a stray margin on a 1px box.
+- The statement and sign-off remain HOMEPAGE ONLY. `LandingFooter` still has neither. Phase 3
+  must carry both onto the service and geo footers -- a committed requirement.

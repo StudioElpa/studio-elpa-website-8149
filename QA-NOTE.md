@@ -1254,3 +1254,79 @@ read and confirmed by eye.
   the word and I will retry it cleanly.
 - **The signature and brand line are homepage-only today.** Phase 3 fixes that; it is now a
   committed requirement rather than an open question.
+
+## §20 The footer note: one handwritten image replaces both lines
+
+The typeset brand statement and the separate handwritten signature are both gone. In their
+place is the single artwork you supplied, containing the whole sentence, the heart and the
+"Aviva" sign-off, cream on transparent, sitting on the dark footer. It renders 580px wide on
+desktop, inside the 520-620px band you gave, with the original aspect ratio preserved
+exactly, and it is pushed to the right so it balances the cream logo on the left.
+
+Nothing else in the footer moved, and the footer is the same height as before: the image
+reserves its box up front, so there is no layout shift when it loads.
+
+### The sentence is still real text, three ways over
+
+You asked for it and it matters more than usual here, because this site is being built to be
+read by AI assistants as much as by people. The sentence survives as:
+
+- the image's `alt` text, carrying the statement and the sign-off together
+- a hidden paragraph behind the image with the statement verbatim, present in the page
+  source and in the accessibility tree, positioned off-view rather than switched off
+- Aviva's name in ordinary visible text in the About section and on `/founder.html`
+
+**One judgement call I made:** the hidden paragraph is marked `aria-hidden`. Without it, a
+screen reader would announce the sentence twice in a row, once from the image and once from
+the paragraph. With it, the sentence is announced once and stays fully crawlable in the
+source. If you would rather it be announced by the paragraph instead of by the image, that is
+a one-attribute change in either direction; say which you prefer.
+
+### The artwork, and why the file on the site is not the file you sent
+
+The original is 5096x4051 and reports an aspect ratio of roughly 1.26. That number is an
+artifact: only about 1.5% of its pixels are solid, and there is faint haze and a scatter of
+stray pen dots spread over almost the full height. Measured against the actual ink, the
+handwriting occupies a band with a ratio of about 2.43. Had I sized the file as sent, the
+footer would have reserved 461px of height for 239px of handwriting, roughly 45% dead space,
+and the balance you asked for would have been lost.
+
+So the shipped file is your artwork **cropped to the ink with a small pad**, then resized. It
+is a crop only. No pixel inside that box was altered and no stroke edge was touched, so the
+handwriting is exactly as you drew it, antialiasing included.
+
+### The one cost, stated plainly
+
+The note ships at **52,590 bytes**, against 10,529 bytes for the small signature it replaces.
+That is about 42kB more footer artwork. It sits below the fold and loads lazily, so it should
+not affect how fast the page feels or scores, but it is a real increase and you should know
+it.
+
+I did try to shrink it. Reducing the colour count got it to 18-22kB, a seven-fold saving, but
+measured against the ink it damaged the soft edges of the strokes on more than 20,000 pixels.
+Handwriting is mostly edge, so that was not a trade worth making without asking. The tools
+that would do this properly without quality loss are not available in this environment. If
+the weight matters to you, the honest options are a slightly smaller display width or a
+flattened version on the dark brown rather than a transparent one.
+
+### Verified
+
+Lint clean. Build clean, 20 routes. Footer suite rewritten against the new contract and
+passing 466/466 across eight widths from 1440 down to 360. Responsive battery 840 pass / 0
+fail. Overflow probe clean at 360 on both the dev server and the production build.
+Accessibility, copy, image and link suites clean. Footer screenshots at five widths read and
+confirmed by eye: logo left and note right on desktop, both stacked and left-aligned on
+phones, where a right-pushed note under a left-aligned logo would have read wrong.
+
+I also confirmed the build's image optimizer did not alter the artwork while compressing it:
+composited on the actual footer brown, 133 pixels out of 641,080 differ perceptibly.
+
+### Open items
+
+- **The `aria-hidden` decision above** is mine and reversible in one attribute.
+- **The weight**, 42kB up on the footer. Options listed above if you want it back.
+- **Still homepage-only.** `LandingFooter`, used by all 13 service pages and by the geo pages
+  next, has neither the statement nor the sign-off. Carrying both onto those footers is a
+  committed Phase 3 task, not an open question.
+- **The old signature file is now unused** but left on disk rather than deleted, in case you
+  want it back somewhere. It costs nothing on the pages that do not use it.
