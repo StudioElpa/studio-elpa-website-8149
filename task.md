@@ -4425,3 +4425,30 @@ The four photography flags from §25 are still unanswered, the Blackout card pho
 Plus: Lighthouse not re-measured since Phase 2; LandingFooter lacks the statement and sign-off;
 hydration does not preserve prerendered HTML on service pages; estimate prices; duplicate founder
 link; Phase 3 geo layer; host/CDN crawler allowance; unused assets on disk.
+
+## 27. Hero overlay made even left to right, and the phone paragraph unlatched
+
+Client picked option 2 on the overlay and asked for the phone paragraph to go back to a flush left
+edge. Both done in `styles.css`, no JSX.
+
+- `.page-lp .hero::after` was a `100deg` left-heavy wash. Now two layers: a `180deg` vertical wash
+  (`0.34 -> 0.62 at 46% -> 0.30`) that is even left to right, plus a soft
+  `radial-gradient(ellipse 62% 46% at 50% 44%)` at `0.44` sitting only under the copy. The ellipse
+  is what buys the paragraph its contrast without smoking the whole photograph.
+- `.page-lp .hero.night::after` follows the same shape at `0.42 -> 0.70 -> 0.38`.
+- New `@media (max-width: 480px)` giving `.page-lp .hero p { text-align: start }`. Kicker, heading
+  and buttons stay centred; only the long measure goes flush left.
+
+Measured with `/tmp/heroglyph.py` at each step, 12 photographic heroes at 1440 and 360:
+glyph pixels below threshold went 36 -> 23 (vertical wash) -> 18 (plus ellipse). Headings now pass
+the 3.0 large-text threshold everywhere except `woven` at phone width (2.94, borderline). Medians
+moved from roughly 2-5 to roughly 5-8.
+
+Not fully solved and not pretended otherwise: paragraph p5 still sits between 2.85 and 4.1 against
+4.5 on most heroes, because the worst 5% of glyph pixels fall over blown-out window light in the
+photographs themselves. Closing that last gap needs a much heavier scrim that would visibly smoke
+the imagery, so I stopped and read the heroes by eye instead: photographs still bright, no visible
+scrim edge, text clearly legible. Further gain has to come from the photography, not the CSS.
+
+Suite green after the change: respqa 840/0, herosizeqa 50/0, herostaticqa 65/0, aeoqa 1088/1088,
+footerqa 534/534, svcqa PASS, qa_a11y clean, qa2 18 images 0 broken, ovprobe 360 no overflow.

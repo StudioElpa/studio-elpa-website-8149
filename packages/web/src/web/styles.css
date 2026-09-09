@@ -2850,20 +2850,33 @@ header.lp .logo img {
 	content: "";
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(
-		100deg,
-		rgba(40, 37, 33, 0.66),
-		rgba(40, 37, 33, 0.34) 60%,
-		rgba(40, 37, 33, 0.12)
-	);
+	/* Even left to right. The old 100deg wash was heaviest on the left, which
+	   was fine under left-aligned copy but leaves centred copy sitting over the
+	   thin end of the gradient. Vertical instead, deepest through the band the
+	   text occupies, so both halves of a centred line get the same ground. */
+	/* Two layers. The vertical wash sets the mood over the whole frame; the
+	   ellipse is a soft scrim sitting only under the copy, which buys the
+	   paragraph its contrast without flattening the photograph edge to edge. */
+	background:
+		radial-gradient(
+			ellipse 62% 46% at 50% 44%,
+			rgba(40, 37, 33, 0.44),
+			rgba(40, 37, 33, 0) 72%
+		),
+		linear-gradient(
+			180deg,
+			rgba(40, 37, 33, 0.34),
+			rgba(40, 37, 33, 0.62) 46%,
+			rgba(40, 37, 33, 0.3)
+		);
 }
 
 .page-lp .hero.night::after {
 	background: linear-gradient(
-		100deg,
-		rgba(22, 20, 18, 0.74),
-		rgba(22, 20, 18, 0.42) 60%,
-		rgba(22, 20, 18, 0.2)
+		180deg,
+		rgba(22, 20, 18, 0.42),
+		rgba(22, 20, 18, 0.7) 46%,
+		rgba(22, 20, 18, 0.38)
 	);
 }
 
@@ -2910,6 +2923,15 @@ header.lp .logo img {
 
 .page-lp .hero .btn-row {
 	justify-content: center;
+}
+
+/* On a phone the hero paragraph runs eight to ten lines, and centred copy that
+   long is harder to read than a flush left edge. Heading, kicker and buttons
+   stay centred; only the measure goes back to start. */
+@media (max-width: 480px) {
+	.page-lp .hero p {
+		text-align: start;
+	}
 }
 
 .page-lp .block {
