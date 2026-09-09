@@ -63,8 +63,11 @@ const SERVICE_SIGNATURE = {
 
 /* The other primary categories, given full editorial cards. Roller Shades was
    removed here in V2: it is no longer a standalone service, its content lives
-   inside Motorized Shades (the signature treatment above). That leaves one card,
-   so the grid gets `.svc-solo` rather than a hole beside it. */
+   inside Motorized Shades (the signature treatment above). Blackout was then
+   promoted up out of the SERVICES_REST link list to fill the empty half of the
+   row, so the pair is balanced again and `.svc-solo` (see the render below) no
+   longer applies. Blackout appears here only: it was removed from
+   SERVICES_REST so the homepage does not offer it twice. */
 const SERVICES_PRIMARY = [
 	{
 		img: "art-drapery-linen.jpg",
@@ -73,6 +76,17 @@ const SERVICES_PRIMARY = [
 		body: "The softest thing you can add to a room. Made to measure in European fabrics, chosen for how they fall, age, and handle light, down to the header, lining, and stack-back.",
 		tags: "Softening · warmth · framing windows",
 		href: "/drapery.html",
+	},
+	{
+		/* Shares lp-bedroom.jpg with the /blackout.html and /european-fabrics.html
+		   heroes. The alt describes what the photograph actually shows, which is a
+		   bright room with the drapery drawn back, not a darkened one. */
+		img: "lp-bedroom.jpg",
+		alt: "Floor-to-ceiling drapery drawn back from garden doors in a South Florida bedroom.",
+		title: "Blackout Shades and Drapery",
+		body: "True dark, not a dimmer version of the room. Fitted tight to the glass or layered behind drapery so the light has nowhere to slip through, and by day the room still feels bright.",
+		tags: "Bedrooms · nurseries · real darkness",
+		href: "/blackout.html",
 	},
 ];
 
@@ -109,7 +123,6 @@ const SERVICES_MORE = [
    list underneath. Strings only, because this array is mapped (see the note
    on SERVICES_PRIMARY). */
 const SERVICES_REST = [
-	{ label: "Blackout Shades and Drapery", href: "/blackout.html" },
 	{ label: "Smart-Home Window Treatments", href: "/smart-home-window-treatments.html" },
 	{ label: "Specialty-Shaped Windows", href: "/specialty-shaped-windows.html" },
 	{ label: "European Fabrics and Textiles", href: "/european-fabrics.html" },
@@ -480,9 +493,12 @@ export default function HomePage() {
 							</div>
 						</div>
 
-						{/* The other primary categories. One card since the V2 roller
-						    consolidation, so the two-column grid collapses to a centered
-						    single column and the card keeps its own proportions. */}
+						{/* The other primary categories. Two cards again now that Blackout
+						    is promoted here, so this is the normal two-column grid. The
+						    `.svc-solo` branch is kept rather than hardcoded: it is what
+						    collapses the grid to a centered single column if this array is
+						    ever cut back to one card again, as it was between the roller
+						    consolidation and the Blackout promotion. */}
 						<div
 							className={SERVICES_PRIMARY.length === 1 ? "svc svc-solo" : "svc"}
 							data-reveal-group
