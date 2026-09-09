@@ -4115,7 +4115,104 @@ survive (see §17 static hero + v3 freeze clip).
       against unintended drift past the approved V2 height instead. respqa 833/0, descender
       failures gone. CLS 0.0000-0.0015 at every width, well under the 0.02 gate.
 
-### 23.3 Footer swap
+### 23.3 Footer swap  [DONE, committed cea1ab2]
 REACH US block (phone, email, Serving South Florida, reply line) moves UP beside the logo
 into the note's current slot. Handwritten note becomes the closing element, bottom-right.
 Keep "Begin a conversation" and the note's visually-hidden text (§21).
+
+- [x] site-chrome.tsx SiteFooter: .f-contact moved out of .f-mid into .f-top, .f-voice
+      moved out of .f-top into .f-mid. The two blocks traded slots; NEITHER changed
+      internally, so the note's img attrs, alt, lazy load, hidden <p> and aria-hidden all
+      came along untouched. "Begin a conversation" still leads .f-say.
+- [x] .f-voice wrapper KEPT and carried down with the note. It exists because its parent
+      is a grid and the img + hidden <p> must be ONE grid item; .f-mid is a grid too, so
+      the reason survives the move. Dropping it here would have blockified the hidden
+      paragraph into its own column.
+- [x] .f-mid grid 1.35fr 1fr -> 1fr auto, plus align-items: end. FORCED: the right track
+      now holds the 580px note, and 1fr in a ~1200px wrap resolves to ~470px, which would
+      have silently shrunk the artwork. `auto` gives the note its natural width; end sits
+      the link on the note's bottom edge so the row reads as one closing line.
+- [x] .f-contact inherited the note's margin-left:auto (scoped `footer.site .f-top
+      .f-contact`). Without it the details huddle against the lockup and leave the right
+      half of the opening band empty; the first screenshot showed exactly that. Text stays
+      left-aligned, only the box moves, so it balances the lockup the way the note did.
+      -> MINOR DESIGN CALL, mention to client.
+- [x] Mobile: both auto margins reset to 0 in the 860px block (.f-note reset already
+      existed; added the matching .f-contact one). Stack order verified logo -> Reach us
+      -> hairline -> Begin a conversation -> note -> base.
+- [x] Comments updated everywhere they named the old parent (.f-top -> .f-mid) rather
+      than left to rot: .f-voice rule, .f-note rule, the mobile margin reset, and the
+      f-say "signature moved up" note which was describing a layout that no longer exists.
+- [x] /tmp/footerqa.py REWRITTEN to the new contract, not deleted. 466 -> 534 assertions.
+      New: .f-top children == [footer-logo, f-contact], .f-mid children == [f-say,
+      f-voice], both reparent checks, contact block internals intact after the move,
+      contact top < note top (details OPEN), note bottom <= base top (note CLOSES),
+      contact right-pin on desktop / left-pin on mobile, and dist SOURCE-ORDER checks
+      (CSS grid placement could fake the visual order; source order is what a crawler
+      and an AI assistant actually read). 534/534.
+
+---
+
+## §24 V2 three-part request: closing state, full suite, and what is still open
+
+All three workstreams are committed:
+
+    d785e1a  V2: consolidate Roller and Solar Shades into Motorized Shades
+    eca9e3f  V2: make the hero image the dominant element
+    cea1ab2  V2: swap the footer so contact details open and the handwritten note closes
+
+Nothing published. Working tree clean at cea1ab2.
+
+### Full suite, re-run after the footer commit against BOTH servers
+
+    build          exit 0, 20 routes, sitemap 19 urls   (unchanged by the swap)
+    lint           clean
+    respqa         833 / 0      (HERO_BASE re-baselined 1013 -> 1120, see 23.2)
+    ovprobe 360    no overflow, docSw == vw on 4200 and 4310; only the
+                   intentional off-screen .skip-link reports negative left
+    aeoqa          1088 / 0
+    qa             no page errors, no console errors, no broken images
+    qa_copy        em_dashes=0 banned=0 missing_alt=0 emoji=0; all four facts present
+    qa2            17 images, 0 broken, 0 page errors; no /roller-solar-shades href left
+    qa_a11y        reduced-motion errors NONE, faded=0 everywhere
+    balticqa       63 / 0, sitewide linked mentions 10 (want 10)
+    svcqa          all five titles at 2, Motorized Shades present, no em dash
+    menuqa         all five interaction cases PASS
+    herostaticqa   65 / 0
+    herofreezeqa   48 / 0
+    herosizeqa     50 / 0
+    stubqa         PASS
+    footerqa       534 / 534   (rewritten to the new contract)
+    probe11        root children 2, section ids intact, body text 10795
+
+### Decisions surfaced to the client rather than settled here
+
+1. `.svc-solo`. Removing the Roller card leaves ONE editorial card in the primary
+   services grid. Centred at 620px rather than left as a hole or stretched full width.
+   The alternative is promoting Blackout (or Roman Shades) up out of SERVICES_MORE to
+   keep a two-card row. That is a brand-hierarchy call and it is theirs, not mine.
+2. Hero height. Grew +49% (484 -> 720px) PROPORTIONALLY with the width. It could not be
+   made taller than 16:9 without cropping, and cropping cuts the boy and the dog out of
+   the artwork, which is the emotional content and exactly why V1.2 rejected it. A
+   genuinely taller frame needs taller ARTWORK.
+3. Hero headline 72.5px -> 58px and line-height 1.0 -> 1.04. The size drop is the brief
+   ("reduce the headline's weight relative to the image"); the leading change is a
+   regression fix (descender clipping at 1180px and 768px). Both reversible.
+4. `.f-contact` right-pin in the opening band. Mine, cosmetic, one line of CSS.
+5. estimate.html label changes (roller -> shade wording). Mine, reversible, prices
+   untouched and still awaiting Aviva.
+
+### Still open, unchanged by this pass
+
+- Lighthouse not re-measured since Phase 2 (mobile perf ~81). The hero now renders at
+  1280px wide, so LCP is worth re-measuring before go-live.
+- Footer note is ~42kB heavier than the old signature.
+- The footer statement and sign-off are HOMEPAGE ONLY. LandingFooter (all 13 service
+  pages) still lacks them, and now also lacks the swapped ordering. Phase 3.
+- Prerendered HTML is not preserved through hydration on service pages. Unfixable while
+  createRoot lives in template-managed __main.tsx. Evidence /tmp/hydprobe.py.
+- Duplicate founder link in the homepage About section, awaiting the client's call.
+- Phase 3 still needs the bullseye-15 geo layer and geo links from service pages.
+- Host/CDN crawler allowance still open.
+- art-motor.jpg is now unused (Motorized hero moved to art-roller.jpg). Left on disk
+  alongside about.jpg and signature-aviva.png.

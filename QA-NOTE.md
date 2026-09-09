@@ -1385,3 +1385,146 @@ card's source, your exact alt text, the photo's true pixel size, that `object-fi
 the 16 by 11 card box are still in force, the rendered crop at three widths, the hero's
 background, and that Hospitality is still on the old photo as intended. Image, responsive and
 overflow suites all clean, including 360px. All four screenshots read by eye.
+
+## §22 The three V2 changes: Roller folded into Motorized, a bigger hero, and the footer swap
+
+Three changes, all done, nothing published. Taking them in the order you asked.
+
+### 1. Roller Shades is gone, and Motorized Shades absorbed it
+
+There is now one page for powered and solar shading instead of two. The standalone Roller
+Shades card is off the homepage, and everything that was genuinely only on the roller page
+moved into Motorized Shades rather than being thrown away: the solar screen openness
+explanation, dimout, blackout, and the bit about keeping the view. Three questions came with
+it, on choosing an openness factor, on night privacy behind a solar shade, and on very wide
+windows. "Solar shades" survives as a term inside Motorized, exactly as you asked. The word
+"roller" is gone from every sentence a visitor can read.
+
+The old address still works. `/roller-solar-shades.html` is now a short page that says roller
+and solar shades are Motorized Shades now and sends the visitor straight to `/motorized.html`.
+Nothing on the site links to it any more, but old bookmarks, anything Aviva has sent by email,
+and anything Google still has indexed all land somewhere sensible instead of a dead end.
+
+Two details worth knowing, because they are the difference between a redirect that helps and
+one that quietly costs you ranking.
+
+The stub tells search engines not to index it AND tells them the real page is
+`/motorized.html`. A redirect page that points at itself throws away whatever standing the old
+URL had built. Pointed properly, that standing folds into Motorized instead.
+
+The stub also behaves differently for the page-builder that writes your static files than it
+does for a real visitor. Without that distinction the builder would have followed its own
+redirect and saved a copy of the Motorized page at the roller address, which would have given
+you two identical pages at two addresses and no working redirect for anyone who actually
+arrived. It is now specifically the builder that is held back, not automated browsers in
+general, so the redirect stays testable. I have a test that drives a real browser to the old
+address and confirms it ends up on Motorized with the absorbed content present.
+
+Nine other pages mentioned roller or solar shades in passing and were updated. Where a
+paragraph already linked to Motorized, the second mention became plain text rather than a
+second link to the same place in the same sentence. Nothing on the site 404s.
+
+**Your call, and I have deliberately not made it.** Removing the Roller card leaves exactly
+one card in the main services row. I centred it at a readable width so it does not sit in a
+hole or stretch across the full page, and it looks intentional. But the honest alternative is
+to promote Blackout, or Roman Shades, up from the secondary list so the row still holds two.
+That is a decision about which service you want ranked as headline, which is yours.
+
+I also relabelled the estimate tool, since it said "roller" in six places. "Roller shade,
+light-filtering" is now "Shade, light-filtering", "Day-night double roller" is now "Day-night
+double shade", and so on. No price changed, and prices are still waiting on you.
+
+### 2. The hero image now leads, not the headline
+
+The image frame went from 860px wide to 1280px, inside your 1240 to 1300 range, still
+contained rather than running edge to edge. Because the illustration fills the frame's width,
+its height went up with it: 484px to 720px, half again as tall. Nothing is stretched. I
+measured the shape of the picture before and after and it is unchanged to three decimal
+places.
+
+Measured on the page, the image is now 720px tall against the headline's 116px. It is
+unambiguously the first thing your eye lands on. The headline and both buttons are still
+there, and the animation still plays once and freezes on its last frame with its space
+reserved in advance, so nothing on the page jumps while it loads.
+
+**The one thing I could not do, and why.** You asked for taller framing. I got taller by
+widening, which is honest growth. What I did not do is crop the picture to a taller shape,
+which is the other way to get height. Cropping this particular illustration to anything taller
+than its natural shape cuts the boy and the dog out of the frame, and they are the reason the
+picture works. This is the same conclusion we reached earlier in the project for the same
+reason. If you want a genuinely taller hero, it needs new artwork drawn tall, not this artwork
+trimmed. Say the word and I will spec the shape.
+
+Two knock-on changes you should know about, both reversible in one line.
+
+The headline dropped from 72.5px to 58px at its largest. That is the "reduce the headline's
+weight relative to the image" part of your brief, and it is 20% smaller, not a token nudge.
+The smallest phone size is untouched at 43px.
+
+The headline's line spacing went from 1.0 to 1.04. That one was not a preference. With the new
+size, the descenders on letters like g and y were being clipped at two common browser widths.
+The fix is four hundredths of a line and it is inside the range we agreed for hero type. The
+original reason for the tighter setting was to keep the hero short, which is precisely what
+this change reverses.
+
+I also rebuilt the soft edge fade around the image as a proportion rather than a fixed number
+of pixels. It had to change: widening the frame opened a range of screen sizes where the frame
+is narrower than its maximum, and no single fixed value is right across that range. As a
+proportion it now holds the look you approved at every width by itself, and the separate phone
+override it used to need is gone.
+
+### 3. The footer swap
+
+The footer now opens with the lockup and your contact details side by side, and closes with
+Aviva's handwritten note at the bottom right, next to "Begin a conversation". Practical
+information first, the personal note signing off last. That is the order you asked for.
+
+The note itself is untouched. Same image, same size, same reserved space, same wording, and
+the invisible text version of the sentence that search engines and AI assistants read is still
+there, still word for word, still set up so a screen reader hears the sentence once rather than
+twice. "Begin a conversation" is where it was.
+
+**One small thing I decided.** When the contact block moved up next to the logo, it sat
+hard against the lockup and left the right half of the opening band empty, which read as
+unfinished. I pushed the block to the right edge, so it balances the lockup the way the note
+used to. The text inside it is still left-aligned; only the block moved. If you would rather it
+sat close to the logo, that is one line to change back.
+
+On a phone the whole footer stacks in the same reading order: lockup, Reach us, hairline,
+Begin a conversation, the note, then the legal line.
+
+### Verified
+
+Build clean, 20 pages, sitemap unchanged at 19 addresses. Lint clean.
+
+Sixteen test suites re-run against both the live preview and the built files after the final
+change, all passing. The headline numbers: the sitewide structured-data and metadata suite
+1088 of 1088, the responsive suite 833 of 833 across seven screen widths, the footer suite 534
+of 534, the hero size suite 50 of 50, the hero freeze and static-fallback suites 65 and 48,
+the redirect suite passing, and the partner-link, service-page, menu, copy, accessibility and
+image suites all clean. No page errors, no broken images, no em dashes, no missing alt text.
+No horizontal overflow at 360px, the narrowest phone width worth testing.
+
+The footer suite was rewritten rather than deleted. It had been asserting the old arrangement,
+so it would have failed by construction; it now asserts the new one, including that the contact
+details come before the note in the underlying page source and not merely in the visual
+layout. Styling can fake a visual order, and source order is what a crawler and an AI assistant
+actually read. The responsive suite had one leftover rule that said the hero must not get
+taller, written back when we were deliberately keeping it short. I re-based that number to the
+new approved height and reworded it rather than removing it, so it still catches the hero
+growing by accident later.
+
+I read the footer by eye at desktop, tablet and phone widths.
+
+### Still outstanding, unchanged by this pass
+
+The statement and sign-off are still on the homepage footer only. The thirteen service pages
+use a slimmer footer that does not carry them, and now does not carry the new ordering either.
+That remains a Phase 3 job.
+
+Page speed has not been re-measured since Phase 2, where mobile scored around 81. The hero
+image now renders at 1280px wide, so the largest-element load time is worth measuring again
+before go-live.
+
+Estimate prices still need your numbers. The duplicate founder link in the homepage About
+section is still waiting on your preference. And nothing here has been published.
