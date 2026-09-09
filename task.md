@@ -4074,10 +4074,46 @@ Registry was already half-done in the tree. Steps and status:
       - Playwright's bundled chromium is absent in this sandbox; QA scripts launch
         system Chrome via executable_path, same as prerender.py.
 
-### 23.2 Hero size
+### 23.2 Hero size  [DONE, pending suite re-baseline]
 Image dominant, contained, ~1240-1300px wide, taller framing, no distortion. Headline and
 both CTAs stay but lose relative weight. Freeze-on-last-frame and reserved dimensions must
 survive (see §17 static hero + v3 freeze clip).
+
+- [x] .hero-frame max-width 860px -> 1280px. HEIGHT IS A CONSEQUENCE OF WIDTH: the img is
+      width:100% over an intrinsic 1120x630 box, so it grows ~484px -> 720px (+49%) purely
+      by proportion. Nothing stretched, aspect ratio untouched (measured 1.7778 vs 1.7774).
+- [x] REFUSED to crop to a taller-than-16:9 aspect, same reason V1.2 refused it: object-fit
+      would cut the boy and the dog out of the artwork, which is the emotional content.
+      A genuinely taller frame needs taller ARTWORK, not a crop. -> SURFACE TO CLIENT.
+- [x] Feather converted from a fixed 108px to --feather-x: 12.5% / --feather-y: 22.3%.
+      Two vars because a % in the to-bottom gradient resolves against height and in
+      to-right against width. This was FORCED: widening to 1280px opened a fluid zone
+      (861-1280px viewport) where the frame is narrower than its cap and no single px
+      value is right. Bonus: the phone `--feather: 44px` override is now redundant and
+      was deleted. Ratios now hold at every width automatically.
+- [x] `sizes` 860px -> 1280px. Left at 860px it would UNDERSTATE the box and serve a
+      1120w candidate into a 1280px slot = an upscaled hero. Largest candidate is 1365w
+      and the source is 1365x768, so at 1280px nothing is upscaled (verified currentSrc).
+- [x] h1 clamp(43px, 6.78vw, 72.5px) -> clamp(43px, 5.42vw, 58px). Max -20%, vw ramp
+      scaled by the same 0.8 so the curve keeps its shape. 43px floor untouched: on a
+      phone the image is already full-width, and 43px is what the 560px wrap rules were
+      measured against. Both CTAs kept.
+- [x] NEW /tmp/herosizeqa.py, 50/0, dev + dist. Asserts the 1240-1300 band, contained not
+      full-bleed, rendered AR == natural AR (catches anyone "making it taller" with an
+      explicit height), img height > 2x h1 height, reserved 1120x630, proportional
+      feather, both CTAs, no overflow, and that the frozen v3 clip fills the bigger frame
+      (1280x720, still .on, still hero-motion-v3.webm). Undistorted at 1000/900/390/360.
+- [x] line-height 1.0 -> 1.04 on .page-home .hero h1, and the 560px block's duplicate
+      line-height removed (it keeps only text-wrap: balance). FORCED BY A REGRESSION, not
+      taste: respqa caught Newsreader descenders clipping at 1180px (below=16 room=15) and
+      768px (below=12 room=11), the documented §17 Stage C descender trap, now biting at
+      more widths because the size ramp changed. 1.04 is inside the approved 0.98-1.04
+      hero band. The original reason for 1.0 was that tighter leading kept the hero
+      SHORTER, which V2 explicitly reverses.
+- [x] respqa HERO_BASE re-baselined 1440: 1013 -> 1120 and the check reworded. NOT deleted:
+      it encoded the old "keep the hero shorter" rule the client reversed, so it now guards
+      against unintended drift past the approved V2 height instead. respqa 833/0, descender
+      failures gone. CLS 0.0000-0.0015 at every width, well under the 0.02 gate.
 
 ### 23.3 Footer swap
 REACH US block (phone, email, Serving South Florida, reply line) moves UP beside the logo

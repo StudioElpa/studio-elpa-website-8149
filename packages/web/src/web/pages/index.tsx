@@ -242,7 +242,7 @@ export default function HomePage() {
 							    .hero-frame, a one-time GSAP reveal on the <img>). All three are
 							    gone on client instruction: the only motion in the hero is the
 							    video clip below. .hero-frame now exists solely for the max-width
-							    and the edge feather mask. */}
+							    (1280px since V2 HEROSIZE) and the edge feather mask. */}
 							<div className="hero-frame">
 								<img
 									src="/assets/hero-1120.jpg"
@@ -251,10 +251,12 @@ export default function HomePage() {
 									/* 1365w, not 1800w: the still is now the clean final artwork the
 									   client supplied, which is 1365x768. Nothing is upscaled. */
 									srcSet="/assets/hero-780.jpg 780w, /assets/hero-1120.jpg 1120w, /assets/hero.jpg 1365w"
-									/* 860px, not 1000px: the frame's max-width came down to 860px in
-									   V1.2 section 3, and an overstated `sizes` lets the browser pick a
-									   larger candidate than it will ever render. */
-									sizes="(max-width: 860px) 100vw, 860px"
+									/* Tracks .hero-frame's max-width exactly. V2 HEROSIZE took the frame
+									   from 860px to 1280px, so an 860px `sizes` would now UNDERSTATE the
+									   box and let the browser serve a 1120w candidate into a 1280px slot,
+									   i.e. an upscaled hero. Equally, an overstated value picks a
+									   candidate larger than anything that renders. Keep the two in sync. */
+									sizes="(max-width: 1280px) 100vw, 1280px"
 									alt="Illustration of a South Florida living room with drapery, a boy using a shade remote, and a dog"
 									width={1120}
 									height={630}

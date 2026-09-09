@@ -1604,7 +1604,13 @@ footer.lp .footer-logo {
 }
 
 .page-home .hero h1 {
-	font-size: clamp(43px, 6.78vw, 72.5px);
+	/* V2 HEROSIZE: max 72.5px -> 58px (-20%), and the vw ramp scaled by the
+	   same factor (6.78 * 0.8) so the curve keeps its shape. The client asked
+	   for the headline to keep both CTAs but carry less visual weight than the
+	   image. The 43px floor is untouched: on a phone the image is already
+	   full-width and dominant, and 43px is what the 560px wrap rules below were
+	   measured against. */
+	font-size: clamp(43px, 5.42vw, 58px);
 	color: var(--ink);
 	max-width: 840px;
 	margin: 0 auto 12px;
@@ -1613,20 +1619,25 @@ footer.lp .footer-logo {
 	   measured well here; the tighter leading also pulls the hero slightly
 	   shorter rather than taller, which section 6 requires. */
 	font-weight: 400;
-	line-height: 1;
+	/* V2 HEROSIZE: 1.0 -> 1.04, still inside the brief's 0.98-1.04 hero band.
+	   At line-height 1.0 Newsreader's descenders (the g in "light") sit ~1px
+	   past the line box. That was only being corrected at <=560px, but the V2
+	   size ramp moved the wrap points and respqa caught the same clipping at
+	   1180px (below=16 room=15) and 768px (below=12 room=11). Fixing it at the
+	   base rule covers every width instead of chasing breakpoints.
+	   The original reason for 1.0 was that tighter leading kept the hero
+	   SHORTER, which old section 6 wanted. V2 explicitly reverses that: the
+	   client asked for a taller, more dominant hero. */
+	line-height: 1.04;
 	letter-spacing: -0.02em;
 }
 
-/* Stage C, section 6: at 390px and below the hero wraps to four lines, and at
-   line-height 1.0 Newsreader's descenders (the g in "light") sit 1px past the
-   line box and press against the cap line below. 1.04 is still inside the
-   brief's 0.98-1.04 hero band and buys the descenders room. Balancing the two
-   sentence blocks also stops the last line falling to a single orphan word. */
+/* Stage C, section 6: at 390px and below the hero wraps to four lines. The
+   line-height: 1.04 that used to live here moved to the base rule in V2
+   (see above), because the same descender clipping showed up at 1180px and
+   768px once the size ramp changed. What stays is the balance: it stops the
+   last line falling to a single orphan word. */
 @media (max-width: 560px) {
-	.page-home .hero h1 {
-		line-height: 1.04;
-	}
-
 	.page-home .hero h1 .hline {
 		text-wrap: balance;
 	}
@@ -1675,11 +1686,19 @@ footer.lp .footer-logo {
 	position: relative;
 	display: block;
 	width: 100%;
-	/* V1.2 section 3: 1120px -> 860px. The illustration was 630px tall and the
-	   single largest contributor to hero height; scaling it proportionally to
-	   ~484px is the bulk of the reduction. Cropping with object-fit was rejected
-	   because it would cut the boy and the dog out of the artwork. */
-	max-width: 860px;
+	/* V2 HEROSIZE: 860px -> 1280px. The client asked for the image to be the
+	   dominant element of the hero, still contained rather than full-bleed.
+	   Width drives height here: .hero-art img is width:100% with the intrinsic
+	   1120x630 box, so the illustration grows from ~484px to ~720px tall
+	   (+49%) purely by proportion. Nothing is stretched and the aspect ratio is
+	   untouched.
+	   Cropping to a TALLER aspect than 16:9 is still refused, for the same
+	   reason it was refused in V1.2: object-fit would cut the boy and the dog
+	   out of the artwork, which is the emotional content of the illustration.
+	   A genuinely taller frame needs taller artwork, not a crop.
+	   1365w is the largest srcSet candidate and the source is 1365x768, so at
+	   1280px nothing is upscaled. */
+	max-width: 1280px;
 	margin: 0 auto;
 
 	/* Feather all four edges so the illustration melts into the page instead
@@ -1689,24 +1708,30 @@ footer.lp .footer-logo {
 	   seam. Corners get both gradients, which reads as a soft vignette.
 	   On the frame, not the <img>, so the light sweep inside is feathered by
 	   exactly the same falloff and cannot show a hard rectangle.
-	   V1.2 section 3: scaled 140px -> 108px alongside the 1120px -> 860px
-	   max-width (860/1120 = 0.768) so the falloff keeps the ratios that were
-	   measured and approved in V1.1: 12.5% of the width, 22% of the height.
-	   Left at 140px it would have eaten 29% of the shorter image's height. */
-	--feather: 108px;
+	   The falloff is expressed as a PERCENTAGE of the frame, not a fixed px, so
+	   it holds the approved V1.1 ratios (12.5% of the width, 22% of the height)
+	   at every width automatically. It used to be a fixed 108px tuned to the
+	   860px frame, with a separate 44px override for phones. Widening the frame
+	   to 1280px opened a fluid zone between 861px and 1280px where the frame is
+	   narrower than its cap and no single px value is correct, so the px
+	   approach was retired. Two variables are needed because a percentage in
+	   the to-bottom gradient resolves against height and in the to-right
+	   gradient against width. */
+	--feather-x: 12.5%;
+	--feather-y: 22.3%;
 	mask-image:
 		linear-gradient(
 			to bottom,
 			transparent 0,
-			#000 var(--feather),
-			#000 calc(100% - var(--feather)),
+			#000 var(--feather-y),
+			#000 calc(100% - var(--feather-y)),
 			transparent 100%
 		),
 		linear-gradient(
 			to right,
 			transparent 0,
-			#000 var(--feather),
-			#000 calc(100% - var(--feather)),
+			#000 var(--feather-x),
+			#000 calc(100% - var(--feather-x)),
 			transparent 100%
 		);
 	mask-composite: intersect;
@@ -1714,15 +1739,15 @@ footer.lp .footer-logo {
 		linear-gradient(
 			to bottom,
 			transparent 0,
-			#000 var(--feather),
-			#000 calc(100% - var(--feather)),
+			#000 var(--feather-y),
+			#000 calc(100% - var(--feather-y)),
 			transparent 100%
 		),
 		linear-gradient(
 			to right,
 			transparent 0,
-			#000 var(--feather),
-			#000 calc(100% - var(--feather)),
+			#000 var(--feather-x),
+			#000 calc(100% - var(--feather-x)),
 			transparent 100%
 		);
 	-webkit-mask-composite: source-in;
@@ -3660,16 +3685,10 @@ footer.lp .wordmark {
 		padding: 0 24px;
 	}
 
-	/* A desktop-sized falloff would eat most of a phone-width illustration, so
-	   the feather scales down with the image. This override MUST sit on
-	   .hero-frame: the mask that consumes --feather moved to the frame during
-	   the V1.1 gap closure, and custom properties only inherit downward, so the
-	   previous `.hero-art img` version was silently dead and mobile was
-	   rendering the full desktop falloff. 44px is 12.5% of the ~342px frame at
-	   390px wide, the same ratio the desktop feather uses. */
-	.hero-frame {
-		--feather: 44px;
-	}
+	/* The phone feather override is GONE and must not come back as a px value.
+	   --feather-x / --feather-y are percentages of the frame, so the falloff
+	   already scales itself down on a phone-width illustration and keeps the
+	   same ratio the desktop feather uses. */
 
 	.two,
 	.contact-grid,
