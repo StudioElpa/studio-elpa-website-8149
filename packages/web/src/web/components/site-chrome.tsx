@@ -203,9 +203,38 @@ export function SiteFooter() {
 	return (
 		<footer className="site">
 			<div className="wrap">
+				{/* V2 FOOTER SWAP: the footer now OPENS with the lockup and the practical
+				    details and CLOSES with the personal note, on client instruction. So
+				    .f-contact moved up here out of .f-mid, and .f-voice moved down into
+				    .f-mid's closing row. The two blocks traded slots; neither changed
+				    internally. */}
 				<div className="f-top">
 					<FooterLogo />
-					{/* .f-top is a two-column grid, so the note and its crawlable text must
+					<div className="f-contact">
+						<h3>Reach us</h3>
+						<a className="f-tel" href={CONTACT.phoneHref}>
+							{CONTACT.phone}
+						</a>
+						<a className="f-mail" href={`mailto:${CONTACT.email}`}>
+							{CONTACT.email}
+						</a>
+						<p>Serving South Florida.</p>
+						<p>We reply within one business day.</p>
+					</div>
+				</div>
+				<div className="f-mid">
+					<div className="f-say">
+						{/* V1.2 section 16: a "thirty minutes, no obligation, you will come away
+						    knowing what your windows need" pitch lived here and restated the
+						    contact section almost word for word. Removed so the footer signs
+						    off rather than selling the same call twice. */}
+						{/* The text signature that sat here ("Aviva, Studio Elpa") is part of the
+						    handwritten note, which now closes the footer beside this link. */}
+						<a className="f-begin" href="#contact">
+							Begin a conversation
+						</a>
+					</div>
+					{/* .f-mid is a two-column grid, so the note and its crawlable text must
 					    share ONE grid item or each would blockify into its own column.
 					    Hence this wrapper. */}
 					<div className="f-voice">
@@ -234,31 +263,6 @@ export function SiteFooter() {
 						<p className="f-line visually-hidden" aria-hidden="true">
 							Come with us, into a life touched by beautiful textiles.
 						</p>
-					</div>
-				</div>
-				<div className="f-mid">
-					<div className="f-say">
-						{/* V1.2 section 16: a "thirty minutes, no obligation, you will come away
-						    knowing what your windows need" pitch lived here and restated the
-						    contact section almost word for word. Removed so the footer signs
-						    off rather than selling the same call twice. */}
-						{/* The text signature that sat here ("Aviva, Studio Elpa") moved up to
-						    .f-top as the handwritten sign-off, on client instruction: it signs
-						    the brand statement, not the CTA. */}
-						<a className="f-begin" href="#contact">
-							Begin a conversation
-						</a>
-					</div>
-					<div className="f-contact">
-						<h3>Reach us</h3>
-						<a className="f-tel" href={CONTACT.phoneHref}>
-							{CONTACT.phone}
-						</a>
-						<a className="f-mail" href={`mailto:${CONTACT.email}`}>
-							{CONTACT.email}
-						</a>
-						<p>Serving South Florida.</p>
-						<p>We reply within one business day.</p>
 					</div>
 				</div>
 				<div className="base">

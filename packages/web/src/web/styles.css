@@ -1357,9 +1357,11 @@ footer.site {
 	padding: 60px 0 38px;
 }
 
-/* Editorial footer, not a link-column grid. Top band is the wordmark with one
-   line of voice beside it; below that a signed note on the left and the real
-   contact block on the right, separated by a hairline. */
+/* Editorial footer, not a link-column grid. V2 FOOTER SWAP reordered it on
+   client instruction: the top band is now the wordmark with the real contact
+   details beside it, and below the hairline the footer CLOSES with "Begin a
+   conversation" on the left and Aviva's handwritten note on the right. The
+   practical information opens, the personal note signs off. */
 footer.site .f-top {
 	display: grid;
 	grid-template-columns: auto 1fr;
@@ -1369,11 +1371,22 @@ footer.site .f-top {
 	border-bottom: 1px solid #3d3a35;
 }
 
+/* The contact block took over the note's slot in the V2 swap, so it also takes
+   over the note's margin-left:auto. Without it the details huddle against the
+   lockup and leave the right half of the opening band empty, which reads as
+   unfinished rather than editorial. The text inside stays left-aligned; only
+   the box is pushed right, so it balances the lockup exactly the way the note
+   used to. Reset to 0 in the stacked mobile block below. */
+footer.site .f-top .f-contact {
+	margin-left: auto;
+}
+
 /* The statement, the heart and the "Aviva" sign-off are now ONE piece of
    supplied artwork (.f-note), so this wrapper no longer carries a serif face
    or a 42ch measure: there is no typeset line left to give a measure to. It
-   stays because .f-top is a grid, which would otherwise blockify the note and
-   its hidden crawlable text into two separate grid items. min-width:0 keeps
+   stays because .f-mid is a grid (it lived in .f-top before the V2 swap), which
+   would otherwise blockify the note and its hidden crawlable text into two
+   separate grid items. min-width:0 keeps
    the item from refusing to shrink below the image's intrinsic width.
    .f-line itself needs no rule here any more: it is visually-hidden, and a
    footer.site-scoped rule would outrank .visually-hidden on margin. */
@@ -1387,8 +1400,8 @@ footer.site .f-voice {
    the viewport width overflows a 360px screen unconditionally. width plus
    max-width:100% shrinks correctly instead, and the width/height attributes on
    the element hold the 2.4:1 box against the lazy load. margin-left:auto pushes
-   it to the right of .f-top's 1fr track so it balances the lockup in the auto
-   track on the left, which is what the client asked for. */
+   it to the right of .f-mid's closing row, so the note signs off at the bottom
+   right of the footer, which is what the client asked for in the V2 swap. */
 footer.site .f-note {
 	display: block;
 	width: 580px;
@@ -1397,9 +1410,16 @@ footer.site .f-note {
 	margin-left: auto;
 }
 
+/* Was 1.35fr 1fr when this row held two text columns. After the V2 swap the
+   right track holds the 580px note, and a 1fr track in a ~1200px wrap resolves
+   to roughly 470px, which would have quietly shrunk the artwork. `auto` lets
+   the note take its natural width and gives the rest to the link. align-items:
+   end sits the link on the note's bottom edge so the row reads as one closing
+   line rather than a link floating above a picture. */
 footer.site .f-mid {
 	display: grid;
-	grid-template-columns: 1.35fr 1fr;
+	grid-template-columns: 1fr auto;
+	align-items: end;
 	gap: 40px 64px;
 	padding-top: 34px;
 }
@@ -3671,11 +3691,20 @@ footer.lp .wordmark {
 		gap: 14px;
 	}
 
-	/* .f-top is one stacked column here, so the desktop margin-left:auto would
-	   right-align the note under a left-aligned lockup. Between 580px and 860px
-	   the image is still narrower than the column, so this reset is load-bearing
-	   rather than cosmetic; below 580px max-width:100% makes it moot anyway. */
+	/* .f-mid is one stacked column here (the note lived in .f-top before the V2
+	   swap; the reasoning is unchanged, only the parent), so the desktop
+	   margin-left:auto would right-align the note under a left-aligned "Begin a
+	   conversation". Between 580px and 860px the image is still narrower than
+	   the column, so this reset is load-bearing rather than cosmetic; below
+	   580px max-width:100% makes it moot anyway. */
 	footer.site .f-note {
+		margin-left: 0;
+	}
+
+	/* Same reasoning as .f-note above: .f-top is one stacked column here, so the
+	   desktop margin-left:auto would right-align the contact details under a
+	   left-aligned lockup. */
+	footer.site .f-top .f-contact {
 		margin-left: 0;
 	}
 
