@@ -57,9 +57,17 @@ export default function HospitalityWindowTreatmentsPage() {
 
 			<main id="main">
 				<section className="hero">
+					{/* The client's photograph of a private dining booth. Supplied with the
+					    alt sentence "Custom drapery framing a private dining booth in an
+					    upscale restaurant." It is kept here because a CSS background image
+					    cannot carry an alt attribute. Per QA-NOTE §21 that is correct: the
+					    hero is decoration behind an <h1> that already names the subject, so
+					    announcing it again would only repeat the headline to a screen
+					    reader. The hospitality photograph lower down is a real <img> and
+					    does carry its alt. */}
 					<div
 						className="bgimg"
-						style={{ backgroundImage: "url('/assets/art-drapery.jpg')" }}
+						style={{ backgroundImage: "url('/assets/art-restaurant.jpg')" }}
 						data-parallax
 					/>
 					<div className="wrap">
@@ -159,6 +167,31 @@ export default function HospitalityWindowTreatmentsPage() {
 								<BalticLink />, on the same schedule.
 							</li>
 						</ul>
+					</div>
+				</section>
+
+				{/* Photograph band, placed directly after the "How we work" band so it sits
+				    against the hotel and scheduling copy. A real <img> rather than a
+				    background, so the client's alt sentence is carried verbatim. Native
+				    3:2 is kept rather than cropped to a letterbox: the subject is drapery
+				    running ceiling to floor, and a shallower band would cut the top of it. */}
+				<section className="block">
+					<div className="wrap" data-reveal>
+						<figure className="photoband">
+							<img
+								src="/assets/art-hospitality.jpg"
+								alt="Layered sheer and drapery at a floor-to-ceiling hotel-room window."
+								width={1536}
+								height={1024}
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption className="soft">
+								Sheer drawn across the glass for daytime privacy, with drapery layered to the
+								sides to close the room down at night. The same pairing does the work in a guest
+								room as in a dining room.
+							</figcaption>
+						</figure>
 					</div>
 				</section>
 

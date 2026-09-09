@@ -837,6 +837,36 @@ ul.inline li {
 	text-align: center;
 }
 
+/* ---------- single photograph band ----------
+
+   The .ba primitive above is a hard two-column pair, and .header-photo is
+   scoped to the header guide cards, so neither covers one wide photograph
+   sitting on its own inside a .block. This does, borrowing .ba's framing
+   (hairline, grade, cover) so a lone photograph reads as part of the same
+   family. Native aspect ratio is set per instance in the markup where the
+   crop matters. */
+
+.photoband {
+	margin: 0;
+}
+
+.photoband img {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 3 / 2;
+	object-fit: cover;
+	background: var(--bg-alt);
+	filter: var(--elpa-grade);
+	border: 1px solid var(--hairline);
+}
+
+.photoband figcaption {
+	max-width: 760px;
+	margin: 20px auto 0;
+	text-align: center;
+}
+
 /* ---------------------------------------------------------------------------
    V1.2 section 11: the before/after comparison frame.
 
