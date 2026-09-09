@@ -64,8 +64,8 @@ const SERVICE_SIGNATURE = {
 /* The two other primary categories, given full editorial cards. */
 const SERVICES_PRIMARY = [
 	{
-		img: "art-drapery.jpg",
-		alt: "Floor-length custom drapery falling in soft folds beside a sunlit window",
+		img: "art-drapery-linen.jpg",
+		alt: "Custom drapery in soft blue linen framing floor-to-ceiling windows in a South Florida bedroom.",
 		title: "Custom Drapery",
 		body: "The softest thing you can add to a room. Made to measure in European fabrics, chosen for how they fall, age, and handle light, down to the header, lining, and stack-back.",
 		tags: "Softening · warmth · framing windows",

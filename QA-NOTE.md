@@ -1330,3 +1330,58 @@ composited on the actual footer brown, 133 pixels out of 641,080 differ percepti
   committed Phase 3 task, not an open question.
 - **The old signature file is now unused** but left on disk rather than deleted, in case you
   want it back somewhere. It costs nothing on the pages that do not use it.
+
+---
+
+## §21 Custom Drapery photography
+
+The photo you sent is now the Custom Drapery image. It appears in two places, which were the
+only two places Custom Drapery used a photo of its own:
+
+- the lead treatment card on the homepage, with your alt text applied word for word
+- the hero at the top of the Custom Drapery page
+
+Your alt text reads: "Custom drapery in soft blue linen framing floor-to-ceiling windows in a
+South Florida bedroom." The hero is a CSS background image rather than a picture element, so
+there is no alt attribute to set there. That is correct behaviour, not an omission: the hero
+is decoration behind a headline that already says what the page is about.
+
+### One thing I did not change, on purpose
+
+The Hospitality and Restaurant page was also using the old drapery photo for its hero. I left
+it alone. It is a different service, and swapping its photography under the heading of a
+Custom Drapery request felt like a decision that is yours rather than mine. Say the word and
+it takes a minute.
+
+### The card crop is untouched, and slightly better than before
+
+The card's dimensions and its `object-fit: cover` behaviour were not modified at all. Worth
+knowing why the result looks tidier anyway: your photo is 1264 by 848, a ratio of 1.49, and
+the card box is 1.45. The old photo was 1.60. So the card now trims about 2.4% off the sides
+instead of about 9%, and the photo still has more than two and a half times the resolution the
+card needs on a large screen.
+
+It also ships lighter. Compressed it comes out at 138kB against the old photo's 255kB.
+
+### Worth your call
+
+The hero on the Custom Drapery page is the one place the fit is imperfect. A hero is much
+wider than it is tall, so it crops roughly a third off the top and bottom of your photo. I
+read it at desktop and phone widths and it holds up, the bed, the blue panels and the glass
+all stay in frame. But the dark wash over the hero was tuned for the old photo, which was
+darker through the middle. Yours is pale bedding right where the body copy and the outlined
+"Get a quick estimate" button sit, so the text is softer against it than it used to be on a
+phone.
+
+I have not touched it, because both fixes, deepening the wash or shifting the crop upward,
+change the crop behaviour you asked me to preserve. Two honest options if it bothers you: a
+slightly stronger wash on that hero only, or a second crop of the same photo cut for a wide
+hero shape.
+
+### Verified
+
+Lint clean. Build clean, 20 routes. A new suite for this swap passes 35 of 35: it checks the
+card's source, your exact alt text, the photo's true pixel size, that `object-fit: cover` and
+the 16 by 11 card box are still in force, the rendered crop at three widths, the hero's
+background, and that Hospitality is still on the old photo as intended. Image, responsive and
+overflow suites all clean, including 360px. All four screenshots read by eye.

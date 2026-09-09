@@ -58,7 +58,7 @@ export default function DraperyPage() {
 				<section className="hero">
 					<div
 						className="bgimg"
-						style={{ backgroundImage: "url('/assets/art-drapery.jpg')" }}
+						style={{ backgroundImage: "url('/assets/art-drapery-linen.jpg')" }}
 						data-parallax
 					/>
 					<div className="wrap">

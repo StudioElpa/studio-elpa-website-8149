@@ -3934,3 +3934,93 @@ both are worth keeping as lessons rather than quietly deleting:
   outrank `.visually-hidden` (0,2,1 vs 0,1,0) and reintroduce a stray margin on a 1px box.
 - The statement and sign-off remain HOMEPAGE ONLY. `LandingFooter` still has neither. Phase 3
   must carry both onto the service and geo footers -- a committed requirement.
+
+---
+
+## §22 Custom Drapery photography swap
+
+Request: replace the Custom Drapery image on the lead treatment card, and anywhere else
+Custom Drapery uses its photo, with the supplied `custom-drapery.jpg`. Keep `object-fit:
+cover` and the same card dimensions and crop behaviour. Alt text supplied verbatim.
+
+### §22.1 The attachment
+
+`/home/user/Attachments/custom-drapery_x02qij.jpg` -- `identify` confirms a real JPEG,
+1264x848, 8-bit sRGB, 160,322 B. Shipped unmodified as:
+
+```
+packages/web/public/assets/art-drapery-linen.jpg
+```
+
+Named `-linen` rather than overwriting `art-drapery.jpg` on purpose: the old file is still in
+use by the Hospitality page (§22.3), so overwriting would have silently changed that page too.
+
+### §22.2 Uses changed
+
+- `packages/web/src/web/pages/index.tsx:67` -- `SERVICES_PRIMARY` Custom Drapery card. `img`
+  now `art-drapery-linen.jpg`; `alt` replaced with the client string verbatim, including its
+  trailing period: "Custom drapery in soft blue linen framing floor-to-ceiling windows in a
+  South Florida bedroom."
+- `packages/web/src/web/pages/drapery.tsx:61` -- the Custom Drapery service-page hero
+  `.bgimg` background-image. This is the other Custom Drapery use, so "anywhere else"
+  covers it. It is a CSS background, not an `<img>`, so there is no alt to set there.
+
+### §22.3 Use deliberately NOT changed
+
+`packages/web/src/web/pages/hospitality-window-treatments.tsx:62` still points at
+`/assets/art-drapery.jpg`. That is the Hospitality & Restaurant service hero, not Custom
+Drapery. Changing it would have swapped the photography on an unrelated service under cover
+of this request. Flagged to the client rather than decided silently.
+
+### §22.4 No CSS change was needed
+
+`.svc .card .ph` is unchanged: `width: 100%; aspect-ratio: 16 / 11; object-fit: cover`.
+`.page-lp .hero .bgimg` is unchanged: `center / cover no-repeat`. The crop behaviour the
+client asked to preserve lives entirely in CSS and was never touched.
+
+Ratios: source 1264x848 = 1.491. Card box 16/11 = 1.4545. The old `art-drapery.jpg` was
+1600x1000 = 1.600. The new photo is CLOSER to the card box than the old one, so the card crop
+improved: cover now trims about 2.4% off the sides instead of ~9%. Source still covers the
+card at 2.61x (1440), 2.77x (1024), 3.72x (390), well above the 1.5x bar.
+
+The hero is the weak fit: it is far wider than 1.491, so cover trims roughly 31% off top and
+bottom and upscales about 1.14x at a 1440px hero. Read by eye at both widths and accepted.
+
+### §22.5 QA
+
+- `bun run lint` clean. `bun run build` exit 0, 20 routes, sitemap 19 urls. Optimizer:
+  `art-drapery-linen.jpg` 0.2MB -> 0.1MB, 14% smaller, dist 137,902 B. That is LIGHTER than
+  the old dist `art-drapery.jpg` at 254,754 B, so this swap is a net weight win.
+- `/tmp/drapqa.py` NEW, **35/35**: card src is the new asset and the old asset is absent from
+  it, alt matches the client string exactly, naturalWidth/Height 1264x848, `object-fit:
+  cover` intact, `aspect-ratio: 16 / 11` intact, rendered box ratio ~1.455 at three widths,
+  source-over-box coverage, drapery hero uses the new asset with `background-size: cover`,
+  and Hospitality still on the old asset.
+- `/tmp/qa2.py` 18 images, 0 broken, 0 page errors. `/tmp/respqa.py` 840/0. `/tmp/ovprobe.py`
+  360 clean on 4200 and 4310, only the intentional `-9999` skip link.
+- `/tmp/svcqa.py` run: its `Motorized Shading 0` line is unrelated Workstream B drift from the
+  uncommitted consolidation, NOT a regression from this swap.
+- Screenshots `/tmp/drap/{card,hero}_{desktop,mobile}.png` all four read by eye.
+
+### §22.6 First version of drapqa.py was wrong
+
+It waited for `load` on the service pages and found `.hero .bgimg` missing. Cause, confirmed
+with `/tmp/hydprobe.py`: on service pages the prerendered DOM is present at `commit`, then
+React hydration BLANKS the page at domcontentloaded/load (bodyLen 17, .hero 0), and the lazy
+route chunk repopulates it ~1s later. The homepage does not do this. Fixed by waiting for the
+actual selector. Keep `hydprobe.py`; it is the evidence for the known non-completion that
+prerendered HTML is not preserved through hydration, which is unfixable from our side while
+`createRoot` lives in template-managed `__main.tsx`.
+
+### §22.7 Open, for the client
+
+The hero scrim was tuned against the old photo, which was darker through the middle. The new
+photo is pale bedding exactly where the hero body copy and the outlined secondary button sit,
+so contrast there is softer than before on mobile. Not fixed silently: strengthening the
+scrim or nudging `background-position` would change the crop behaviour the client asked to
+preserve.
+
+### §22.8 Committed separately
+
+`index.tsx` also carries uncommitted Workstream B edits, so this went in via `git add -p`
+staging only the Custom Drapery hunk. Workstream B stays unstaged and unfinished.
