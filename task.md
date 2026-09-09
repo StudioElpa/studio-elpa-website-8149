@@ -4452,3 +4452,57 @@ scrim edge, text clearly legible. Further gain has to come from the photography,
 
 Suite green after the change: respqa 840/0, herosizeqa 50/0, herostaticqa 65/0, aeoqa 1088/1088,
 footerqa 534/534, svcqa PASS, qa_a11y clean, qa2 18 images 0 broken, ovprobe 360 no overflow.
+
+## 28. Phase 3 opened: the geo schema layer and the first geo page
+
+Client answered the three-question form: my proposed 13 neighbourhoods stand, the geo layer goes
+hybrid on imagery (photographic heroes on the 7 city pages, typographic headers on the 13
+neighbourhood pages), and the exemplar ships for approval before the other 19 are written.
+
+**Schema plumbing.** `SiteRoute` gained two optional fields, `areaServed` and `parent`.
+`areaServedNodes()` in `seo-data.ts` now takes an optional list and defaults to `AREA_SERVED`, so
+the sitewide LocalBusiness node still claims all 30 cities while a geo page's Service node claims
+only its own. `breadcrumb()` builds a trail array, so a neighbourhood page with `parent` set will
+render Home > city page > page instead of flattening to depth two. Nothing uses `parent` yet; the
+first neighbourhood page will be the first test of it.
+
+**First geo page.** `/custom-drapery-palm-beach.html`, Template A, built from the brief's worked
+copy rather than a city-name swap. Hero photograph is `art-drapery.jpg`, previously unused. Route
+registered in `site-routes.json` with `areaServed: [Palm Beach 33480]`, wired in `app.tsx`, page
+mirrors `european-fabrics.tsx`. Verified in the prerendered HTML: Service areaServed is Palm Beach
+33480 alone, `/drapery.html` still carries all 30, one h1, no em dashes, title and description from
+the registry, sitemap picked it up.
+
+**Not done yet, deliberately:** no inbound links from the parent service pages into this page. It
+would be churn to wire them one at a time; they go in once the set of 20 exists. Do not forget.
+
+**Stale assertion fixed, not the site.** `aeoqa.py` line 97 required every service page's Service
+node to carry >= 25 areas, which was right until geo pages existed. It now asserts a geo page
+carries exactly its registry list, its ZIPs, region FL, and that every scoped city is also claimed
+sitewide; other service pages still need >= 25. This was the fourth stale assertion this project.
+
+Also noted: `balticqa` still reports 10 sitewide mentions and passes, which means its page list is
+hardcoded and does not include the new route. The geo page's two Baltic mentions are therefore
+unchecked. Worth widening before the other 19 land.
+
+## 29. The real Blackout photograph
+
+Client sent the darkened-nursery photograph that had been on hold since §23. Installed as
+`assets/blackout.jpg` (1600x1067, 162 kB source, 123 kB after the build's own optimisation) and
+used in both places:
+
+- the homepage two-card row, replacing `lp-bedroom.jpg` and its apologetic alt text about a bright
+  room with the drapery drawn back;
+- the `/blackout.html` hero, also replacing `lp-bedroom.jpg`.
+
+Alt text is the client's own wording. Both keep `object-fit: cover` and the existing crop; the card
+crop holds the glowing edge along the floor, which is the point of the photograph. Verified loaded
+at 1600x1067 with a 200, not merely present in the markup.
+
+`lp-bedroom.jpg` now appears once on the site, on the `/european-fabrics.html` hero. That frees one
+photograph for the geo layer, which matters given 7 city heroes are still to place.
+
+Suite green after both changes: build 21 routes / sitemap 20 urls, lint clean, aeoqa 1146/1146,
+footerqa 534/534, respqa 840/0, herosizeqa 50/0, herostaticqa 65/0, herofreezeqa 48/0, balticqa
+63/0, svcqa PASS, menuqa 5/5, stubqa PASS, qa/qa2/qa_copy/qa_a11y clean, 18 homepage images 0
+broken, CLS 0.0015 at 360px.

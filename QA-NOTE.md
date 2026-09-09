@@ -1710,3 +1710,61 @@ photograph on the homepage, which shows a bright sunlit room beside copy promisi
 
 Also unchanged: the footer statement and sign-off are still homepage only, page speed has not been
 re-measured since Phase 2, and the estimate prices and the duplicate founder link still need you.
+
+## 25. The Blackout photograph, and the first geographic page
+
+### Your Blackout photograph is in
+
+The darkened nursery is now in both places it was needed: the Blackout card on the homepage, and
+the hero of the Blackout page. Both were showing a bright sunlit bedroom next to copy promising
+true darkness, which was the most awkward mismatch left on the site. It reads properly now, and the
+crop on the homepage card keeps the glow along the floor visible, which is the whole story of the
+photograph.
+
+The alt text is your wording, so anyone using a screen reader gets the same picture in words.
+
+One knock-on benefit: the old bright bedroom photograph is now used only once on the site, on the
+European Fabrics page. That gives us one more photograph to work with on the geographic pages,
+where we are short.
+
+### The first geographic page, for your approval
+
+This is the start of Phase 3, the geography work. Rather than write twenty pages and ask you to
+review them in bulk, here is one to react to first: **Custom Drapery in Palm Beach**.
+
+The copy is the worked example from your brief, used close to as written. The plan for the other
+nineteen is the same shape but genuinely different words each time, built from the per-area angles
+in your brief. No two pages will be the same text with a place name swapped, which is both what you
+asked for and the only version of this that actually works.
+
+Three decisions you confirmed and one you should sanity check on the page itself:
+
+1. Which thirteen neighbourhoods we build. Your list stands.
+2. Imagery: the seven city pages get a photograph, the thirteen neighbourhood pages get the
+   typographic header treatment instead. We have roughly ten usable photographs and twenty pages,
+   and repeating the same image across five geographic pages looks worse than not using one.
+3. This page tells search engines and AI assistants that it covers Palm Beach and the 33480 ZIP
+   specifically, rather than the whole thirty-city territory. The main Custom Drapery page still
+   claims everywhere. That distinction is the entire point of a geographic page.
+
+The one thing to check by eye: whether the Palm Beach page sounds like you. If the voice is right,
+the other nineteen follow quickly. If it is not, better to find out on page one.
+
+### Not linked up yet
+
+Nothing on the site links into the Palm Beach page yet. That is deliberate. The links from Custom
+Drapery and the other service pages go in once all twenty geographic pages exist, so we wire them
+once instead of twenty times. It will not ship unlinked.
+
+### Checks
+
+Everything green: twenty-one pages build with a twenty-url sitemap, the search and AI-answer layer
+passes 1146 checks, no broken images, no console errors, no sideways scrolling on a phone, layout
+shift effectively zero. I confirmed the new photograph actually loads at full size rather than just
+appearing in the code, and looked at both the card and the hero by eye at desktop and phone.
+
+### Still waiting on you
+
+Page speed still has not been re-measured since Phase 2, and twenty new pages are about to be
+added, so that needs a proper pass before publish. The footer statement and sign-off are still
+homepage only. The estimate prices and the duplicate founder link still need you.
