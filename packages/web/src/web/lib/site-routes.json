@@ -45,6 +45,39 @@
 			"priority": "0.9"
 		},
 		{
+			"path": "/roller-solar-shades.html",
+			"aliases": [],
+			"title": "Roller and Solar Shades for Florida Sun · Studio Elpa",
+			"description": "Solar screens that hold your view while cutting glare and heat, dimout for privacy, blackout for sleep. Made to measure, fitted clean, and motorized when you want the room to run itself.",
+			"schema": "service",
+			"serviceType": "Roller and solar shade design, fabrication and installation",
+			"breadcrumb": "Roller and Solar Shades",
+			"changefreq": "monthly",
+			"priority": "0.9"
+		},
+		{
+			"path": "/roman-shades.html",
+			"aliases": [],
+			"title": "Custom Roman Shades, Made to Measure · Studio Elpa",
+			"description": "The softness of fabric in a tailored, space-saving form. European fabrics, even folds, cordless and child-safe, for kitchens, baths and windows where full drapery would be too much.",
+			"schema": "service",
+			"serviceType": "Custom Roman shade design, fabrication and installation",
+			"breadcrumb": "Roman Shades",
+			"changefreq": "monthly",
+			"priority": "0.8"
+		},
+		{
+			"path": "/natural-woven-shades.html",
+			"aliases": [],
+			"title": "Natural Woven Shades in Grasses and Bamboo · Studio Elpa",
+			"description": "Shades woven from reeds, grasses and bamboo that turn hard Florida light soft and golden. Beautiful on their own, better layered with drapery, and lined when a room needs privacy.",
+			"schema": "service",
+			"serviceType": "Natural woven shade design and installation",
+			"breadcrumb": "Natural Woven Shades",
+			"changefreq": "monthly",
+			"priority": "0.8"
+		},
+		{
 			"path": "/estimate.html",
 			"aliases": [],
 			"title": "Estimate Your Window Treatments · Studio Elpa",

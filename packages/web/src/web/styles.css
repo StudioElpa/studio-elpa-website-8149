@@ -2049,6 +2049,28 @@ footer.lp .footer-logo {
 	color: var(--accent);
 }
 
+/* The link through to a service page. Rendered only where a page exists, so a
+   card without an href simply has no anchor. */
+.svc-golink {
+	margin: 14px 0 0;
+	font-family: var(--sans);
+	font-size: 14px;
+	letter-spacing: 0.01em;
+}
+
+.svc-golink a {
+	color: var(--ink);
+	text-decoration: none;
+	border-bottom: 1px solid var(--hairline);
+	padding-bottom: 2px;
+}
+
+.svc-golink a:hover,
+.svc-golink a:focus-visible {
+	color: var(--accent);
+	border-bottom-color: var(--accent);
+}
+
 /* Quieter continuation: a hairline header, then three compact entries with no
    panel and no border, so they read as a lighter rail below the primaries. */
 .svc-more-head {
@@ -2319,6 +2341,18 @@ footer.lp .footer-logo {
 	   olive kicker above them. */
 	line-height: 1.45;
 	margin-bottom: 2px;
+}
+
+/* The detail run of a spec row, as one grid item.
+
+   Without this wrapper the row's inline content is split: a grid container
+   blockifies every inline-level child into its own grid item, so an inline
+   link inside the sentence (BalticLink, row 03) became a separate item and was
+   auto-placed into the 34px numeral column, where it collided with the text on
+   either side of it. The column is stated explicitly rather than left to
+   auto-placement so the row cannot reflow if another element is ever added. */
+.trade .spec-list li .spec-detail {
+	grid-column: 2;
 }
 
 /* projects */

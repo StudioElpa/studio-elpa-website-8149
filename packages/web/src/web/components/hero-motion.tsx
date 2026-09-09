@@ -9,13 +9,13 @@ import { useEffect, useState } from "react";
  * about the first paint changes, which is the whole point of "must not delay
  * LCP" in the brief.
  *
- * The clip plays EXACTLY ONCE and is not looped. Measured, the wrap from the
- * last frame back to the first was a mean-abs-diff of 54.4 against 0.013 for a
- * settled frame-to-frame step, which is the visible jump the client reported;
- * the clip's own closing frames taper smoothly to a near-freeze, so there is
- * nothing to trim. On `ended` the video crossfades out over 600ms to reveal the
- * static illustration underneath, then unmounts and frees the decoder. The
- * resting state of the hero is therefore the still, permanently.
+ * The clip plays EXACTLY ONCE and is not looped. The reversed clip the client
+ * supplied opens dark, raises the shades, and settles on the bright open room,
+ * which is the same composition as the static illustration underneath, so the
+ * handoff is a dissolve between two near-identical frames rather than a cut.
+ * On `ended` the video crossfades out over 600ms to reveal that still, then
+ * unmounts and frees the decoder. The resting state of the hero is therefore
+ * the still, permanently.
  *
  * Reduced motion is a real no-op, not a shortened animation: the <video> is
  * never mounted at all, so the still is what the visitor sees. That also keeps

@@ -15,6 +15,9 @@ import { AgentFeedback, RunableBadge } from "@runablehq/website-runtime";
 const Drapery = lazy(() => import("./pages/drapery"));
 const Motorized = lazy(() => import("./pages/motorized"));
 const Blackout = lazy(() => import("./pages/blackout"));
+const RollerSolar = lazy(() => import("./pages/roller-solar-shades"));
+const RomanShades = lazy(() => import("./pages/roman-shades"));
+const NaturalWoven = lazy(() => import("./pages/natural-woven-shades"));
 const Estimate = lazy(() => import("./pages/estimate"));
 const Founder = lazy(() => import("./pages/founder"));
 const JournalBlackout = lazy(() => import("./pages/journal-blackout"));
@@ -38,6 +41,9 @@ function App() {
           <Route path="/drapery.html" component={Drapery} />
           <Route path="/motorized.html" component={Motorized} />
           <Route path="/blackout.html" component={Blackout} />
+          <Route path="/roller-solar-shades.html" component={RollerSolar} />
+          <Route path="/roman-shades.html" component={RomanShades} />
+          <Route path="/natural-woven-shades.html" component={NaturalWoven} />
           <Route path="/estimate.html" component={Estimate} />
           <Route path="/founder.html" component={Founder} />
           <Route path="/journal-blackout.html" component={JournalBlackout} />

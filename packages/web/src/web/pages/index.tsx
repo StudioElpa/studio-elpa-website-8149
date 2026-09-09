@@ -69,6 +69,7 @@ const SERVICES_PRIMARY = [
 		title: "Custom Drapery",
 		body: "The softest thing you can add to a room. Made to measure in European fabrics, chosen for how they fall, age, and handle light, down to the header, lining, and stack-back.",
 		tags: "Softening · warmth · framing windows",
+		href: "/drapery.html",
 	},
 	{
 		img: "art-roller.jpg",
@@ -76,6 +77,7 @@ const SERVICES_PRIMARY = [
 		title: "Roller Shades",
 		body: "Clean light control that knows when to disappear. A solar screen keeps your view while taming the Florida sun; a dimout gives rest and privacy; a blackout makes a bedroom truly dark.",
 		tags: "Glare · heat · views kept",
+		href: "/roller-solar-shades.html",
 	},
 ];
 
@@ -87,6 +89,7 @@ const SERVICES_MORE = [
 		title: "Roman Shades",
 		body: "The softness of fabric in a tailored, space-saving form. A favorite for kitchens, baths, and windows where full curtains would be too much. Cordless and child-safe.",
 		tags: "Kitchens · baths · soft look",
+		href: "/roman-shades.html",
 	},
 	{
 		img: "art-woven.jpg",
@@ -94,13 +97,16 @@ const SERVICES_MORE = [
 		title: "Natural Woven Shades",
 		body: "Warmth and character woven from grasses, reeds, and bamboo. They filter light into something soft and golden, beautiful on their own and even better layered with drapery.",
 		tags: "Texture · organic · filtered light",
+		href: "/natural-woven-shades.html",
 	},
 	{
 		img: "art-hardware.jpg",
 		alt: "A decorative metal drapery rod, bracket, and finial",
 		title: "Decorative Hardware",
+		/* No page yet, so no link. An empty href renders no anchor. */
 		body: "The jewelry of the window. The right rod, bracket, or finial pulls the whole look together, matched to the fabric, the room, and the way the drapery moves.",
 		tags: "Bronze · brass · matte black",
+		href: "",
 	},
 ];
 
@@ -232,7 +238,9 @@ export default function HomePage() {
 									src="/assets/hero-1120.jpg"
 									/* The full 1800px file was going to phones too, which made a
 									   224 kB image the LCP element on a 390px viewport. */
-									srcSet="/assets/hero-780.jpg 780w, /assets/hero-1120.jpg 1120w, /assets/hero.jpg 1800w"
+									/* 1365w, not 1800w: the still is now the clean final artwork the
+									   client supplied, which is 1365x768. Nothing is upscaled. */
+									srcSet="/assets/hero-780.jpg 780w, /assets/hero-1120.jpg 1120w, /assets/hero.jpg 1365w"
 									/* 860px, not 1000px: the frame's max-width came down to 860px in
 									   V1.2 section 3, and an overstated `sizes` lets the browser pick a
 									   larger candidate than it will ever render. */
@@ -453,6 +461,11 @@ export default function HomePage() {
 								<p className="svc-sig">{SERVICE_SIGNATURE.sig}</p>
 								<p>{SERVICE_SIGNATURE.body}</p>
 								<div className="tags">{SERVICE_SIGNATURE.tags}</div>
+								{/* Rendered once, so a Link inline here is safe. The mapped
+								    cards below use an href string instead (see SERVICES_PRIMARY). */}
+								<p className="svc-golink">
+									<Link to="/motorized.html">See Motorized Shading →</Link>
+								</p>
 							</div>
 						</div>
 
@@ -471,6 +484,11 @@ export default function HomePage() {
 										<h3>{s.title}</h3>
 										<p>{s.body}</p>
 										<div className="tags">{s.tags}</div>
+										{s.href ? (
+											<p className="svc-golink">
+												<Link to={s.href}>See {s.title} →</Link>
+											</p>
+										) : null}
 									</div>
 								</div>
 							))}
@@ -494,6 +512,11 @@ export default function HomePage() {
 									<h4>{s.title}</h4>
 									<p>{s.body}</p>
 									<div className="tags">{s.tags}</div>
+									{s.href ? (
+										<p className="svc-golink">
+											<Link to={s.href}>See {s.title} →</Link>
+										</p>
+									) : null}
 								</div>
 							))}
 						</div>
@@ -591,22 +614,41 @@ export default function HomePage() {
 						<div className="trade-cols" data-reveal-group>
 							<div className="trade-col" data-reveal="x">
 								<div className="kicker">What we bring</div>
+								{/* The detail text is wrapped in .spec-detail on purpose. `.trade
+								    .spec-list li` is `display: grid`, and a grid container blockifies
+								    every inline-level child into its own grid item, so an inline <a>
+								    (BalticLink, item 03) was being auto-placed into the 34px numeral
+								    column and colliding with the text either side of it. Wrapping the
+								    whole run in one element keeps it a single grid item. Applied to all
+								    four rows so the next link added here cannot reintroduce the bug. */}
 								<ul className="clean spec-list">
 									<li>
-										<b>Technical expertise.</b> Solar exposure, stack-back, light control, fabric
-										behavior, and the details that make or break a spec.
+										<b>Technical expertise.</b>
+										<span className="spec-detail">
+											Solar exposure, stack-back, light control, fabric behavior, and the details
+											that make or break a spec.
+										</span>
 									</li>
 									<li>
-										<b>Our own crews.</b> Precise measuring and installation by people who do this
-										every day, never subcontracted.
+										<b>Our own crews.</b>
+										<span className="spec-detail">
+											Precise measuring and installation by people who do this every day, never
+											subcontracted.
+										</span>
 									</li>
 									<li>
-										<b>Electrical, handled for you.</b> The electrical is handled by our licensed,
-										insured electrical partner, <BalticLink />, so motorized projects don't stall
-										while a client hunts for an electrician; we coordinate it for you.
+										<b>Electrical, handled for you.</b>
+										<span className="spec-detail">
+											The electrical is handled by our licensed, insured electrical partner,{" "}
+											<BalticLink />, so motorized projects don't stall while a client hunts for
+											an electrician; we coordinate it for you.
+										</span>
 									</li>
 									<li>
-										<b>Proactive communication.</b> You'll always know where things stand.
+										<b>Proactive communication.</b>
+										<span className="spec-detail">
+											You'll always know where things stand.
+										</span>
 									</li>
 								</ul>
 							</div>

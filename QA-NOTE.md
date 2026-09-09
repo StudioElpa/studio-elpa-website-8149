@@ -936,6 +936,51 @@ removing them would move no number and they were left alone; and **the deferred 
 success path is unverified end to end**, because verifying it means transmitting a real
 lead. Only the failure path is proven.
 
+## §16 Phase 2 service pages, the spec-list grid bug, and the hero clip swap
+
+**The spec-list bug.** Homepage `#designers` row 03 rendered the Baltic Electrical link on
+top of its own sentence ("Electrhunts"). Cause: `.trade .spec-list li` is `display: grid`,
+and a grid container blockifies every inline-level child into its own grid item, so the `<a>`
+became a separate item and was auto-placed into the 34px numeral column. Fixed by wrapping
+all four detail runs in `<span class="spec-detail">` and pinning `grid-column: 2`. Verified
+by `/tmp/specqa.py` at 1440/390/360: **72 passed, 0 failed**. The script itself was wrong
+first, counting `getClientRects()`'s duplicate rect for an inline element and its inner text
+run as an overlap; de-duplicated to within 1px.
+
+**Phase 2 pages.** `/roller-solar-shades.html`, `/roman-shades.html`,
+`/natural-woven-shades.html`, all lazy-loaded, all registered in `site-routes.json` (now 13
+routes), all linked from the homepage services grid. Build prerenders 13 routes, sitemap has
+13 urls, all three prerender guards pass.
+
+| Check | Result |
+|---|---|
+| `bun run lint` | 0 violations, 77 files |
+| `bun run build` | clean, 13 routes, 13 sitemap urls |
+| `qa_copy.py` (13 routes) | 0 em dashes, 0 banned words, 0 missing alt, 0 emoji |
+| `qa_booking.py` | 19 booking CTAs, 0 misconfigured |
+| `balticqa.py` | 53 checks, 0 failed, 9 canonical linked mentions |
+| `specqa.py` | 72 passed, 0 failed |
+| `heroswapqa.py` | 25 passed, 0 failed |
+
+Six QA scripts carried hardcoded route lists and were stale by three routes
+(`qa.py`, `qa_a11y.py`, `qa_copy.py`, `qa_booking.py`, `overflow360.py`, `motionqa.py`), plus
+`balticqa.py`'s sitewide count. All updated.
+
+**Hero clip swap.** New reversed clip encoded to `hero-motion.mp4` 1,379,199 B and
+`hero-motion.webm` 543,054 B, 1600x900, audio stripped at the encoder. 1.92 MB total, under
+the ~4 MB budget. Behaviour was already exactly what was asked and is unchanged: plays once,
+no loop, 600ms crossfade to the still, then unmounts; reduced motion mounts no video and
+fetches no clip bytes. The still is now the clean final artwork, which closes the
+long-standing pencil-marks non-completion; srcset's top candidate is 1365w, not 1800w,
+because that is the master's real width.
+
+**The seam is not seamless, and this needs a decision.** Measured through the same CSS grade
+in the same box: clip final frame mean RGB (194.6, 168.6, 138.3) against the still's
+(212.5, 209.0, 202.8), rendered RMSE 0.176. A scale search rules out a framing offset (best
+fit 1.06 at 0.169 versus 1.00 at 0.172, i.e. flat). The gap is baked-in amber warmth plus
+real differences between the two renders. Not corrected, because colour-correcting supplied
+artwork is the client's call. See open item 11.
+
 ## Open items before go-live
 
 1. **`estimate.html` shows unconfirmed pricing to real prospects.** The original's
@@ -966,11 +1011,12 @@ lead. Only the failure path is proven.
    **(b)** `.wrap.two` still carries "Read a note from our founder →" directly above
    Aviva's "Read more →", and both target `/founder.html`. Two links to one page within
    a few hundred pixels. **Left in place pending the client's call, not removed silently.**
-7. **The hero still was not swapped to the clean final art.** The clip now plays once and
-   dissolves to the static illustration, but that still is `hero.jpg`, which carries the
-   stray pencil marks the clean art removes. The supplied `hero-clean-final.png` is only
-   1365px wide against the existing 1800px srcset tier, so using it would downgrade
-   high-DPI screens. **A full-resolution export would let us complete the swap.**
+7. **The hero still is now the clean final art, but we lost the 1800w srcset tier.**
+   `hero.jpg`, `hero-1120.jpg`, `hero-780.jpg` and `hero-poster.jpg` were all regenerated
+   from the supplied clean artwork, so the stray pencil marks are gone. That master is
+   only **1365px wide**, so the srcset's largest candidate dropped from 1800w to 1365w
+   rather than upscale bytes with no detail behind them. **A full-resolution export would
+   restore the high-DPI tier.**
 8. **Confirm both article publication dates** — `2026-07-01` for the blackout story and
    `2026-09-08` for the headers guide are assumptions, and they appear in JSON-LD.
 9. **Two Blindspace questions.** **(a)** Neither supplied lockup works on a dark
@@ -983,10 +1029,28 @@ lead. Only the failure path is proven.
    space". Say the word and I will add a second lockup to `drapery.html`.
 10. **The hero video is now the largest remaining performance lever, and cutting it is
     your call, not a refactor.** After §15 the homepage weighs 2,065 KiB, of which
-    `hero-motion.webm` is **682 kB** — roughly a third of the page, downloading in
-    parallel with the hero image that Lighthouse is timing. Every code-level lever is
-    either spent or locked by the template. The options, in order of gain: drop the clip
-    and ship the still alone; delay the video request until after the hero image has
-    painted (keeps the motion, costs a beat before it starts); or shorten/re-encode it
-    harder at some quality cost. The clip is a deliberate brand decision, so I have
-    changed nothing. **Which of the three do you want?**
+    `hero-motion.webm` was **682 kB** — roughly a third of the page, downloading in
+    parallel with the hero image that Lighthouse is timing. **§16's clip swap has already
+    cut the served WebM to 543 kB**, so restate the numbers before re-deciding. Every
+    code-level lever is either spent or locked by the template. The remaining options, in
+    order of gain: drop the clip and ship the still alone; delay the video request until
+    after the hero image has painted (keeps the motion, costs a beat before it starts);
+    or re-encode harder at some quality cost. The clip is a deliberate brand decision, so
+    I have changed nothing beyond the swap you asked for. **Which do you want?**
+11. **The hero crossfade seam does not match, and correcting it means altering your
+    artwork.** The new clip was supplied on the understanding that its final frame
+    "matches the static hero exactly". Measured through the identical CSS grade that both
+    the `<video>` and the `<img>` carry, it does not: the clip's last frame means
+    **RGB (194.6, 168.6, 138.3)** against the still's **(212.5, 209.0, 202.8)** — a
+    **64-level gap in the blue channel** — for a rendered **RMSE of 0.176** across the
+    seam. A framing or scale offset is ruled out: after normalising colour per channel,
+    the best scale fit is 1.06 at RMSE 0.169 versus 1.00 at 0.172, which is flat. The gap
+    is baked-in amber warmth plus genuinely different shading and floor shadows between
+    the two renders, and no transform corrects that away. Side-by-side evidence is at
+    `hero-seam-evidence.png`. **Four options, your call:** **(a)** ship as is, since the
+    dissolve reads as warm sunlight cooling to paper; **(b)** colour-correct the clip
+    toward the paper white, matching per-channel mean and standard deviation, which
+    alters supplied artwork; **(c)** use the clip's own final frame as the resting still,
+    which contradicts your instruction to crossfade to the clean art and is lower
+    fidelity than the master; **(d)** re-render the clip from the clean artwork so its
+    last frame is literally the still. **(d) is the only one that is genuinely seamless.**

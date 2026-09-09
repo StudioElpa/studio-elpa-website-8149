@@ -27,12 +27,14 @@
 		<!-- The homepage hero is the LCP element. Pages are prerendered now, but
 		     the preload still wins the request a round trip earlier. imagesrcset
 		     mirrors the <img> exactly, so a phone preloads the 780px file rather
-		     than the 1800px one. -->
+		     than the largest one. The top candidate is 1365w, not 1800w: the
+		     clean final artwork the client supplied is 1365x768, and upscaling it
+		     would ship bytes with no detail behind them. -->
 		<link
 			rel="preload"
 			as="image"
 			href="/assets/hero-1120.jpg"
-			imagesrcset="/assets/hero-780.jpg 780w, /assets/hero-1120.jpg 1120w, /assets/hero.jpg 1800w"
+			imagesrcset="/assets/hero-780.jpg 780w, /assets/hero-1120.jpg 1120w, /assets/hero.jpg 1365w"
 			imagesizes="(max-width: 860px) 100vw, 1000px"
 			fetchpriority="high"
 		/>

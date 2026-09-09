@@ -3346,3 +3346,104 @@ all three prerender guards passed.
    rather than churn the lockfile on a verified-green tree; flagged as housekeeping.
 5. The success path of the deferred submit is **still unverified end to end**, because
    verifying it means transmitting a real lead. Only the failure path is proven.
+
+---
+
+## §15 PHASE 2 SERVICE PAGES, THE SPEC-LIST GRID BUG, AND THE HERO CLIP SWAP
+
+### 15.1 The spec-list bug: a grid container blockifies every inline child
+
+The client reported that on the homepage, `#designers` -> "What we bring" -> row 03, the
+Baltic Electrical link overlapped its own sentence and rendered as "Electrhunts".
+
+Root cause, diagnosed rather than guessed. `.trade .spec-list li` is
+`display: grid; grid-template-columns: 34px 1fr`. **A grid container blockifies every
+inline-level child into its own grid item.** The row's children were therefore the `::before`
+numeral, the `<b>`, the leading text run, **the `<a>` as a separate grid item**, and the
+trailing text run. The `<a>` was auto-placed into row 3, column 1, the 34px numeral column,
+where it overflowed and collided with the text beside it. The other eight Baltic mentions sit
+in plain `ul.clean` lists, which is why exactly one of nine broke.
+
+Fix, two parts:
+1. Every one of the four `<li>` detail runs is wrapped in `<span className="spec-detail">`,
+   so the whole run is a single grid item. All four, not just the broken one, so the next
+   inline link added there cannot reintroduce the bug.
+2. `.trade .spec-list li .spec-detail { grid-column: 2 }` — the column is stated explicitly
+   rather than left to auto-placement. Inserted mid-file, because `.band.dark .partner-link`
+   must remain the last block in `styles.css`.
+
+Row 03 now carries the client's exact sentence. `/tmp/specqa.py`: **72 checks, 0 failures**
+at 1440/390/360.
+
+**The QA script was wrong first.** It reported 3 failures, one identical "overlapping pair"
+at every viewport. `/tmp/rectdump.py` showed rects 3 and 4 were byte-identical:
+`Range.getClientRects()` emits one rect for the inline `<a>` box **and another for the text
+run inside it**. The overlap heuristic counted that self-referential pair. Fixed by
+de-duplicating rects to within 1px before the pairwise comparison. The site was never wrong.
+That is the twenty-fourth time a QA script, not the site, was the defect.
+
+### 15.2 Phase 2 = the three service pages that did not exist yet
+
+`V2-PLAN.md` names "Custom Drapery, Motorized Shades, Blackout" for Phase 2, but **all three
+shipped in V1**, so the plan's wording is stale. Brief §4 keeps V1's hierarchy and lists 12
+service pages; the missing primary is Roller & Solar Shades, and the next two in §4's own
+order are Roman Shades and Natural Woven. Decorative Hardware moves to Phase 4. This is my
+call and it is reversible in one line.
+
+| Page | Route | Angle |
+|---|---|---|
+| `roller-solar-shades.tsx` | `/roller-solar-shades.html` | Heat, glare and fading on big glass without losing the view; openness factor as the real decision |
+| `roman-shades.tsx` | `/roman-shades.html` | Fabric where drapery would swallow the window; flat / relaxed / hobbled |
+| `natural-woven-shades.tsx` | `/natural-woven-shades.html` | Texture in hard pale coastal rooms; honest limits on privacy and humidity |
+
+All three follow `blackout.tsx`'s structure exactly. Every FAQ answer carries an honest
+limitation, because that is the brand voice: solar screens give no night privacy, a Roman is
+not truly blackout unaided, unlined woven gives little privacy and moves with humidity.
+
+The brief's Template A is explicitly "Service + City"; there is no service-only template, so
+I used its skeleton minus the city specificity.
+
+`site-routes.json` is now **13 routes**, `app.tsx` lazy-loads all three, and the homepage §7
+services grid finally links through: `SERVICES_PRIMARY` and `SERVICES_MORE` gained an `href`
+**string** field rendered as a `<Link>` inside the map, never JSX in the data (lesson 25).
+Decorative Hardware has an empty href and therefore renders no anchor.
+
+Build: 13 routes prerendered, sitemap 13 urls, all three prerender guards passed.
+Booking CTAs went 10 -> **19**, not the 16 I predicted: each new page carries three, like
+every other service page. 0 misconfigured. Baltic mentions 8 -> **9**, all canonical.
+`qa_copy.py`: 0 em dashes, 0 banned words, 0 missing alts across all 13 routes.
+
+### 15.3 The hero clip swap, and the seam that is not seamless
+
+The client supplied a reversed clip: dark, shades rise, ends on the bright open room.
+Encoded to 1600x900, audio stripped at the encoder rather than only muted:
+`hero-motion.mp4` 1,379,199 B (H.264 crf25, faststart) and `hero-motion.webm` 543,054 B
+(VP9 crf36). **1.92 MB total against a ~4 MB budget.** The build's asset optimizer then
+re-encoded the MP4 to 500,496 B; proven faithful, not degraded, at RMSE 0.016 on the final
+frame and 0.013 mid-clip.
+
+**No behaviour changed, because the component was already correct**: autoplay, muted,
+playsInline, `loop` absent, `onEnded` -> `.out` -> 600ms crossfade -> unmount, and under
+reduced motion the `<video>` is never mounted and no clip bytes are fetched at all.
+`/tmp/heroswapqa.py`: **25 checks, 0 failures**.
+
+The still was also swapped to the clean final artwork, which closes the longest-standing
+honest non-completion on this build: the hero no longer carries stray pencil marks.
+`hero.jpg`, `hero-1120.jpg`, `hero-780.jpg` and `hero-poster.jpg` all regenerate from that
+master, and the srcset's top candidate drops **1800w -> 1365w** in both `index.html` and
+`index.tsx`, because the supplied master is 1365x768 and upscaling would ship bytes with no
+detail behind them.
+
+**The seam does not match, and the client's premise that it does is measurably wrong.**
+Captured through the identical CSS grade, in the identical box, with the breathing loop and
+the sweep frozen:
+
+- clip final frame mean RGB **(194.6, 168.6, 138.3)**
+- clean still mean RGB **(212.5, 209.0, 202.8)**
+
+The blue channel differs by 64 levels. Rendered RMSE across the seam is **0.176**. A scale
+search rules out a framing offset: after normalising colour, best fit is scale 1.06 at RMSE
+0.169 against 0.172 at scale 1.00, which is flat. So the residual is **baked-in amber warmth
+plus genuine differences in the two renders' linework and floor shadows**, not a transform
+anyone can correct away. Raised with the client rather than silently colour-correcting their
+artwork.
