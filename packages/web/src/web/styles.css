@@ -1379,6 +1379,25 @@ footer.site .f-line {
 	text-wrap: balance;
 }
 
+/* The statement and the signature that signs it are one grid item, so the
+   signature sits under the line rather than under the lockup. */
+footer.site .f-voice {
+	min-width: 0;
+}
+
+/* Aviva's handwritten sign-off (V2). Cream artwork on transparent ground, so
+   it needs no treatment on the dark footer. Width is capped rather than set
+   so it can shrink on narrow screens; height stays auto so the 2.22:1 ratio
+   of the supplied artwork is never distorted. The width/height attributes on
+   the element reserve the box against the lazy load. */
+footer.site .f-signature {
+	display: block;
+	width: 210px;
+	max-width: 60%;
+	height: auto;
+	margin: 18px 0 0;
+}
+
 footer.site .f-mid {
 	display: grid;
 	grid-template-columns: 1.35fr 1fr;
@@ -1406,16 +1425,6 @@ footer.site .f-begin:hover {
    conversion paragraph that section 16 removed. */
 footer.site .f-say .f-begin:first-child {
 	margin-top: 0;
-}
-
-/* The signature. Italic serif, so it reads as a person signing off rather
-   than another line of body copy. */
-footer.site .f-sign {
-	font-family: var(--serif);
-	font-style: italic;
-	font-size: 19px;
-	color: var(--dark-head);
-	margin-top: 22px;
 }
 
 footer.site .f-tel {

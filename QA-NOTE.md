@@ -1156,3 +1156,46 @@ stale rather than current.
   "Drapery Hardware" are one service.
 - **New:** photography for all ten new service pages. Every one reuses homepage art. There
   is no arched-window photo, no restaurant photo and no fabric close-up.
+
+## §18 The handwritten footer signature
+
+The footer text sign-off `Aviva, Studio Elpa` is gone. In its place, a cream handwritten
+signature image sits directly beneath the footer brand-statement line, inside a new
+`.f-voice` wrapper that keeps `.f-top`'s two-column grid intact.
+
+**Green after the change.** `footerqa.py` had to be rewritten first (it asserted `.f-sign`
+and `sayChildren == ["f-begin","f-sign"]`, both of which no longer exist) and now passes
+**200/200** across 1440/1180/390/360 plus the dist HTML. Full battery re-run: `qa_a11y`
+clean on 20, `qa` clean, `qa2` 18 images 0 broken, `qa_copy` clean, `respqa` 840/0 with CLS
+0.0000-0.0015, `overflow360` 0 overflow on 20 routes at 360px, `motionqa` green, `aeoqa`
+1095/1095, `qa_booking` 40 CTAs 0 bad, `balticqa` 73/0 with 11 mentions, `herostaticqa`
+65/0, `herofreezeqa` 48/0.
+
+**The asset is faithful.** 3374x1521 master, real alpha, cream ink; no trimmable margin
+(the strokes run to the canvas edge, so 2.218:1 is the true ratio). Shipped at 420x189,
+17,662 B, 2x its 210px box. The build optimizer cut it 40% to 10,529 B and I proved it
+bit-for-bit lossless (alpha RMSE 0.00000, composited-over-ink RMSE 0.00000).
+
+**A missing footer logo was a false alarm in my own harness, not a site defect.**
+`scrollIntoView()` plus a fixed wait does not reliably trigger Chrome's lazy-load in
+headless: the lockup reported `complete: false`, `naturalWidth 0` and fired zero network
+requests while being fully visible and correctly boxed, then screenshot as a blank column.
+An incremental human-like scroll (`/tmp/lazyprobe.py`) shows 18 images and 0 failures. Every
+screenshot harness now forces `loading='eager'` on all images, not just the one under test.
+
+### New open items
+
+- **The footer CTA column is now unsigned.** The text sign-off was deleted outright, not
+  duplicated. If you want the CTA to keep a sign-off, say so and it comes back as text.
+- **The sans "Studio Elpa" line under the signature was not built**, per your follow-up:
+  the footer already carries the wordmark in the cream lockup and again in the copyright
+  line.
+- **The name "Aviva" is no longer crawlable text in the footer.** The image carries
+  `alt="Aviva"`, which is right for a signature, but it contributes nothing to on-page copy.
+  Aviva is still named in real text in the About section and on `/founder.html`.
+- **The signature is homepage-only.** `LandingFooter`, which every service page uses and the
+  geo pages will use, has no brand-statement line and therefore no signature. With 13
+  service pages live and the geo layer next, the sign-off is absent from most of the site.
+  Should it be added there?
+- **Confirm the size.** Shipped at 210px desktop and ~205px on a 390px screen, the top of
+  your 180-210px band, using the discretion you gave me on mobile.

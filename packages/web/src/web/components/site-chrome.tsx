@@ -205,10 +205,24 @@ export function SiteFooter() {
 			<div className="wrap">
 				<div className="f-top">
 					<FooterLogo />
-					<p className="f-line">
-						Good window treatments do not announce themselves. They just make a room feel
-						finished.
-					</p>
+					{/* .f-top is a two-column grid, so the statement and the signature must
+					    share ONE grid item or the signature drops into column 1 under the
+					    lockup instead of under the line it signs. Hence this wrapper. */}
+					<div className="f-voice">
+						<p className="f-line">
+							Good window treatments do not announce themselves. They just make a room feel
+							finished.
+						</p>
+						<img
+							className="f-signature"
+							src="/assets/signature-aviva.png"
+							alt="Aviva"
+							width={210}
+							height={95}
+							loading="lazy"
+							decoding="async"
+						/>
+					</div>
 				</div>
 				<div className="f-mid">
 					<div className="f-say">
@@ -216,10 +230,12 @@ export function SiteFooter() {
 						    knowing what your windows need" pitch lived here and restated the
 						    contact section almost word for word. Removed so the footer signs
 						    off rather than selling the same call twice. */}
+						{/* The text signature that sat here ("Aviva, Studio Elpa") moved up to
+						    .f-top as the handwritten sign-off, on client instruction: it signs
+						    the brand statement, not the CTA. */}
 						<a className="f-begin" href="#contact">
 							Begin a conversation
 						</a>
-						<p className="f-sign">Aviva, Studio Elpa</p>
 					</div>
 					<div className="f-contact">
 						<h3>Reach us</h3>

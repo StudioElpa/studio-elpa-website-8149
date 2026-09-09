@@ -3577,3 +3577,104 @@ heroplay.py repointed to -v3.
 
 STILL NOT MEASURED: Lighthouse. Last median 81, before Phase 2. Seven routes, a new hero
 clip and all the hero motion changes have landed since.
+
+--------------------------------------------------------------------------------
+## §18 The handwritten footer signature
+
+Client request, verbatim in intent: replace the footer text signature ("Aviva, Studio
+Elpa") with the supplied handwritten signature image, place it directly beneath the
+footer brand-statement line, NOT near the CTA, ~180-210px wide, aspect ratio preserved,
+alt text "Aviva".
+
+That request carried a genuine internal conflict: the text signature lived in the CTA
+block (.f-mid > .f-say), so "replace it" and "put it under the brand statement, not near
+the CTA" could not both be literal. Surfaced with two readings; the client chose (a) MOVE
+the sign-off, and additionally instructed me to DROP the sans "Studio Elpa" line their
+original message had asked for under the image, because the footer already carries the
+wordmark twice (the cream lockup and the .base copyright line). So the handwritten
+"Aviva" stands alone. They also gave discretion to size it down if mobile strokes felt
+thin.
+
+### 18.1 The asset
+Master: /home/user/Attachments/signature-aviva-cream_n2IYy5.png . 3374x1521, PaletteAlpha,
+genuine 8-bit alpha (94.7% transparent), ink cream #F3ECDF, 318,070 B. Verified a real PNG,
+not a mislabelled JPEG.
+
+`-trim` is a NO-OP at fuzz 0/2/5/10%: the corners are transparent but the edge strips carry
+real ink (max alpha 88 top, 55 bottom, 91 left, 38 right) because the strokes run to the
+canvas edge. **2.218:1 is the true signature ratio. Do not try to trim it again.**
+
+Shipped: packages/web/public/assets/signature-aviva.png, 420x189, 17,662 B (2x the 210px
+display box). Legibility proven visually before shipping by compositing at real display
+width on the actual footer ground rgb(57,41,27) -> /tmp/sig/on_dark_210.png.
+
+The build optimizer cut it 17,662 -> 10,529 B (40%) and I proved it faithful: alpha RMSE
+0.00000, max abs alpha diff 0.0000, composited-over-ink RMSE 0.00000, identical opaque-pixel
+counts, dimensions unchanged. Bit-for-bit lossless. Recorded so nobody re-litigates it.
+
+### 18.2 Markup and CSS
+`.f-top` is a two-column grid (`auto 1fr`, `align-items: end`). A third child would have
+become its own grid item and landed in column 1 UNDER THE LOCKUP, not under the line it
+signs. So `.f-line` and the `<img>` share one wrapper:
+
+  .f-top > FooterLogo + .f-voice( .f-line + img.f-signature )
+
+The `<img>` carries width=210 height=95 loading="lazy" decoding="async" alt="Aviva".
+`<p class="f-sign">Aviva, Studio Elpa</p>` was deleted from `.f-mid > .f-say`, which now
+holds only the `Begin a conversation` link; a source comment records why it moved.
+
+Checked, not assumed: `footer.site .f-say .f-begin:first-child { margin-top: 0 }` still
+matches, because the JSX comment above the `<a>` renders nothing to the DOM.
+
+styles.css, added after the `.f-line` rule (mid-file, source-order safe):
+  footer.site .f-voice { min-width: 0 }
+  footer.site .f-signature { display:block; width:210px; max-width:60%; height:auto;
+                             margin:18px 0 0 }
+`max-width` (not a pinned 210px) is the discretion the client granted: the signature
+shrinks to ~205px at 390px wide. `height:auto` makes distortion impossible. The width/height
+attributes reserve the box against the lazy load (lesson 38). The dead `footer.site .f-sign`
+rule and its comment were deleted with an asserted python script, not a giant old_string.
+
+The mobile override at ~line 3628 collapses `.f-top` to one column; `.f-voice` needs no
+change there, it just becomes a full-width row.
+
+Grep trap: `rg 'f-sign'` matches `f-signature`. Use `rg 'f-sign\b'` or `rg 'f-sign \{'`.
+
+### 18.3 Verified
+lint 0/84 . build exit 0, 20 routes, sitemap 20 urls (/tmp/build-signature.log)
+asset serves: dev 4200 -> 200 image/png 17662 . dist 4310 -> 200 image/png 10529
+desktop: 210 x 94.5, ratio 2.222, gap 18px, left-aligned, alt "Aviva", .f-sign absent
+mobile : 205.2 x 92.3, ratio 2.222, gap 18px, left-aligned, alt "Aviva", .f-sign absent
+Read both screenshots (/tmp/sig/footer_desktop.png, footer_mobile.png): lockup, statement
+and signature all present, cream on dark, legible at both sizes.
+
+footerqa.py REWRITTEN to the new contract (it asserted `.f-sign` and would have failed):
+**200/200**. Full battery re-run after the change, all green:
+  qa_a11y clean/20 . qa clean . qa2 18 images 0 broken . qa_copy clean
+  respqa 840/0 CLS 0.0000-0.0015 . overflow360 0 overflow/20 at 360px . motionqa green
+  aeoqa 1095/1095 . qa_booking 40 CTAs/0 bad . balticqa 73/0 with 11 mentions
+  herostaticqa 65/0 . herofreezeqa 48/0
+
+### 18.4 The footer-logo false alarm - CLOSED, do not re-investigate
+My first screenshots showed an empty left column where the cream lockup belongs, on both
+desktop and mobile, and /tmp/logoprobe.py backed it up: present, correctly boxed, opacity 1,
+but complete:false, naturalWidth 0, ZERO network requests. It looked like a real defect.
+
+It was my own harness. `scrollIntoView()` plus a fixed wait does not reliably trigger
+Chrome's lazy-load in headless. /tmp/lazyprobe.py, which scrolls incrementally (600px steps,
+120ms apart) like a human, reports 18 images and 0 failures, logo-footer-cream.png and
+signature-aviva.png both complete. sigshot.py had forced `loading='eager'` on `.f-signature`
+ONLY, which is exactly why the signature appeared and the lockup did not. It now forces
+every image eager and waits on `complete && naturalWidth > 0`; re-shot, and both elements
+render. This is operational lesson 45.
+
+### 18.5 Open / owed
+- The footer CTA column is now UNSIGNED. The text sign-off was deleted, not duplicated.
+- The sans "Studio Elpa" line under the image was NOT built, per the client's follow-up.
+- The signature is an image, so "Aviva" is not crawlable text there. alt="Aviva" is correct
+  for a signature but contributes nothing to on-page copy. Aviva is named in real text in
+  #about and on /founder.html.
+- Homepage-only: `LandingFooter` (every service page, and the coming geo pages) has no
+  `.f-top` statement line, so no signature. With 13 service pages and a geo layer next, the
+  sign-off is absent from most of the site. Ask whether it should be added there.
+- Confirm the size: shipped at 210px desktop / ~205px mobile, the top of their 180-210 band.
