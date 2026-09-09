@@ -4335,3 +4335,93 @@ Screenshots read by eye at 1440/1024/390: `/tmp/hosp_hero_*.png`, `/tmp/hosp_ban
 - Estimate prices still awaiting Aviva. Duplicate founder link still awaiting the client's call.
 - Phase 3 geo layer. Host/CDN crawler allowance.
 - Unused on disk: art-drapery.jpg (new), art-motor.jpg, about.jpg, signature-aviva.png.
+
+## 26. Hero text centring on the service pages
+
+Request: the `/motorized.html` hero text block reads left-aligned and floated toward the
+middle-right of the image, inconsistent with the centred homepage hero. Centre it, and apply the
+same treatment to any other interior service-page hero that inherited the layout.
+
+### The stated diagnosis was wrong, and the fix was still right
+
+Measured at 1440px with `/tmp/heroalign.py` BEFORE touching anything. On every `.page-lp` page the
+hero `.inner` measured `l=390 r=1050 w=660 cx=720` against a viewport centre of 720, so
+`OFFSET from viewport centre: 0`. The block was already dead centre. It was never floated right.
+
+What was actually broken, and what the client correctly perceived as uneven:
+
+- `.page-lp .hero .inner` was `text-align: start`, inherited by kicker, h1, paragraph and buttons.
+- `.page-lp .hero p` had `max-width: 540px` with `margin-bottom: 30px` only, i.e. no auto side
+  margins, so the 540px measure sat flush left inside the 660px block. Its centre was 60px left of
+  the heading's centre (`h1cx->pcx: -60`).
+
+The floated-right impression comes from `.page-lp .hero::after`, a `100deg` gradient running
+`rgba(40,37,33,0.66)` -> `0.34` at 60% -> `0.12`. It is heaviest on the LEFT, so a left-aligned
+block leaves a dark empty margin to its left and reads as pushed right.
+
+Vertical centring already existed and was not touched: `.page-lp .hero` is
+`display:flex; align-items:center; min-height:74vh`.
+
+### The change
+
+Three rules in `packages/web/src/web/styles.css`, no JSX touched:
+
+1. `.page-lp .hero .inner` gains `margin-inline: auto` and `text-align: center`.
+2. `.page-lp .hero p` becomes `margin: 0 auto 30px`, matching `.page-home .hero p`.
+3. New `.page-lp .hero .btn-row { justify-content: center; }`.
+
+One rule set covers all 13 service pages, so they are consistent by construction rather than by
+repetition. Verified on dev 4200 and dist 4310, all 13 routes identical:
+`OFFSET from viewport centre: 0   h1cx->pcx: 0`, `p margin=60px / 60px`, `btnRow justify=center`.
+Auto margins resolving to used pixel values is the proof the centring landed.
+
+### The two routes without a `.hero h1`
+
+- `/estimate.html` uses `<header className="est-head" data-hero>`, not `.hero`. Already
+  `text-align: center` at `styles.css:3244` with `p { margin: 14px auto 0 }`. Unaffected by the
+  `.page-lp` rules, no change needed.
+- `/drapery-headers.html` is a Journal article (`page-article guide`) whose `<div data-hero>` at
+  `pages/drapery-headers.tsx:157` is a plain article header on the light ground, not a hero over a
+  photograph. Out of scope, deliberately not changed.
+
+### Contrast, measured properly
+
+Centring moves pale text off the darkest part of a left-heavy overlay, so this had to be checked
+rather than eyeballed. First attempt (`/tmp/heroshot2.py`) was invalid: it sampled a strip that
+contained the pale glyphs themselves, inflating the measured ground luminance.
+
+`/tmp/heroglyph.py` is the honest version. It screenshots twice, once normally and once with
+`.inner` set to `visibility:hidden`, diffs to find the pixels a glyph actually inked, discards
+antialiased edges, then reads the ground colour under each inked pixel from the hidden shot. It
+reports the 5th percentile and median ratio and the share of inked pixels under threshold, for the
+old and the new alignment on the same pixels, across all 12 photographic heroes at 1440 and 360.
+Thresholds: 3.0 for the h1 (40.5px+ at weight 500, WCAG large text), 4.5 for the paragraph.
+
+Result: the heroes fail WCAG both before and after. Old and new track each other closely and the
+new value is never better, usually 0.05 to 0.7 lower at p5. Worst deltas: `drapery` desk h1
+2.75 -> 2.07, `hardware` desk p 3.46 -> 2.91, `flame` desk p median 2.43 -> 2.35 with 99.9% of
+inked pixels under threshold. So centring did not create the problem, it slightly deepens a
+pre-existing sitewide one. NOT fixed unilaterally: the fix is darkening or symmetrising the hero
+overlay on 13 pages, which changes the brand's look, and a symmetric gradient is arguably the
+correct companion to centred text. Surfaced with options instead.
+
+Second observation from the 360px screenshot: the motorized paragraph now runs about ten centred
+lines on a phone. Centred long copy is harder to read than left-aligned. Offered as an option to
+keep the centring at desktop and left-align only the paragraph below 480px.
+
+### Suite state
+
+Everything green, no assertion needed changing this pass. build 0 / 20 routes / sitemap 19 urls.
+lint clean. respqa 840/0. ovprobe 360 no overflow on both servers. aeoqa 1088/1088.
+footerqa 534/534. herosizeqa 50/0. herostaticqa 65/0. herofreezeqa 48/0. balticqa 63/0 (10
+mentions). menuqa 5/5. stubqa PASS. svcqa OVERALL PASS. qa/qa2/qa_copy/qa_a11y clean, 18 homepage
+images, 0 broken, no page errors, CLS 0.0015 at 360px.
+
+Screenshots read by eye at 1440/1024/360: `/tmp/hero_{motorized,drapery,blackout,hosp}_*.png`.
+
+### Still open, unchanged by this pass
+
+The four photography flags from §25 are still unanswered, the Blackout card photograph above all.
+Plus: Lighthouse not re-measured since Phase 2; LandingFooter lacks the statement and sign-off;
+hydration does not preserve prerendered HTML on service pages; estimate prices; duplicate founder
+link; Phase 3 geo layer; host/CDN crawler allowance; unused assets on disk.

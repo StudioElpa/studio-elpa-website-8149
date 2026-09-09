@@ -1639,3 +1639,74 @@ two more photographs to the site, so it is worth measuring again before go-live.
 
 Estimate prices still need your numbers, and the duplicate founder link in the homepage About
 section is still waiting on your preference.
+
+## 24. Centring the hero text on the service pages
+
+Done, on all thirteen service pages rather than only Motorized Shades, so they now match each
+other and the homepage.
+
+### What was actually wrong, because it was not quite what it looked like
+
+Before changing anything I measured the hero on every service page. The text block was already
+exactly centred over the image, to the pixel. It was not floated to the right.
+
+Two other things were true, and together they produced the effect you saw:
+
+1. The text inside the block was left-aligned, so the kicker, heading, paragraph and buttons all
+   ran from the left edge of the block.
+2. The paragraph is set to a narrower measure than the heading, and it had no side margins, so it
+   sat hard against the block's left edge. Its centre was sixty pixels left of the heading's
+   centre. That mismatch is what makes a heading and the sentence under it look untidy.
+
+The dark wash over these hero photographs is also heavier on the left than the right, so a
+left-aligned block leaves a dark empty margin beside it and genuinely reads as pushed to the right.
+Your instinct was right, the cause was just elsewhere.
+
+Now the whole block is centre-aligned, the paragraph sits evenly beneath the heading with their
+centres exactly aligned, and the buttons are centred under both. Vertical centring was already
+correct and is untouched.
+
+The Quick Estimate page header was already centred and needed nothing. The Journal article
+"Drapery headers, compared" has a plain header on a light background rather than a hero over a
+photograph, so I deliberately left it alone.
+
+### One thing I want to raise, and it needs your call
+
+Because the dark wash is heaviest on the left, moving the text to the centre moves it over a
+slightly lighter part of each photograph. So I measured the real legibility properly: I found the
+exact pixels each letter inks, then read the photograph's colour underneath every one of them, on
+all twelve photographic heroes, at desktop and phone width, both before and after the change.
+
+The finding is bigger than this change. These heroes do not meet the accessibility contrast
+standard, and they did not before either. Centring the text does not cause that, but it does make
+it marginally worse, never better. On the Custom Drapery page the heading goes from 2.75 to 2.07
+against a 3.0 minimum, and on the Flame Retardant page almost every pixel of the paragraph is
+under the standard both before and after.
+
+I have not changed the look of your photographs to fix it, because that is a brand decision:
+
+1. Deepen the dark wash over the hero photographs a little, sitewide. Most reliable fix, and it
+   costs some of the brightness of the images.
+2. Make the wash even left-to-right instead of heavier on the left. This is arguably the natural
+   companion to centred text, and it helps without darkening the whole thing as much.
+3. Leave the wash alone and accept that the hero headlines are decorative over photography.
+
+Separately, on a phone the Motorized paragraph now runs about ten centred lines. Centred text that
+long is harder to read than left-aligned. If you like, I can keep the centring on desktop and
+left-align just that paragraph on phones. Say the word.
+
+### Checks
+
+Full suite green, nothing needed fixing: responsive layout, the AI-answer and search layer, the
+footer, hero, accessibility, copy rules and brand embargoes. No broken images, no console errors,
+no sideways scrolling at 360px, layout shift effectively zero, all twenty pages build with a
+nineteen-url sitemap. I confirmed the centring is identical on the live build as well as the
+preview, and read the heroes by eye at desktop, tablet and phone.
+
+### Still waiting on you
+
+The four photography points from the last note are still open, in particular the Blackout card
+photograph on the homepage, which shows a bright sunlit room beside copy promising true darkness.
+
+Also unchanged: the footer statement and sign-off are still homepage only, page speed has not been
+re-measured since Phase 2, and the estimate prices and the duplicate founder link still need you.

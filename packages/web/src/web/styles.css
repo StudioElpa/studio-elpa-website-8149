@@ -2867,11 +2867,21 @@ header.lp .logo img {
 	);
 }
 
+/* Centred to match the homepage hero. The 660px block was already sitting dead
+   centre in the viewport, but its contents were text-align:start, and the
+   paragraph's 540px max-width with no auto margins put its centre 60px left of
+   the heading's. Against this hero's left-heavy gradient that read as a text
+   block floated off to the right of the image rather than composed over it.
+   margin-inline is explicit rather than left to the wrap, so the centring does
+   not depend on .wrap's own width. Vertical centring already comes from
+   .page-lp .hero being a flex row with align-items: center. */
 .page-lp .hero .inner {
 	position: relative;
 	z-index: 2;
 	color: var(--surface);
 	max-width: 660px;
+	margin-inline: auto;
+	text-align: center;
 }
 
 .page-lp .hero .kicker {
@@ -2889,11 +2899,17 @@ header.lp .logo img {
 	letter-spacing: -0.02em;
 }
 
+/* Auto side margins so the 540px measure sits evenly under the 660px heading
+   instead of flush to its left edge. Same treatment as .page-home .hero p. */
 .page-lp .hero p {
 	color: #f0eadf;
 	font-size: 20.5px;
 	max-width: 540px;
-	margin-bottom: 30px;
+	margin: 0 auto 30px;
+}
+
+.page-lp .hero .btn-row {
+	justify-content: center;
 }
 
 .page-lp .block {
