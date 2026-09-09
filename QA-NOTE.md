@@ -1528,3 +1528,114 @@ before go-live.
 
 Estimate prices still need your numbers. The duplicate founder link in the homepage About
 section is still waiting on your preference. And nothing here has been published.
+
+## §23 Your two photographs, and Blackout moved up
+
+All three changes are in. Nothing is published.
+
+### The restaurant photograph
+
+It is now the hero of the Hospitality and Restaurant page, replacing the drapery photograph that
+was there. It suits the page: the dark panelling and the green booth sit behind the headline
+without fighting it, and the drapery is legible as drapery, which is the point.
+
+One thing I could not do as written. You asked for `object-fit: cover` and gave me alt text. That
+hero is a CSS background image rather than a picture element, so it has no alt attribute to put
+your sentence into. This is the same situation as the Custom Drapery hero in §21, and the same
+answer: the image is decoration sitting behind a headline that already says "A dining room people
+want to sit in", so a screen reader describing the photograph too would just repeat the headline.
+No alt is the correct behaviour here, not an oversight. Your sentence is saved as a comment in the
+code beside the image so it is not lost if the photograph ever becomes a picture element.
+
+The cropping behaviour you asked to keep is unchanged.
+
+### The hospitality photograph
+
+This one needed a decision from you and you made it, so it is now a new band lower down the same
+page, sitting directly after "One team, and a schedule that respects your covers." It is a real
+picture element, so your alt text IS applied, word for word.
+
+I kept the photograph at its natural proportions rather than cropping it into a letterbox strip.
+The subject is drapery running from ceiling to floor, and a shallower band would have cut the top
+off. I added a short caption underneath.
+
+Worth your judgement on one point: the photograph reads as much like a high-end private bedroom as
+a hotel room, to my eye. Your alt text calls it a hotel-room window. On a page about hotels and
+restaurants that may be exactly what you want, since it shows the treatment rather than the
+building. But it is your call, and if you would rather the alt text not say hotel, it is a one-line
+change.
+
+### Blackout moved up beside Custom Drapery
+
+Done, and the row is balanced again the way it was when Roller sat there. Motorized Shades is
+untouched above it. Blackout has been removed from the small link list underneath, so it now
+appears exactly once on the page rather than twice.
+
+You asked to see the card copy I drafted from your Blackout page:
+
+> **Blackout Shades and Drapery**
+> True dark, not a dimmer version of the room. Fitted tight to the glass or layered behind drapery
+> so the light has nowhere to slip through, and by day the room still feels bright.
+> Bedrooms · nurseries · real darkness
+
+That is pulled from three things already on that page: fitting tight to the glass, nurseries, and
+dark by night without being gloomy by day. Change any of it and I will match it.
+
+### Something you should look at before this goes live
+
+Every automated check passed and the row is perfectly balanced, but when I looked at the actual
+page I do not think the Blackout card works yet, and the reason is the photograph.
+
+You chose the bedroom photograph already used on the Blackout page, which was sensible: no new
+asset, and consistent. On that page it works, because the headline immediately tells you the room
+is about to be made dark. On the homepage it does not have that help. The photograph shows a bright
+room flooded with sunshine, with sheer curtains pulled wide open and the garden doors letting the
+light straight in. Directly beneath it the card promises true dark and light with nowhere to slip
+through. The picture argues with the words.
+
+There is a second, smaller thing. The card next to it, Custom Drapery, is also a bedroom, also with
+the bed on the left and glass doors on the right. Side by side on a desktop screen the two look
+like near-copies of each other, so the most important row on your homepage is now two similar
+bedrooms.
+
+I have left it exactly as you asked, because this is a photography decision and it is yours. Your
+options, roughly in order of how well they fix it:
+
+1. Send me a genuine blackout photograph, a bedroom actually darkened, ideally mid-close so you can
+   see the seal at the glass. This is the only real fix, and it is the strongest possible image for
+   that card.
+2. Put the drapery photograph that just came off the hospitality hero onto one of the two cards.
+   It is now unused, so it costs nothing, and it breaks the two-bedroom repetition.
+3. Change the Custom Drapery photograph instead and leave Blackout alone.
+4. Leave it as it is.
+
+Related: that bedroom photograph now appears in three places, on this card, on the Blackout page
+hero, and on the European Fabrics page hero. Option 1 would relieve that too.
+
+I also wrote the card's alt text to describe what the photograph genuinely shows, drapery drawn
+back from garden doors, rather than claiming darkness that is not in the picture.
+
+### Checks
+
+The full suite is green: 2,600-odd individual assertions across responsive layout, the AI-answer
+and search layer, the footer, the hero, accessibility, copy rules and brand embargoes. No broken
+images, no console errors, no horizontal overflow at 360px, and layout shift still effectively
+zero. The build produces all 20 pages and a 19-url sitemap.
+
+One suite needed extending rather than just re-running. It was checking the five old service titles
+and so could not see the promoted card at all. It now also proves Blackout appears exactly as often
+as its siblings, which is what catches a duplicate if one ever creeps back, and that the row really
+is two columns again.
+
+I read the hero, the new band and the services row by eye at desktop, tablet and phone widths.
+
+### Still outstanding
+
+The footer statement and sign-off remain on the homepage only; the thirteen service pages use the
+slimmer footer. Phase 3.
+
+Page speed has not been re-measured since Phase 2, where mobile scored around 81. This pass adds
+two more photographs to the site, so it is worth measuring again before go-live.
+
+Estimate prices still need your numbers, and the duplicate founder link in the homepage About
+section is still waiting on your preference.

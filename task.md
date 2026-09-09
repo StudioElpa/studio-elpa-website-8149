@@ -4216,3 +4216,122 @@ Nothing published. Working tree clean at cea1ab2.
 - Host/CDN crawler allowance still open.
 - art-motor.jpg is now unused (Motorized hero moved to art-roller.jpg). Left on disk
   alongside about.jpg and signature-aviva.png.
+
+## §25 Two client photographs and the Blackout promotion (DONE)
+
+Three-part request. All three executed, full suite green, nothing published.
+
+### 1. Restaurant photograph -> hospitality hero
+
+`packages/web/public/assets/art-restaurant.jpg`, 1264x848, 139480B on disk (the build-time
+optimizer takes another 14% off the shipped copy). Source `restaurant_KOyy8o.jpg` was already
+compressed at roughly our target quality, so `convert -strip -quality 82` gained almost nothing
+(139492 -> 139480B). Re-encoding harder would only have degraded it, so it ships close to native.
+
+Swapped into `hospitality-window-treatments.tsx` at the `.hero .bgimg` rule. `data-parallax` and
+the surrounding structure untouched.
+
+The brief asked for `object-fit: cover` and supplied alt text. Neither applies literally: this is
+a CSS `background-image`, so the equivalent is `background-size: cover` (already inherited from
+`.hero .bgimg`) and there is no alt attribute to set. Followed the §21 precedent, which already
+explained this to the client for the Custom Drapery hero: the hero is decoration behind an `<h1>`
+that names the subject, so no alt is correct rather than an omission. The supplied sentence is
+preserved as a code comment at the swap site so it is not lost.
+
+`art-drapery.jpg` is now unused (this hero was its only consumer). Left on disk alongside
+`about.jpg`, `signature-aviva.png` and `art-motor.jpg`.
+
+### 2. Hospitality photograph -> new image band
+
+`art-hospitality.jpg`, 1536x1024, 248278B. Real `<img>`, not a background, so the client's alt
+sentence IS applied verbatim.
+
+The brief did not map onto the site as written. There is exactly one hospitality page and it had
+exactly one image (the hero) and no Restaurant section at all, so two photographs arrived for one
+slot. Surfaced rather than guessed; the client chose restaurant-as-hero plus a new band lower down
+"next to the hotel/schedule copy".
+
+Placed as a new sibling `<section className="block">` immediately AFTER the `.block.band.dark`
+"One team, and a schedule that respects your covers." section. That band is already a full
+two-column grid with copy in both columns, so the image could not go inside it without wrecking
+the layout; adjacency was the readable intent. Verified in the DOM that the band's previous
+sibling really is that section.
+
+New CSS primitive `.photoband` in `styles.css`, next to `.ba`. Genuinely needed: `.ba` is a hard
+two-column pair and `.header-photo` is scoped to the header guide cards, so nothing covered one
+wide photograph alone in a `.block`. It borrows `.ba`'s framing (hairline, `--elpa-grade`,
+`object-fit: cover`) so a lone photograph reads as the same family.
+
+Kept at native 3:2 rather than cropped to a letterbox. The subject is drapery running ceiling to
+floor; a shallower band cuts the top of it off. `width`/`height` attributes set to 1536x1024 to
+reserve space, `loading="lazy"`, `decoding="async"`. Measured 3:2 exactly (AR 1.5) at 1440, 1024
+and 390, no overflow, CLS still 0.0015 at 360px.
+
+### 3. Blackout promoted into the primary row
+
+Added to `SERVICES_PRIMARY` in `index.tsx` and DELETED from `SERVICES_REST`, so it renders once.
+Verified: `svcqa` counts "Blackout Shades and Drapery" at 2 on the homepage, identical to all five
+sibling titles, which is the dedup proof. `SERVICES_REST` keeps its remaining six entries.
+
+No layout code was needed. The render already read
+`SERVICES_PRIMARY.length === 1 ? "svc svc-solo" : "svc"`, written that way in §23-24 precisely so a
+second card would restore the two-column grid on its own. Confirmed: grid is now `487px 487px` at
+desktop, single column at 390px, `.svc-solo` no longer applied. The ternary is KEPT rather than
+hardcoded, since it is what collapses the grid if the array is ever cut back to one. `.svc-solo`
+CSS is therefore dormant, not dead, and stays.
+
+Copy drafted from the blackout page (client asked to see it):
+  body: "True dark, not a dimmer version of the room. Fitted tight to the glass or layered behind
+         drapery so the light has nowhere to slip through, and by day the room still feels bright."
+  tags: "Bedrooms · nurseries · real darkness"
+Drawn from that page's "Fitted tight to the glass", "For nurseries too" and "Dark, not gloomy"
+cards. Middot separators, no em dashes, sibling length and rhythm.
+
+Image is `lp-bedroom.jpg` per the client's explicit choice (no new asset, already the
+`/blackout.html` hero). It now appears in THREE places: this card, `/blackout.html`,
+`/european-fabrics.html`.
+
+### The design flaw the screenshot caught, and the assertions did not
+
+Every numeric gate passed and the row is geometrically balanced, but the rendered page is wrong on
+its own terms. `lp-bedroom.jpg` is a bright, sun-flooded bedroom with SHEER drapery drawn wide open
+and daylight pouring through open garden doors. It sits directly under the heading "Blackout Shades
+and Drapery" and body copy promising "True dark ... light has nowhere to slip through". The photo
+contradicts the card.
+
+Second, compounding problem: the card beside it, Custom Drapery, is ALSO a bedroom with a bed left
+and glass doors right. Side by side at desktop the two read as near-duplicate compositions, so the
+most prominent row on the homepage is now two similar bedrooms.
+
+Written honestly rather than papered over: the card's alt says "drapery drawn back from garden
+doors", describing what the photograph actually shows, not what the heading claims.
+
+Left as the client instructed, but flagged with options: (a) leave it, (b) reuse the now-free
+`art-drapery.jpg` on one of the two cards to break the repetition, (c) source a genuine darkened
+bedroom photograph, which is the only real fix, (d) change the Custom Drapery photo instead.
+This is a photography-sourcing call and it is theirs. Constraint reminder: no stock, no AI imagery.
+
+### Suite state
+
+build 0 / 20 routes / sitemap 19 urls. lint clean. respqa 840/0 (up from 833, the new `<img>`).
+aeoqa 1088/0. footerqa 534/534. herosizeqa 50/0. herostaticqa 65/0. herofreezeqa 48/0.
+balticqa 63/0 (10 mentions). menuqa 5/5. stubqa PASS. svcqa OVERALL PASS (extended this pass).
+qa/qa2/qa_copy/qa_a11y clean, 18 homepage images, 0 broken, no page errors. ovprobe 360 no
+overflow on both servers.
+
+`svcqa` was extended, not just re-run: it asserted only the five old titles, so the promoted card
+was invisible to it. It now also asserts Blackout at sibling parity (the dedup), `cardCount == 2`,
+that `.svc-solo` is absent, and that the grid is two-column at desktop. Stale assertion, not a
+site bug.
+
+Screenshots read by eye at 1440/1024/390: `/tmp/hosp_hero_*.png`, `/tmp/hosp_band_*.png`,
+`/tmp/v12-s7-{desktop,mobile}.png`.
+
+### Still open, unchanged by this pass
+
+- Lighthouse not re-measured since Phase 2 (mobile perf ~81). Two more photographs added here.
+- Footer statement and sign-off are homepage only; LandingFooter lacks them. Phase 3.
+- Prerendered HTML not preserved through hydration on service pages (template-managed __main.tsx).
+- Estimate prices still awaiting Aviva. Duplicate founder link still awaiting the client's call.
+- Phase 3 geo layer. Host/CDN crawler allowance.
+- Unused on disk: art-drapery.jpg (new), art-motor.jpg, about.jpg, signature-aviva.png.
