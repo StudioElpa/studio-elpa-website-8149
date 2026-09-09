@@ -1199,3 +1199,58 @@ screenshot harness now forces `loading='eager'` on all images, not just the one 
   Should it be added there?
 - **Confirm the size.** Shipped at 210px desktop and ~205px on a 390px screen, the top of
   your 180-210px band, using the discretion you gave me on mobile.
+
+## §19 The footer brand line and the right-offset sign-off
+
+The footer statement now reads, verbatim as you gave it:
+
+> Come with us, into a life touched by beautiful textiles.
+
+The handwritten signature sits directly beneath it, offset to the right so it lands at the
+end of the sentence rather than under its start, and it is smaller: 170px wide, down from
+210px. The CTA column stays unsigned. Nothing else in the footer moved.
+
+**How the right offset works**, in case a future change disturbs it: the text block hugs its
+own text (`width: fit-content`, capped at a 42ch measure), so `margin-left: auto` on the
+image pushes it to the end of the sentence. If that block were full width, the signature
+would drift to the far right of empty space instead. The serif size and measure were moved
+from the paragraph onto that wrapper so the statement and the sign-off share one measure by
+construction; the paragraph class has exactly one use site, so that was safe.
+
+**"Life touched by beautiful textiles" is recorded as the brand line** in a source comment
+and in `task.md`, with the instruction that Phase 3 carries this statement and this signature
+onto the service and geo page footers, which today have neither.
+
+### Something I got wrong and caught before shipping
+
+My first version of the width cap overflowed a 360px-wide phone by 12px. It looked right in
+screenshots at 1440 and 390, and one of the guard scripts called it clean. The responsive
+battery disagreed, and it was correct: a percentage width cap on a grid item measures against
+the column, not against where the item actually starts, so the block ran 12px past the screen
+edge. Fixed with the right CSS primitive and re-verified.
+
+Two consequences worth stating plainly:
+
+- **One of my guards (`overflow360.py`) gave a false clean.** I do not trust it until I have
+  reconciled it against the responsive battery that caught this. That work is outstanding.
+- **390px is not a narrow enough test.** I will not call mobile clean again without a 360px
+  measurement.
+
+### Verified
+
+Lint clean (84 files). Build clean, 20 routes, sitemap 20 urls. Responsive battery 840 pass /
+0 fail across seven widths down to 360. Footer suite 209/209 against the new contract.
+Overflow probe: zero offenders at 360 on both the dev server and the production build.
+Accessibility, copy, image and link suites all clean. Desktop and mobile footer screenshots
+read and confirmed by eye.
+
+### Open items
+
+- **Confirm the size.** 170px is my read of "small", and it is below the 180-210px band you
+  gave for the previous revision. Easy to nudge either way.
+- **The brand-line note did not save to my cross-chat memory** - five attempts, all rejected
+  on malformed input from me, not a tool fault. It is safely in the repo (`task.md` and a
+  source comment), so this project is covered, but it will not follow me into a new chat. Say
+  the word and I will retry it cleanly.
+- **The signature and brand line are homepage-only today.** Phase 3 fixes that; it is now a
+  committed requirement rather than an open question.

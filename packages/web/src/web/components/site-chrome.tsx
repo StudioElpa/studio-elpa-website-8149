@@ -209,16 +209,19 @@ export function SiteFooter() {
 					    share ONE grid item or the signature drops into column 1 under the
 					    lockup instead of under the line it signs. Hence this wrapper. */}
 					<div className="f-voice">
+						{/* The brand line, client-supplied verbatim. "Life touched by beautiful
+						    textiles" is the brand line, so Phase 3 must carry this exact
+						    statement and the signature below it onto the service and geo
+						    footers too. */}
 						<p className="f-line">
-							Good window treatments do not announce themselves. They just make a room feel
-							finished.
+							Come with us, into a life touched by beautiful textiles.
 						</p>
 						<img
 							className="f-signature"
 							src="/assets/signature-aviva.png"
 							alt="Aviva"
-							width={210}
-							height={95}
+							width={170}
+							height={77}
 							loading="lazy"
 							decoding="async"
 						/>

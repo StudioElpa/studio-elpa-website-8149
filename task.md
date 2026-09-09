@@ -3678,3 +3678,66 @@ render. This is operational lesson 45.
   `.f-top` statement line, so no signature. With 13 service pages and a geo layer next, the
   sign-off is absent from most of the site. Ask whether it should be added there.
 - Confirm the size: shipped at 210px desktop / ~205px mobile, the top of their 180-210 band.
+
+## §19 The footer brand line and the right-offset sign-off
+
+### 19.1 What changed (uncommitted at time of writing, now committed with this entry)
+1. `.f-line` copy is now the client's verbatim sentence:
+   `Come with us, into a life touched by beautiful textiles.`
+   It replaces "Good window treatments do not announce themselves..." Same serif treatment,
+   same position.
+2. The handwritten signature moved to a right-offset sign-off at the END of the statement,
+   and shrank to 170px wide (`width={170} height={77}` attributes, kept in sync with the CSS
+   width per lesson 38; 170 / 2.222 = 76.5 -> 77).
+3. A source comment in `site-chrome.tsx` records the standing instruction: "Life touched by
+   beautiful textiles" is the BRAND LINE, and Phase 3 must carry this exact statement AND the
+   signature onto the service and geo footers (`LandingFooter`), which today have neither.
+
+### 19.2 The mechanism, so nobody undoes it
+`.f-line` has exactly ONE use site in the codebase (inside `.f-voice`), verified by grep, so
+the serif face, the `clamp(21px, 2.4vw, 27px)` size and the `42ch` measure were moved OFF
+`.f-line` and ONTO `.f-voice`. `.f-line` now only carries line-height, colour, margin and
+`text-wrap: balance`. That means the statement and its signature share one measure by
+construction.
+
+`.f-voice` is `width: fit-content; max-width: 42ch`. Because it hugs its own text,
+`margin: 14px 0 0 auto` on `.f-signature` lands the image at the END OF THE SENTENCE. If
+`.f-voice` were full-width, the sign-off would park at the far right of empty space instead.
+`.f-signature` keeps `max-width: 55%` so it shrinks on narrow screens.
+
+### 19.3 Postmortem: a 12px overflow at 360px that a "correct on paper" cap caused
+The first attempt used `width: max-content; max-width: min(42ch, 100%)`. It screenshotted
+perfectly at 1440 and 390, and `overflow360.py` called the homepage clean. `respqa.py` then
+failed the homepage at 360px with `sw=372 vw=360`.
+
+`/tmp/ovprobe.py` (new, keep it) named `div.f-voice` and `p.f-line` at `left=24
+right=372.3`. Cause: a PERCENTAGE max-width on a grid item resolves against the grid AREA
+(336px) and ignores the item's own 24px offset inside it, so 24 + 348 = 372. `fit-content`
+is the correct primitive - it is `min(max-content, available)`, which is what the hand-rolled
+cap was trying and failing to express. This is operational lesson 46.
+
+Two things follow:
+- **`overflow360.py` is now SUSPECT.** It reported clean while a real 12px overflow was live
+  on both servers. Its clean result on 20 routes is not reassuring until it is reconciled
+  with `respqa.py`. That reconciliation is OWED.
+- **390px is not narrow enough** (lesson 47). Do not claim mobile is fine until `respqa.py`
+  or `ovprobe.py` has run at 360.
+
+### 19.4 Verification, all green before commit
+`bun run lint` 0 violations / 84 files . `bun run build` exit 0, 20 routes, sitemap 20 urls
+(`/tmp/build-fitcontent.log`) . `ovprobe` 0 offenders at 360 on BOTH 4310 and 4200 (only the
+intentional `-9999px` skip-link) . `respqa` PASS 840 FAIL 0 . `footerqa` 209/209 (rewritten
+to the new contract: new line present, old line absent, attrs 170/77, size band 165-175, and
+the alignment assertions INVERTED to NOT-left-aligned + right edge within 2.0px of the
+statement's right edge + starts inside the measure, gap 11-20px) . `sigshot` geometry
+desktop and mobile both `imgW 170, imgH 76.5, ratio 2.222, natural 420x189, alt Aviva,
+gapUnderLine 14, leftAligned False` . both screenshots read . qa_copy, qa, qa2 (18 images 0
+broken), qa_a11y (20 routes, faded=0) all clean.
+
+### 19.5 Open / owed
+- The brand-line note did NOT save to cross-chat memory: five `memory_edit` attempts were
+  rejected on malformed input from me. It lives in this file and in the `site-chrome.tsx`
+  source comment only. The user was offered a clean retry and has not answered.
+- Confirm 170px is what "small" meant. It is below the 180-210px band given for the previous
+  revision.
+- Reconcile `overflow360.py` with `respqa.py`.
