@@ -1997,3 +1997,60 @@ around 3600 individual assertions, 40 pages built. Nothing else moved.
 - The seven "Areas we serve" links have no underline until you hover, which
   keeps the row quiet but makes them less obviously clickable. A resting
   underline is a one-line change if you want it.
+
+---
+## 29. The "What we do" restructure
+
+Built exactly to the spec you sent. Nothing published, still preview only.
+
+The featured slot at the top of the section keeps its "Our signature" label and
+is now **Motorized Custom Drapery**, carrying the drapery photograph and your
+three paragraphs word for word. Its link goes to the custom drapery page.
+
+The first of the two cards below is now **Motorized Shades**, with the pool
+photograph that used to sit at the top and your one paragraph of copy. It links
+to the motorized page. The Blackout card is untouched.
+
+All three paragraphs in the top slot render in the same body font, size and
+weight, as you asked. The old serif opening line is gone: your first paragraph
+now carries that claim itself, so keeping a special style for it would have
+contradicted the instruction.
+
+We checked the built pages rather than trusting the build, and looked at the
+section on a laptop and a phone. All four blocks of your copy match character
+for character, the images are the right way round, nothing runs off the edge on
+a phone, and there are no em dashes. The full test suite is green otherwise:
+around 3600 assertions, 40 pages built clean.
+
+### One wording decision for you
+
+Your third paragraph reads "our licensed and insured electrical partner, Baltic
+Electrical". Everywhere else on the site that sentence reads "our licensed,
+insured electrical partner" without the "and". So the site now says it one way
+once and the other way fifty two times, and our consistency check flags it.
+
+We have left your wording exactly as you wrote it, because it is your copy and
+the difference is harmless in itself. Three ways to settle it, your call:
+
+1. Keep it as is and we record it as a deliberate exception.
+2. Put the comma back in that one sentence, so it matches the rest of the site.
+3. Change all of them to "licensed and insured", if that is the phrasing you
+   prefer going forward.
+
+### One small thing worth a look
+
+The little label under the demoted Motorized Shades card still reads
+"Softening · warmth · framing windows". That was written for drapery and reads
+oddly under a motorized shades heading. Your spec did not mention those labels
+so we changed nothing. Tell us what it should say and it is a one line change.
+
+### Still outstanding, unchanged
+
+- Speed has not been re-measured since nineteen pages were added.
+- Text over the photographic page headers is still slightly under the formal
+  contrast target. Needs a darker crop or your acceptance.
+- We still need you to confirm the blackout photograph is your own project.
+- Six city pages reuse a photograph from elsewhere on the site.
+- Estimate prices are still waiting on Aviva.
+- The two questions from note 27 are still open: the shared ZIPs on three city
+  pages, and whether the "Areas we serve" links should be underlined at rest.

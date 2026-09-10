@@ -45,17 +45,37 @@ const PILLARS = [
 	},
 ];
 
-/* The signature treatment. Featured on its own, above the rest. */
+/* The signature treatment. Featured on its own, above the rest.
+
+   Restructured on the client's written spec: the featured slot is now
+   Motorized Custom Drapery, carrying the drapery photograph and three body
+   paragraphs of the client's own exact copy, while the Motorized Shades name,
+   photograph and copy moved down into the first card of SERVICES_PRIMARY. The
+   separate `sig` field is gone: its claim now opens P1 ("Our signature is
+   custom drapery"), and the client asked for all three paragraphs in the same
+   body font and weight, so the serif `.svc-sig` treatment no longer applies. */
 const SERVICE_SIGNATURE = {
-	img: "art-motor.jpg",
-	alt: "Motorized shades lowered evenly across a wide wall of glass",
-	title: "Motorized Shades",
-	sig: "Our signature is motorized custom drapery: European fabric that moves on a schedule, on quiet, reliable motors, ready for smart-home integration.",
+	img: "art-drapery-linen.jpg",
+	alt: "Custom drapery in soft blue linen framing floor-to-ceiling windows in a South Florida bedroom.",
+	title: "Motorized Custom Drapery",
 	body: (
 		<>
-			The luxury of never touching a cord. Quiet, reliable motors for the windows you can't
-			reach, whole walls of glass, and cord-free child safety, with the wiring handled by our
-			licensed, insured electrical partner, <BalticLink />.
+			<p className="svc-p">
+				Our signature is custom drapery: the softest thing you can add to a room. Made to
+				measure in European fabrics, chosen for how they fall, age, and handle light, down to
+				the header, lining, and stack-back.
+			</p>
+			<p className="svc-p">
+				Add motorization, and your drapery becomes an invisible member of the family, always
+				on schedule. Let it work quietly on its own or pair it with your smart-home system.
+				The luxury is never having to think about it, or touch a cord.
+			</p>
+			<p className="svc-p">
+				Quiet, reliable motors make especially good sense for windows you cannot reach, whole
+				walls of glass, and homes where cord-free child safety matters. And when hardwiring
+				is the right choice, it is handled by our licensed and insured electrical partner,{" "}
+				<BalticLink />.
+			</p>
 		</>
 	),
 	tags: "Child-safe · smart-home · big glass",
@@ -63,19 +83,22 @@ const SERVICE_SIGNATURE = {
 
 /* The other primary categories, given full editorial cards. Roller Shades was
    removed here in V2: it is no longer a standalone service, its content lives
-   inside Motorized Shades (the signature treatment above). Blackout was then
+   inside Motorized Shades, which is now the first card in this array rather
+   than the featured slot above (see SERVICE_SIGNATURE). Blackout was then
    promoted up out of the SERVICES_REST link list to fill the empty half of the
    row, so the pair is balanced again and `.svc-solo` (see the render below) no
    longer applies. Blackout appears here only: it was removed from
    SERVICES_REST so the homepage does not offer it twice. */
 const SERVICES_PRIMARY = [
 	{
-		img: "art-drapery-linen.jpg",
-		alt: "Custom drapery in soft blue linen framing floor-to-ceiling windows in a South Florida bedroom.",
-		title: "Custom Drapery",
-		body: "The softest thing you can add to a room. Made to measure in European fabrics, chosen for how they fall, age, and handle light, down to the header, lining, and stack-back.",
+		/* Motorized Shades came down out of the featured slot in the client's
+		   restructure, bringing its photograph and its own new copy with it. */
+		img: "art-motor.jpg",
+		alt: "Motorized shades lowered evenly across a wide wall of glass",
+		title: "Motorized Shades",
+		body: "Whether you are softening the afternoon sun, creating complete blackout for a better night's sleep, or simply adding privacy, motorized shades make it effortless. With a touch, a tap, or a schedule, your home adjusts to the way you want to live.",
 		tags: "Softening · warmth · framing windows",
-		href: "/drapery.html",
+		href: "/motorized.html",
 	},
 	{
 		/* The client's own darkened-nursery photograph, shared with the
@@ -487,13 +510,15 @@ export default function HomePage() {
 							<div className="svc-feature-text">
 								<div className="kicker">Our signature</div>
 								<h3>{SERVICE_SIGNATURE.title}</h3>
-								<p className="svc-sig">{SERVICE_SIGNATURE.sig}</p>
-								<p>{SERVICE_SIGNATURE.body}</p>
+								{/* `body` carries its own three <p className="svc-p"> paragraphs, so
+								    it is not wrapped in a <p> here: nesting them would be invalid
+								    markup and the browser would silently split the element. */}
+								{SERVICE_SIGNATURE.body}
 								<div className="tags">{SERVICE_SIGNATURE.tags}</div>
 								{/* Rendered once, so a Link inline here is safe. The mapped
 								    cards below use an href string instead (see SERVICES_PRIMARY). */}
 								<p className="svc-golink">
-									<Link to="/motorized.html">See Motorized Shades →</Link>
+									<Link to="/drapery.html">See Motorized Custom Drapery →</Link>
 								</p>
 							</div>
 						</div>

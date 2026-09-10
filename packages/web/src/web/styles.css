@@ -2000,14 +2000,15 @@ footer.lp .footer-logo {
 	margin-bottom: 0;
 }
 
-/* Scoped through the parent: a bare .svc-sig (0,1,0) loses to
-   .svc-feature-text p (0,1,1) and the emphasis would quietly vanish. */
-.svc-feature-text .svc-sig {
-	font-family: var(--serif);
-	font-size: 22px;
-	line-height: 1.45;
-	color: var(--ink);
-	margin-bottom: 16px;
+/* The featured slot now carries three body paragraphs instead of one serif
+   lead plus one body paragraph. The client asked for all of it in the same
+   body font and weight, so there is no emphasis rule here any more: the only
+   job left is air between the paragraphs. Scoped through the parent because
+   .svc-feature-text p (0,1,1) sets margin-bottom: 0 and a bare .svc-p (0,1,0)
+   would lose to it. Spacing goes on margin-top of the later paragraphs so the
+   last one still sits flush above the tags. */
+.svc-feature-text .svc-p + .svc-p {
+	margin-top: 14px;
 }
 
 /* The two remaining primary categories: full cards, two across. */
@@ -3968,9 +3969,6 @@ footer.lp .wordmark {
 		font-size: 31px;
 	}
 
-	.svc-feature-text .svc-sig {
-		font-size: 20px;
-	}
 
 	.svc {
 		margin-top: 34px;

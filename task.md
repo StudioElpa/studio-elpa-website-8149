@@ -4855,3 +4855,99 @@ Still open on the QA side, unchanged: `herostaticqa.py`, `herofreezeqa.py` and
 the 13 `.hero.plain` pages. Either teach them to skip `.hero.plain` or give the
 plain hero its own contract. None of the `/tmp/*.py` scripts are
 version-controlled; they should move into the repo.
+
+---
+
+## §30 The "What we do" restructure: drapery promoted, motorized demoted (DONE)
+
+Client's written spec, which superseded their own one-line request and the three
+questions I had put to them. Implemented literally.
+
+### What moved
+
+Featured slot (`SERVICE_SIGNATURE`), keeping its "Our signature" kicker:
+
+- title `Motorized Shades` -> `Motorized Custom Drapery`
+- photograph `art-motor.jpg` -> `art-drapery-linen.jpg`, alt travelling with it
+- body: three paragraphs of the client's exact copy, verbatim
+- link `See Motorized Shades -> /motorized.html` becomes
+  `See Motorized Custom Drapery -> /drapery.html`, per spec ("Motorized Custom
+  Drapery to the custom drapery page"). Link text follows the existing
+  `See {title}` pattern; say the word if they want it shortened.
+
+First card of `SERVICES_PRIMARY`:
+
+- title `Custom Drapery` -> `Motorized Shades`
+- photograph `art-drapery-linen.jpg` -> `art-motor.jpg` (the pool image), alt with it
+- body: the client's exact one-paragraph copy
+- href `/drapery.html` -> `/motorized.html`
+
+Blackout card untouched, as instructed.
+
+### The `sig` field is gone
+
+The old serif lead lived in its own `sig` property rendered as `.svc-sig`. Its
+claim now opens P1 ("Our signature is custom drapery"), and the spec asked for
+all copy in the same body font and weight, so the field, the render line and
+both `.svc-sig` CSS blocks (base and the 900px media query) were removed rather
+than left dead. Nothing else referenced the class.
+
+`.svc-feature-text p` sets `margin-bottom: 0`, so three stacked paragraphs would
+have run together. Added `.svc-feature-text .svc-p + .svc-p { margin-top: 14px }`,
+scoped through the parent for the same specificity reason the old `.svc-sig`
+rule was, and put on margin-top so the last paragraph still sits flush above the
+tags. Measured 14/14px at both 1440 and 390.
+
+`body` is now a fragment of three `<p className="svc-p">`, so the render no
+longer wraps it in a `<p>`. Nesting them would be invalid markup and the browser
+would silently split the element. Comment left at the render site.
+
+### Verified
+
+Against dist markup, not the build log, plus screenshots at 1440 and 390
+(`/tmp/svcshot.py`, `/tmp/svc-1440.png`, `/tmp/svc-390.png`):
+
+- all four blocks of client copy match character for character
+- featured slot: drapery photo, "Our signature" kicker intact, 3 `.svc-p`, no
+  nested `<p>`, no `svc-sig` anywhere in dist
+- card 1: `art-motor.jpg`, "Motorized Shades", `/motorized.html`; card 2 Blackout
+  byte-identical to before
+- all three paragraphs computed identical: Instrument Sans, 16px, weight 400,
+  `rgb(74,54,38)`. Same font and weight, as asked.
+- no sideways scroll at 390 or 1440, no em dashes in `#services`
+- Baltic Electrical still a real link in P3
+
+Suite: `aeoqa` 2299/2299, `geoqa` 144/144, `footerqa` 534/534, `herosizeqa`
+50/50, `areasqa` 18/18, `zipqa` 4/4, `aboutshot` PASS, `svcqa` PASS. Lint clean
+on 104 files. Clean rebuild 40 routes, sitemap 39.
+
+### One check fails, and it is a copy decision, not a bug
+
+`balticqa` FAILS on `/index.html`: `canon=3 links=4`. The canonical partner
+phrase (§8) is "our licensed, insured electrical partner". The client's P3 says
+"our licensed and insured electrical partner". So the site now reads
+`licensed and insured` once and `licensed, insured` 52 times.
+
+Deliberately left both sides alone: I will not edit client copy they wrote out
+verbatim, and I will not loosen a checker to turn a real inconsistency green.
+Sitewide linked mention count is unaffected at 49, and the link, target, `rel`
+and embargo assertions all pass. Put to the client as a three-way choice: accept
+the variant and I register it as a sanctioned exception, restore the comma on
+that one sentence, or roll "and" out to all 53 mentions.
+
+### Open QA hygiene
+
+`svcqa` passes but its title check is now weaker than it looks: it counts
+`"Custom Drapery"` twice on the homepage, and both hits are substrings of
+`"Motorized Custom Drapery"` (heading and go-link). No standalone "Custom
+Drapery" card exists any more, so that assertion would not notice if the card
+vanished. Needs word-boundary or exact-heading matching. Not touched in this
+pass so the failure surface stayed readable; flagged instead of silently edited.
+
+### Tags were not in the spec
+
+Neither tag line was mentioned, so neither was changed. The featured slot keeps
+"Child-safe · smart-home · big glass", which still fits its P3 exactly. The
+demoted card keeps "Softening · warmth · framing windows", which now reads oddly
+under a Motorized Shades heading: "framing windows" and "warmth" are drapery
+ideas. One line to change once the client says what they want there.
