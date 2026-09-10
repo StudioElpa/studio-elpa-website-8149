@@ -396,9 +396,13 @@ export default function HomePage() {
 									instead of <em>"You sold me something."</em>
 								</p>
 							</div>
-							<p>
-								<Link to="/founder.html">Read a note from our founder →</Link>
-							</p>
+							{/* The standalone "Read a note from our founder" link was removed
+							    here at the client's request. It was the second link to
+							    /founder.html in this one section: Aviva's team card below
+							    already carries a "Read more" link to the same page, so the
+							    section offered two routes to one destination. The team cards
+							    are the clearer entry point because they name the person, so
+							    this one goes and both card links stay untouched. */}
 						</div>
 					</div>
 					{/* V2 section 8. Two real people with real faces, each kept to a name,
