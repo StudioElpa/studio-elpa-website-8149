@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { RELAY_SOURCE, sendLeadToRelay } from "../lib/lead-relay";
 import { CONTACT } from "./brand";
 
 /**
@@ -10,8 +11,13 @@ import { CONTACT } from "./brand";
  * The markup stays eager on purpose: it is real crawlable content, it is in the
  * prerendered HTML, and its height is what keeps CLS at zero. Only the network
  * machinery is deferred — ../queries/leads pulls the @orpc client stack, which
- * nothing on first paint needs, so it is loaded on first focus and awaited on
- * submit. Same dynamic-import shape as lib/home-gsap.ts.
+ * nothing on first paint needs, so it is loaded on first focus. Same
+ * dynamic-import shape as lib/home-gsap.ts.
+ *
+ * Submission goes to the Apps Script relay (lib/lead-relay), fire and forget,
+ * with the thank-you shown optimistically. ../queries/leads is now only the
+ * secondary path: it runs when the relay request never reaches the network, and
+ * the server route behind it emails Aviva through Formspree.
  */
 
 type LeadsModule = typeof import("../queries/leads");
@@ -41,7 +47,6 @@ export function ContactForm({ sourcePage }: { sourcePage: string }) {
 	const [errors, setErrors] = useState<Errors>({});
 	const [failed, setFailed] = useState(false);
 	const [sent, setSent] = useState(false);
-	const [pending, setPending] = useState(false);
 
 	/* One in-flight promise, reused. Warmed on first focus so that by the time
 	   anyone has finished typing their name the module is already resident, and
@@ -66,7 +71,37 @@ export function ContactForm({ sourcePage }: { sourcePage: string }) {
 		return next;
 	}
 
-	async function onSubmit(e: React.FormEvent) {
+	/* The relay carries four content fields, so the two the form asks for on top
+	   of them ride along in the message rather than being dropped. */
+	function relayMessage() {
+		return [
+			values.message.trim() || "(no message provided)",
+			"",
+			`Project area: ${values.area.trim() || "(not given)"}`,
+			`You are: ${values.type}`,
+		].join("\n");
+	}
+
+	/** Only reached when the relay request never left the browser. */
+	async function fallbackToServer() {
+		try {
+			const { submitLeadDirect, readUtm } = await warmLeads();
+			const res = await submitLeadDirect({
+				...values,
+				sourcePage,
+				submittedAt: new Date().toISOString(),
+				...readUtm(),
+			});
+			if (!res.ok) throw new Error("lead route reported every sink failed");
+		} catch {
+			/* A failed chunk fetch and a failed submission read the same to the
+			   visitor, so take the thanks back down and point them at email. */
+			setSent(false);
+			setFailed(true);
+		}
+	}
+
+	function onSubmit(e: React.FormEvent) {
 		e.preventDefault();
 		setFailed(false);
 
@@ -78,24 +113,16 @@ export function ContactForm({ sourcePage }: { sourcePage: string }) {
 			return;
 		}
 
-		setPending(true);
-		try {
-			const { submitLeadDirect, readUtm } = await warmLeads();
-			const res = await submitLeadDirect({
-				...values,
-				sourcePage,
-				submittedAt: new Date().toISOString(),
-				...readUtm(),
-			});
-			if (res.ok) setSent(true);
-			else setFailed(true);
-		} catch {
-			/* A failed chunk fetch and a failed submission read the same to the
-			   visitor, and the fallback copy already points them at email. */
-			setFailed(true);
-		} finally {
-			setPending(false);
-		}
+		/* Optimistic: the thanks goes up now, the relay finishes on its own. */
+		setSent(true);
+		sendLeadToRelay({
+			name: values.name.trim(),
+			email: values.email.trim(),
+			phone: values.phone.trim(),
+			message: relayMessage(),
+			source: RELAY_SOURCE.homepage,
+			companyWebsite: values.trap,
+		}).catch(fallbackToServer);
 	}
 
 	if (sent) {
@@ -202,7 +229,7 @@ export function ContactForm({ sourcePage }: { sourcePage: string }) {
 				<label id="cf-trap-l" htmlFor="cf-trap">Leave this field empty</label>
 				<input
 					id="cf-trap" aria-labelledby="cf-trap-l"
-					name="trap"
+					name="company_website"
 					tabIndex={-1}
 					autoComplete="off"
 					value={values.trap}
@@ -210,13 +237,8 @@ export function ContactForm({ sourcePage }: { sourcePage: string }) {
 				/>
 			</div>
 
-			<button
-				type="submit"
-				className="btn btn-dark"
-				style={{ width: "100%" }}
-				disabled={pending}
-			>
-				{pending ? "Sending…" : "Send it over"}
+			<button type="submit" className="btn btn-dark" style={{ width: "100%" }}>
+				Send it over
 			</button>
 
 			<p className="reassure" role={failed ? "alert" : undefined}>

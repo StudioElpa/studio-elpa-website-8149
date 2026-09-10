@@ -5026,3 +5026,91 @@ and the route's expected count off 1.
 Left as is, both copy and checker, and put to the client: name and link them
 there (answer becomes JSX, counts move to 50/2), name them unlinked, reword the
 answer to avoid the partner phrase, or record it as a sanctioned unnamed mention.
+
+## §32 Lead forms rewired to the Apps Script relay, and the FAQ answer reworded (DONE)
+
+Two client instructions in one turn.
+
+### 1. Every lead form now posts to the relay
+
+There are exactly **two** lead forms in the codebase, not four. "Begin a
+conversation" and "Get a quick estimate" appear 60+ times but are anchor CTAs,
+not forms: they link to `#contact` and `/estimate.html`. So the full set is
+
+| Form | File | `source` label |
+| --- | --- | --- |
+| Homepage contact form (the "Begin a conversation" target) | `components/contact-form.tsx` | `Homepage - Begin a conversation` |
+| Estimate wizard, step 5 | `pages/estimate.tsx` | `Estimate page` |
+
+New module `web/lib/lead-relay.ts` holds the contract, and both forms call it.
+POST to the client's `/exec` deployment, body JSON, `Content-Type:
+text/plain;charset=utf-8` so the request stays CORS-simple and Apps Script never
+has to answer a preflight. `keepalive: true`, because the thanks goes up
+instantly and the visitor may navigate away mid-flight.
+
+Body, exactly the eleven named fields: `name`, `email`, `phone`, `message`,
+`source`, `page` (`location.pathname`), `utm_source`, `utm_medium`,
+`utm_campaign` (off `location.search`), `company_website` (honeypot), `token`.
+
+Three judgement calls, all flagged to the client:
+
+- **The relay has four content fields; the contact form asks six questions.**
+  Rather than invent columns the relay does not know, "Where's the project?" and
+  "You are..." ride along as labelled lines appended to `message`. The estimate
+  wizard sends its full rendered summary as `message`. Nothing is lost.
+- **Honeypot.** The form already had one, state key `trap`. Its DOM `name` is now
+  `company_website` per the spec, and the relay reads it under that name; the
+  server route still receives it as `trap`. The wizard has no honeypot input
+  (five steps of state, no bot completes it), so it sends `company_website: ""`.
+- **The fallback.** Fire-and-forget means an HTTP error is invisible: a simple
+  request's response is unreadable, so `sendLeadToRelay` only rejects when the
+  request never left the browser. The old oRPC route (`/api/rpc` -> Attio +
+  Formspree + old sheet) is therefore kept as the **secondary sink, invoked only
+  on that rejection**. On the happy path it is not called at all, which is the
+  point: firing both every time would duplicate every lead into Attio and into
+  two different sheets. Formspree survives as the trivial fallback the client
+  asked for, it just now sits behind the relay instead of beside it.
+
+`pending` state removed from the contact form. It cannot be observed any more
+(nothing is awaited before the success view replaces the whole form), and a
+disabled-button double-submit guard is redundant once the form is gone. Button
+label is now always "Send it over".
+
+### 2. The "Battery or hardwired?" FAQ answer
+
+Client picked option 3 of the four in §31: reword so the answer does not
+describe the partner at all.
+
+Was: "Where wiring is needed it is handled by our licensed and insured
+electrical partner, so it stays part of one project rather than becoming your
+problem to arrange."
+
+Now: "Where wiring is needed, we arrange the electrical work as part of the same
+project, so you are never left calling around for someone to run power to a
+window."
+
+Same substance, no partner phrase, no unlinked name, so the sitewide linked
+total stays 49 and the route's expected count stays 1. The spec bullet above it,
+which names and links Baltic, is untouched.
+
+### Verified
+
+New `qa/relayqa.py`, **first QA script committed to the repo** rather than left
+in `/tmp`. It intercepts both `script.google.com` and `/api/rpc`, so it cannot
+create a real lead: that is deliberate, given the three real QA rows this
+project has already put in the client's sheet. 27/27 pass across three
+scenarios: homepage happy path (method, content type, exact field set, token,
+source, pathname, all three utm values, empty honeypot, optimistic thanks, and
+the server route provably untouched), homepage with the relay aborted (server
+route tried, failure copy shown), estimate wizard happy path.
+
+`balticqa` **282/282, 0 failed, OVERALL PASS** - the §31 failure is gone.
+`aeoqa` 2299/2299, `faqqa` 765/765, `geoqa` 144/144, `footerqa` 534/534,
+`herosizeqa` 50/50, `areasqa` 18/18, `zipqa` 4/4, `svcqa` PASS. Lint clean.
+Clean rebuild 40 routes, sitemap 39. New answer confirmed present in the
+rendered `FAQPage` JSON-LD. Looked at the form and the thank-you state at
+1280px: unchanged apart from the instant confirmation.
+
+`bun run typecheck` fails on `api/routes/leads.ts:132` (`l !== false` on a
+`string`) under the mobile package only. Pre-existing, untouched file, not from
+this change.

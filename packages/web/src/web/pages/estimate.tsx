@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { CONTACT, Logo } from "../components/brand";
 import { PageSeo } from "../components/page-seo";
 import { usePageMotion } from "../hooks/use-motion";
+import { RELAY_SOURCE, sendLeadToRelay } from "../lib/lead-relay";
 import { readUtm, useSubmitLead } from "../queries/leads";
 import {
 	GOALS,
@@ -183,6 +184,35 @@ export default function EstimatePage() {
 		setSendFailed(false);
 		setStep(6);
 
+		const summary = buildSummary({
+			name: name.trim(),
+			email: email.trim(),
+			phone: phone.trim(),
+			role,
+			timeline,
+			area: zip.trim(),
+			notes: notes.trim(),
+			goals,
+			smsOk,
+			est,
+			rows,
+		});
+
+		/* Relay first, fire and forget: step 6 is already on screen. The mutation
+		   below is the secondary path, and only runs if the relay request never
+		   reached the network. */
+		sendLeadToRelay({
+			name: name.trim(),
+			email: email.trim(),
+			phone: phone.trim(),
+			message: summary,
+			source: RELAY_SOURCE.estimate,
+			companyWebsite: "",
+		}).catch(() => sendViaServer(summary));
+	}
+
+	/** The old oRPC submission, now the fallback. */
+	function sendViaServer(summary: string) {
 		submit.mutate(
 			{
 				name: name.trim(),
@@ -193,19 +223,7 @@ export default function EstimatePage() {
 				message: notes.trim(),
 				sourcePage: "/estimate.html",
 				submittedAt: new Date().toISOString(),
-				estimate: buildSummary({
-					name: name.trim(),
-					email: email.trim(),
-					phone: phone.trim(),
-					role,
-					timeline,
-					area: zip.trim(),
-					notes: notes.trim(),
-					goals,
-					smsOk,
-					est,
-					rows,
-				}),
+				estimate: summary,
 				trap: "",
 				...readUtm(),
 			},

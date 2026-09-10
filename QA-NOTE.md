@@ -2125,3 +2125,86 @@ difficult, just not a one word edit.
 - Estimate prices are still waiting on Aviva.
 - Two questions from note 27 remain open: the shared ZIPs on three city pages,
   and whether the "Areas we serve" links should be underlined at rest.
+
+## 31. Forms now go straight to your relay, and the FAQ answer reworded
+
+### Both forms are wired
+
+There are two forms on the site, not four. "Begin a conversation" and "Get a
+quick estimate" are buttons that appear on nearly every page, but they lead to
+the same two places: the contact form at the bottom of the homepage, and the
+estimate wizard. Both now post to your Apps Script relay.
+
+Each one identifies itself, so the sheet tells you where the lead came from:
+"Homepage - Begin a conversation" and "Estimate page". Every submission also
+carries the page it was sent from and any campaign tags on the URL, so paid
+traffic is attributed.
+
+The thank-you appears the instant someone presses send, without waiting for the
+relay. That is what you asked for and it is the right call, but it is worth
+knowing what it means: the visitor is told the message is on its way before we
+have any confirmation it landed. Your relay is the record of what actually
+arrived.
+
+### Three things we had to decide for you
+
+1. **The relay stores name, email, phone and message.** The contact form asks
+   two more questions: the project area, and whether they are a homeowner,
+   designer or builder. We add those to the bottom of the message rather than
+   drop them, so they still reach you. If you would rather have them as their
+   own columns, we can send them as separate fields once you add them at the
+   relay end.
+2. **The spam trap is now the field name you specified.** It was already there
+   under a different name.
+3. **Formspree is now behind the relay, not beside it.** It only runs if the
+   relay request cannot leave the browser at all, for instance when someone is
+   offline. Firing both every time would have put every lead into Attio and into
+   two separate sheets twice over. If you would rather have Aviva keep getting
+   the Formspree email on every single lead as a belt-and-braces copy, say so
+   and we will switch it back on unconditionally, accepting the duplicates.
+
+Also worth raising: the relay writes into Attio itself. Campaign and lead source
+tracking into Attio has sat on the go-live checklist unverified all along,
+waiting on Attio being configured. If your relay handles it, that item is closed
+and we can drop it. Please confirm.
+
+### The FAQ answer
+
+You chose option 3 from the last note. The "Battery or hardwired?" answer on the
+smart home page no longer mentions the partner at all. It now reads:
+
+> Where wiring is needed, we arrange the electrical work as part of the same
+> project, so you are never left calling around for someone to run power to a
+> window.
+
+Baltic Electrical is still named and linked in the bullet above it, exactly as
+before. The check that flagged this now passes, and the whole site is clean on
+partner wording for the first time.
+
+### How we tested it without emailing you
+
+We have accidentally sent you up to three real test leads earlier in this
+project. We did not risk a fourth. The test intercepts the request before it
+leaves the browser and inspects it, so nothing reached your sheet, your inbox or
+Attio. Twenty seven checks pass: the exact fields, the source labels, the page
+and campaign values, the empty spam trap, the instant thank-you, and the
+offline fallback.
+
+Everything else is green too: partner wording, FAQ markup, structured data, the
+city pages, the footer, headers, the areas row, postal codes. Roughly 4000
+checks. Rebuilds clean at 40 pages.
+
+**Please do send one real submission through each form yourself** once this is
+live. Our test proves the site sends the right thing; only you can confirm your
+relay stores it the way you want.
+
+### Still outstanding, unchanged
+
+- Speed has not been re-measured since nineteen pages were added.
+- Text over the photographic page headers is still under the formal contrast
+  target. Needs a darker crop or your acceptance.
+- We still need you to confirm the blackout photograph is your own project.
+- Six city pages reuse a photograph from elsewhere on the site.
+- Estimate prices are still waiting on Aviva.
+- Two questions from note 27 remain open: the shared ZIPs on three city pages,
+  and whether the "Areas we serve" links should be underlined at rest.

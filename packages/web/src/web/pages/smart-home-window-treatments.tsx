@@ -41,7 +41,7 @@ const FAQS: FaqEntry[] = [
 	},
 	{
 		q: "Battery or hardwired?",
-		a: "Battery motors are simple, quiet and fine on a handful of shades in a finished house. On a whole floor, or on tall or heavy panels, hardwiring is the better answer because nobody wants a recharging schedule across twenty windows. Where wiring is needed it is handled by our licensed and insured electrical partner, so it stays part of one project rather than becoming your problem to arrange.",
+		a: "Battery motors are simple, quiet and fine on a handful of shades in a finished house. On a whole floor, or on tall or heavy panels, hardwiring is the better answer because nobody wants a recharging schedule across twenty windows. Where wiring is needed, we arrange the electrical work as part of the same project, so you are never left calling around for someone to run power to a window.",
 	},
 ];
 
