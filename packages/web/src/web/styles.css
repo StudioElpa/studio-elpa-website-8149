@@ -4430,3 +4430,11 @@ footer.lp .wordmark {
 .band.dark .partner-link:hover {
 	color: var(--dark-head);
 }
+
+/* Centered .lede paragraphs share the heading's center axis. Without auto side
+   margins the 640px measure pins to the wrap's left edge and reads left of the
+   centered heading above it. Only applies inside .center, so left-aligned
+   sections are untouched. */
+.center .lede {
+	margin-inline: auto;
+}
