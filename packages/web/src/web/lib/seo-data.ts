@@ -61,25 +61,38 @@ export const AREA_SERVED: { city: string; region: "FL"; zips: string[] }[] = [
 ];
 
 /**
- * `areaServed` as schema.org `City` nodes, each carrying its postal codes.
+ * `areaServed` as schema.org `City` nodes, ONE NODE PER POSTAL CODE.
  *
  * Defaults to the whole footprint, which is right for the sitewide business
  * node and for a service page that really does cover all thirty cities. A geo
  * page passes its own short list instead, so "Custom Drapery in Palm Beach"
  * claims Palm Beach rather than restating the entire territory.
+ *
+ * `postalCode` is a SINGLE postal code in schema.org, not a list. This used to
+ * emit `a.zips.join(", ")`, so a four-ZIP city handed parsers "33432, 33431,
+ * 33496, 33487", a value matching no real ZIP anywhere. Every earlier page
+ * carried a one-ZIP city, so the defect stayed invisible until the geo layer
+ * shipped pages for Boca Raton, Fort Lauderdale and Coral Gables.
+ *
+ * A multi-ZIP city therefore yields several City nodes sharing a name, each
+ * naming one real postal area. That repetition is correct: these are distinct
+ * postal areas we serve, and it keeps the ZIP signal the brief asked for rather
+ * than dropping `postalCode` and relying on the city name alone.
  */
 function areaServedNodes(list: { city: string; region?: "FL"; zips: string[] }[] = AREA_SERVED) {
-	return list.map((a) => ({
-		"@type": "City",
-		name: a.city,
-		address: {
-			"@type": "PostalAddress",
-			addressLocality: a.city,
-			addressRegion: a.region ?? "FL",
-			addressCountry: "US",
-			postalCode: a.zips.join(", "),
-		},
-	}));
+	return list.flatMap((a) =>
+		a.zips.map((zip) => ({
+			"@type": "City",
+			name: a.city,
+			address: {
+				"@type": "PostalAddress",
+				addressLocality: a.city,
+				addressRegion: a.region ?? "FL",
+				addressCountry: "US",
+				postalCode: zip,
+			},
+		})),
+	);
 }
 
 const ORG_ID = `${ORIGIN}/#organization`;
