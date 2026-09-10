@@ -163,8 +163,8 @@ export default function CustomHomeTextilesPage() {
 						<div className="kicker">Where this goes next</div>
 						<h2 className="big">Start at the window, finish at the bed.</h2>
 						<p className="lede">
-							Most of this work begins with{" "}
-							<Link to="/drapery.html">custom drapery</Link> and grows outward from it, using the
+							The natural starting point is{" "}
+							<Link to="/drapery.html">custom drapery</Link>, and the work grows outward from it, using the
 							same cloth described on{" "}
 							<Link to="/european-fabrics.html">European fabrics and textiles</Link>. In bedrooms
 							the other half of the conversation is darkness, which is a specification of its own:{" "}

@@ -35,7 +35,7 @@ const CARDS = [
 const FAQS: FaqEntry[] = [
 	{
 		q: "Do you come to the island for a consultation?",
-		a: "Yes. Palm Beach is core territory for us, and we measure and specify in the room rather than from a plan. We bring fabrics with us and look at them against your walls at the hour you actually use the space, because a linen that reads warm in a showroom can read grey in an island room at four in the afternoon.",
+		a: "Yes. Palm Beach is core territory for us, and we measure and specify in the room rather than from a plan. We bring fabrics with us and look at them against your walls at the hour you actually use the space, because a linen that reads warm in a showroom can read gray in an island room at four in the afternoon.",
 	},
 	{
 		q: "Can drapery work in a house that is mostly glass?",
@@ -45,7 +45,7 @@ const FAQS: FaqEntry[] = [
 		q: "Our drapery needs to be motorized. Who handles the electrical?",
 		a: (
 			<>
-				We do, through our licensed and insured electrical partner <BalticLink />. They handle the
+				We do, through our licensed, insured electrical partner, <BalticLink />. They handle the
 				power and we schedule and manage them, so the wiring, the track and the fabrication all
 				answer to one point of contact. You never have to find or coordinate a trade.
 			</>
@@ -53,7 +53,7 @@ const FAQS: FaqEntry[] = [
 	},
 	{
 		q: "We are working with an interior designer. Does that complicate things?",
-		a: "Not at all, and a good share of our island work arrives that way. The vision stays the designer's. We fabricate to their specification, tell them honestly how a fabric will behave in this climate, and flag anything about repeat, width or weight before it is cut.",
+		a: "Not at all. We regularly work alongside interior designers, and the vision stays the designer's. We fabricate to their specification, tell them honestly how a fabric will behave in this climate, and flag anything about repeat, width or weight before it is cut.",
 	},
 	{
 		q: "How long does a drapery project take?",
@@ -214,11 +214,12 @@ export default function CustomDraperyPalmBeachPage() {
 					<div className="wrap">
 						<div className="callout" data-reveal>
 							<div className="kicker">No pressure. Just a conversation.</div>
-							<h2 className="big">Serving Palm Beach, including the Estate Section, the North End, and Midtown lakefront.</h2>
+							<h2 className="big">Tell us about the room.</h2>
 							<p>
-								Start with a relaxed 30-minute call. Tell us the room and the feeling you are
-								after, and we will come to the island with the right shortlist instead of the
-								whole library.
+								We work across Palm Beach, from the Estate Section to the North End and the
+								Midtown lakefront. Start with a relaxed 30-minute call. Tell us the room and the
+								feeling you are after, and we will come to the island with the right shortlist
+								instead of the whole library.
 							</p>
 							<div className="btn-row">
 								<a

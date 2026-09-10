@@ -29,7 +29,7 @@ const CARDS = [
 const FAQS: FaqEntry[] = [
 	{
 		q: "Does my restaurant actually need FR drapery?",
-		a: "Usually, but the person to confirm it is your local fire marshal or building official, not us. Assembly and hospitality occupancies in Florida generally require textiles in public areas to meet a recognised flame-resistance standard, and the inspector will ask to see documentation for what is hanging on the wall. We will supply the certificate for the fabric we install. We will not tell you your project is compliant, because that is the authority's call.",
+		a: "Usually, but the person to confirm it is your local fire marshal or building official, not us. Assembly and hospitality occupancies in Florida generally require textiles in public areas to meet a recognized flame-resistance standard, and the inspector will ask to see documentation for what is hanging on the wall. We will supply the certificate for the fabric we install. We will not tell you your project is compliant, because that is the authority's call.",
 	},
 	{
 		q: "What is the difference between inherently FR and treated?",

@@ -93,7 +93,7 @@ export default function EuropeanFabricsPage() {
 						<p className="lede">
 							Two fabrics can look identical in your hand and behave like different materials on the
 							window. One breaks into a soft, heavy fold and one hangs flat and thin. One holds its
-							color for years behind the right lining and one goes grey on the sun side by the
+							color for years behind the right lining and one goes gray on the sun side by the
 							second season. The whole craft of this is knowing which is which before it is cut,
 							and that knowledge comes from working with the same mills long enough to trust them.
 						</p>
@@ -129,7 +129,7 @@ export default function EuropeanFabricsPage() {
 							<h2 className="big">Fabric first, in your light.</h2>
 							<p>
 								We bring the fabrics to you and hang them in the room, because a linen that looks
-								warm in a showroom can read grey against your wall color and your particular
+								warm in a showroom can read gray against your wall color and your particular
 								afternoon. We look at them at the hour you actually use the room. Then we specify
 								the lining and interlining with the face fabric, not after it, since that is what
 								decides both how it falls and how long it lasts. Everything is cut and made to

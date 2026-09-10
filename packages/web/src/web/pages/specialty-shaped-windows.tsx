@@ -32,7 +32,7 @@ const FAQS: FaqEntry[] = [
 	},
 	{
 		q: "Will a shaped shade look as clean as a rectangular one?",
-		a: "Close, but be realistic. Any shade that follows a curve or a rake has a slightly larger light gap at the edges than a square one does, because two shapes have to meet along a line that is not straight. We minimise it with side channels and careful templating. If a room needs true darkness, a shaped shade alone will not deliver it and we would pair it with drapery.",
+		a: "Close, but be realistic. Any shade that follows a curve or a rake has a slightly larger light gap at the edges than a square one does, because two shapes have to meet along a line that is not straight. We minimize it with side channels and careful templating. If a room needs true darkness, a shaped shade alone will not deliver it and we would pair it with drapery.",
 	},
 	{
 		q: "How do you measure something that is not square?",

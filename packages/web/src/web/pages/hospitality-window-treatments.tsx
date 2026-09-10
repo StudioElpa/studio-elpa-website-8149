@@ -36,7 +36,7 @@ const FAQS: FaqEntry[] = [
 	},
 	{
 		q: "Do you handle rated fabric and the paperwork?",
-		a: "Yes. Public areas generally need textiles meeting a recognised flame-resistance standard, and we specify inside that range and keep the mill's documentation with your project. Whether your specific space and layout satisfy the code is your fire marshal's determination, not ours, and we say so plainly rather than implying we can sign it off.",
+		a: "Yes. Public areas generally need textiles meeting a recognized flame-resistance standard, and we specify inside that range and keep the mill's documentation with your project. Whether your specific space and layout satisfy the code is your fire marshal's determination, not ours, and we say so plainly rather than implying we can sign it off.",
 	},
 	{
 		q: "Is this worth it for a small independent room?",
