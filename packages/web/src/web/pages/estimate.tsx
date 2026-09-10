@@ -696,8 +696,8 @@ function WindowFields({ row, index, product, onChange, onRemove }: WindowFieldsP
 				<span id={`w-m-${row.id}-l`}>
 					I'm interested in motorization{" "}
 					<span style={{ color: "var(--ink-soft)" }}>
-						(quoted separately at your consultation, cordless, and the safest choice around
-						children)
+						(we'll add an allowance to your range and quote the exact hardware at your
+						consultation, cordless, and the safest choice around children)
 					</span>
 				</span>
 			</label>
@@ -729,16 +729,32 @@ function Results({ result, name, goals, pending, failed, headingRef }: ResultsPr
 			</div>
 
 			<div className="est">
-				<div className="lbl">Estimated investment range</div>
+				<div className="lbl">
+					{result.belowMin ? "Where our projects start" : "Estimated investment range"}
+				</div>
 				<div className="range">
-					${fmt(result.lo)} – ${fmt(result.hi)}
+					{result.belowMin ? (
+						<>${fmt(result.minimum)}</>
+					) : (
+						<>
+							${fmt(result.lo)} – ${fmt(result.hi)}
+						</>
+					)}
 				</div>
 				<div className="per">
 					{result.windows} window{plural} · fabrication, hardware &amp; standard installation
 					included
-					{result.anyMotor && " · *motorization is quoted separately at your consultation"}
+					{result.anyMotor && " · *includes a motorization allowance where you selected it"}
 				</div>
 			</div>
+
+			{result.belowMin && (
+				<p className="care">
+					The treatments you described come to ${fmt(result.lo)} – ${fmt(result.hi)} on their own,
+					and Studio Elpa projects typically begin around ${fmt(result.minimum)}. Let's talk about
+					your whole space, that is where the work we do best starts to show.
+				</p>
+			)}
 
 			<div>
 				{result.lines.map((l) => (
@@ -762,8 +778,8 @@ function Results({ result, name, goals, pending, failed, headingRef }: ResultsPr
 						<br />
 						<br />
 						<span className="assume-note">
-							Drapery figures are preliminary ranges, your fabric selection at consultation sets
-							the exact number.
+							Some of these are preliminary ranges, your fabric and hardware selection at
+							consultation sets the exact number.
 						</span>
 					</>
 				)}

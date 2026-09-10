@@ -1,72 +1,69 @@
 /* ===========================================================================
    STUDIO ELPA — ESTIMATE ENGINE
    ---------------------------------------------------------------------------
-   Ported number-for-number from the original estimate.html config block. Do
-   not "tidy" these figures: they are the client's, not ours.
+   Every figure below is an ALL-IN range for one typical window of about
+   40 sqft: fabrication, hardware, and standard installation included.
+   Motorization is a separate flat adder, not scaled by size.
 
-   All prices are RETAIL, from supplier retail price books:
-     · 2024 Unique Roller Shades (Nov 2024)   · Unique Honeycomb (Dec 2021)
-     · Sheer Shadings collection              · Automate (May 2022) / Somfy (Apr 2022)
-   Anchors = price at [15 sqft (36x60), 24 sqft (48x72), 48 sqft (72x96)].
-   lo = value-tier chart, hi = designer-tier chart. Edit numbers here only.
+   Supplied by the client on 2026-09-10, replacing the supplier-price-book
+   interpolation the original estimate.html used. Do not "tidy" these figures:
+   they are the client's, not ours. Edit numbers here only.
 
-   ⚠ UNCONFIRMED, RAISE BEFORE LAUNCH — carried over from the original file:
-     · DRAPERY prices are PLACEHOLDER assumptions (no drapery book was
-       provided); confirm against the European workroom costs.
-     · PRICE_ADJUST 0.70 shows estimates 30% below the book-derived figures
-       (per Aviva, Jul 2026).
-     · INSTALL and PROJECT_MIN are assumptions.
-   These numbers are shown to real prospects, so they need Aviva's sign-off.
+   ⚠ THREE MAPPING CALLS ARE OURS, NOT THE CLIENT'S — confirm before launch:
+     · "Sheers 250-700" is read as sheer DRAPERY panels (drape_sheer), a
+       lighter make than the 675-1500 custom drapery. It could instead have
+       meant a sheer shade product.
+     · day-night, honeycomb, and sheer shading are selectable in the wizard
+       and named in homepage copy, but appear in no client price band. Priced
+       here at the nearest band and flagged `assumed`.
+     · Aviva's sign-off on these six ranges is NOT yet confirmed in writing.
+   These numbers are shown to real prospects.
    =========================================================================== */
 
-const SQFT_ANCHORS = [15, 24, 48] as const;
+/** The window the client's ranges describe. Everything scales off this. */
+const BASE_SQFT = 40;
 
-/** Estimates shown at 30% below book-derived figures (per Aviva, Jul 2026). */
-const PRICE_ADJUST = 0.7;
-
-/** Motorization is NOT priced here; it is quoted separately at consultation. */
-const INCLUDE_MOTOR_IN_PRICE = false;
+/** Size scaling is clamped: no window prices below 0.7x or above 1.8x base. */
+const SIZE_MIN = 0.7;
+const SIZE_MAX = 1.8;
 
 interface PriceRow {
 	label: string;
-	lo: [number, number, number];
-	hi: [number, number, number];
+	/** All-in low and high for one ~40 sqft window. */
+	lo: number;
+	hi: number;
 	assumed?: boolean;
 }
 
 export const P: Record<string, PriceRow> = {
-	// Charts 2 → 7
-	roller_lf: { label: "Shade · light-filtering / sheer", lo: [158, 192, 365], hi: [301, 378, 722] },
-	// Charts 3 → 10
-	roller_bo: { label: "Shade · blackout", lo: [166, 209, 390], hi: [393, 573, 1037] },
-	// Double Chart 1 → ~5
-	daynight: { label: "Day-night double shade", lo: [517, 708, 1250], hi: [700, 950, 1650] },
-	// Groups 1 → 4
-	honeycomb: { label: "Honeycomb shade", lo: [293, 419, 745], hi: [381, 545, 969] },
-	// Groups 3 → 4
-	sheershade: { label: "Sheer shading (soft vanes)", lo: [1070, 1463, 2315], hi: [1307, 1853, 2723] },
-	drape_sheer: {
-		label: "Drapery · sheer linen (pair)",
-		lo: [900, 1050, 1400],
-		hi: [1500, 1750, 2300],
-		assumed: true,
-	},
-	drape_bo: {
-		label: "Drapery · lined / blackout (pair)",
-		lo: [1300, 1500, 2000],
-		hi: [2200, 2550, 3400],
-		assumed: true,
-	},
+	// Client band: solar / light-filtering shades.
+	roller_lf: { label: "Shade · solar / light-filtering", lo: 300, hi: 700 },
+	// Client band: roller / blackout shades.
+	roller_bo: { label: "Shade · blackout", lo: 300, hi: 700 },
+	// Client band: Roman shades.
+	roman: { label: "Roman shade", lo: 300, hi: 500 },
+	// Client band: natural woven shades.
+	woven: { label: "Natural woven shade", lo: 300, hi: 500 },
+	// No client band. Nearest is the roller/solar band. OUR ASSUMPTION.
+	daynight: { label: "Day-night double shade", lo: 300, hi: 700, assumed: true },
+	// No client band. Nearest is the roller/solar band. OUR ASSUMPTION.
+	honeycomb: { label: "Honeycomb shade", lo: 300, hi: 700, assumed: true },
+	// No client band. A premium soft-vane product, so priced with drapery. OUR ASSUMPTION.
+	sheershade: { label: "Sheer shading (soft vanes)", lo: 675, hi: 1500, assumed: true },
+	// Client band: sheers. Read as sheer drapery panels. OUR ASSUMPTION.
+	drape_sheer: { label: "Drapery · sheer (pair)", lo: 250, hi: 700, assumed: true },
+	// Client band: custom drapery, simple track included.
+	drape_bo: { label: "Drapery · lined / blackout (pair)", lo: 675, hi: 1500 },
 };
 
-/** Automate Li-ion → Somfy class. */
-const MOTOR = { shade_lo: 315, shade_hi: 660, drape_lo: 900, drape_hi: 1400 };
+/** Flat per motorized window, whatever the size. */
+const MOTOR = { lo: 300, hi: 1500 };
 
-/** Per window. Assumption — edit. */
-const INSTALL = { shade: 55, drape: 150 };
-
-/** Assumption — edit. */
+/** Below this, we show a starting point rather than a smaller number. */
 const PROJECT_MIN = 1500;
+
+/** Every figure shown to a visitor lands on a $25 step. */
+const round25 = (n: number) => Math.round(n / 25) * 25;
 
 /* ------------------------------- selections ------------------------------ */
 
@@ -119,6 +116,8 @@ const SHADE_TYPES: Array<[string, string]> = [
 	["roller_bo", "Blackout"],
 	["daynight", "Day-night (zebra)"],
 	["honeycomb", "Honeycomb (insulating)"],
+	["roman", "Roman shade"],
+	["woven", "Natural woven"],
 	["sheershade", "Sheer shading (soft vanes)"],
 ];
 
@@ -169,46 +168,49 @@ export interface WindowRow {
 	m: boolean;
 }
 
-/** Linear interpolation over the sqft anchors, extrapolating past the top one. */
-function interp(vals: readonly [number, number, number], sqft: number): number {
-	const a = SQFT_ANCHORS;
-	if (sqft <= a[0]) return vals[0];
-	if (sqft >= a[2]) return vals[2] + ((vals[2] - vals[1]) / (a[2] - a[1])) * (sqft - a[2]);
-	const i = sqft <= a[1] ? 0 : 1;
-	return vals[i] + (vals[i + 1] - vals[i]) * ((sqft - a[i]) / (a[i + 1] - a[i]));
+/**
+ * How much of the base ~40 sqft price this window carries. Clamped, so a tiny
+ * window still pays for a real workroom run and a huge one does not run away.
+ * The same factor scales lo and hi, which is what keeps lo below hi.
+ */
+function sizeFactor(w: number, h: number): number {
+	const sqft = (w * h) / 144;
+	if (!Number.isFinite(sqft) || sqft <= 0) return SIZE_MIN;
+	return Math.min(SIZE_MAX, Math.max(SIZE_MIN, sqft / BASE_SQFT));
 }
 
+/**
+ * One window, one treatment: the base band scaled by size, plus a flat
+ * motorization adder that is deliberately NOT size-scaled.
+ */
 export function priceWin(type: string, w: number, h: number, motor: boolean) {
-	const sqft = Math.max((w * h) / 144, 6);
+	const f = sizeFactor(w, h);
 	let lo = 0;
 	let hi = 0;
-	let mlo = 0;
-	let mhi = 0;
-	let inst = 0;
 
-	const add = (key: string, isDrape: boolean) => {
+	const add = (key: string) => {
 		const row = P[key];
 		if (!row) return;
-		lo += interp(row.lo, sqft);
-		hi += interp(row.hi, sqft);
-		inst += isDrape ? INSTALL.drape : INSTALL.shade;
-		if (motor && INCLUDE_MOTOR_IN_PRICE) {
-			mlo += isDrape ? MOTOR.drape_lo : MOTOR.shade_lo;
-			mhi += isDrape ? MOTOR.drape_hi : MOTOR.shade_hi;
-		}
+		lo += row.lo * f;
+		hi += row.hi * f;
 	};
 
 	if (type === "combo_lfbo") {
-		add("roller_lf", false);
-		add("drape_bo", true);
+		add("roller_lf");
+		add("drape_bo");
 	} else {
-		add(type, type.startsWith("drape"));
+		add(type);
 	}
 
-	return { lo: (lo + mlo + inst) * PRICE_ADJUST, hi: (hi + mhi + inst) * PRICE_ADJUST };
+	if (motor) {
+		lo += MOTOR.lo;
+		hi += MOTOR.hi;
+	}
+
+	return { lo, hi };
 }
 
-export const fmt = (n: number) => Math.round(n).toLocaleString("en-US");
+export const fmt = (n: number) => round25(n).toLocaleString("en-US");
 
 export interface EstimateLine {
 	key: number;
@@ -223,14 +225,25 @@ export interface EstimateLine {
 }
 
 export interface EstimateResult {
+	/** True sum of the line items, never floored. */
 	lo: number;
 	hi: number;
 	windows: number;
 	lines: EstimateLine[];
 	anyMotor: boolean;
 	anyAssumed: boolean;
+	/** The sum lands under the project minimum, so show a starting point instead. */
+	belowMin: boolean;
+	/** The starting point to show when `belowMin`. */
+	minimum: number;
 }
 
+/**
+ * Sums the windows. Line figures are rounded to $25 BEFORE they are summed, so
+ * the headline is exactly the sum of the figures on screen: the old version
+ * floored `lo` to the project minimum and then pulled `hi` up to match it,
+ * which printed "$1,500 – $1,500" over a line reading "$254 – $464".
+ */
 export function computeEstimate(rows: WindowRow[]): EstimateResult {
 	let lo = 0;
 	let hi = 0;
@@ -242,8 +255,10 @@ export function computeEstimate(rows: WindowRow[]): EstimateResult {
 		const h = Number(r.h);
 		const q = Math.max(1, Number(r.q) || 1);
 		const p = priceWin(r.type, w, h, r.m);
-		lo += p.lo * q;
-		hi += p.hi * q;
+		const lineLo = round25(p.lo * q);
+		const lineHi = round25(p.hi * q);
+		lo += lineLo;
+		hi += lineHi;
 		if (P[r.type]?.assumed || r.type === "combo_lfbo") anyAssumed = true;
 		lines.push({
 			key: r.id,
@@ -253,13 +268,10 @@ export function computeEstimate(rows: WindowRow[]): EstimateResult {
 			w,
 			h,
 			q,
-			lo: p.lo * q,
-			hi: p.hi * q,
+			lo: lineLo,
+			hi: lineHi,
 		});
 	}
-
-	lo = Math.max(lo, PROJECT_MIN);
-	hi = Math.max(hi, lo);
 
 	return {
 		lo,
@@ -268,6 +280,8 @@ export function computeEstimate(rows: WindowRow[]): EstimateResult {
 		lines,
 		anyMotor: rows.some((r) => r.m),
 		anyAssumed,
+		belowMin: lo < PROJECT_MIN,
+		minimum: PROJECT_MIN,
 	};
 }
 
@@ -425,7 +439,18 @@ export function buildSummary(i: SummaryInput): string {
 		`Goals: ${i.goals.join(", ")}`,
 		`Notes: ${i.notes || "not provided"}`,
 		"",
-		`ESTIMATE: $${fmt(i.est.lo)} – $${fmt(i.est.hi)} (${i.est.windows} windows; motorization NOT included in figure)`,
+		`ESTIMATE: ${fmt(i.est.lo)} – ${fmt(i.est.hi)} (${i.est.windows} windows; ${
+			i.est.anyMotor
+				? "includes a $300-$1,500 motorization allowance per motorized window"
+				: "no motorization selected"
+		})`,
+		...(i.est.belowMin
+			? [
+					`NOTE: under the ${fmt(i.est.minimum)} project minimum, so the visitor was shown a ${fmt(
+						i.est.minimum,
+					)} starting point, not the summed figure.`,
+				]
+			: []),
 		...i.est.lines.map(
 			(l) => ` · ${l.room}: ${l.label}${l.motor ? " MOTORIZED" : ""} ${l.w}x${l.h}" x${l.q}`,
 		),

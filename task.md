@@ -5114,3 +5114,142 @@ rendered `FAQPage` JSON-LD. Looked at the form and the thank-you state at
 `bun run typecheck` fails on `api/routes/leads.ts:132` (`l !== false` on a
 `string`) under the mobile package only. Pre-existing, untouched file, not from
 this change.
+
+## §33 - real pricing in the estimate engine, and a scrim behind every photographic hero
+
+Two things this round: the client supplied real all-in price ranges to replace
+the placeholder book, and the hero text got a local scrim so it clears WCAG on
+photographs without washing the whole image.
+
+### The pricing model, old vs new
+
+Gone: `SQFT_ANCHORS` with `interp()` between them, `PRICE_ADJUST` (the 0.70
+drapery fudge), a separate `INSTALL` addend, and a size-scaled `MOTOR`.
+
+In its place, one base range per treatment at a 40 sqft window, all-in
+(fabrication + hardware + standard install), from the client on 2026-09-10:
+
+| catalog key    | 40 sqft base | source                          |
+| -------------- | ------------ | ------------------------------- |
+| `drape_bo`     | 675 - 1500   | client, "custom drapery"        |
+| `drape_sheer`  | 250 - 700    | client, "sheers" (see below)    |
+| `roller_lf`    | 300 - 700    | client, "solar/light-filtering" |
+| `roller_bo`    | 300 - 700    | client, "roller/blackout"       |
+| `roman`        | 300 - 500    | client, "roman shades"          |
+| `woven`        | 300 - 500    | client, "natural woven"         |
+| `daynight`     | 300 - 700    | ASSUMED, no client band         |
+| `honeycomb`    | 300 - 700    | ASSUMED, no client band         |
+| `sheershade`   | 675 - 1500   | ASSUMED, no client band         |
+
+`sizeFactor(w,h) = clamp((w*h/144)/40, 0.7, 1.8)`, multiplied into both ends.
+`MOTOR = {lo:300, hi:1500}` added **flat per motorized window**, deliberately
+outside the size scaling, per the client's instruction. `round25()` on every
+displayed figure.
+
+### The bug the client reported, and its actual cause
+
+Reported: headline read "$1,500-$1,500" while the only line read "$254-$464".
+
+Two faults compounding. First, `computeEstimate()` ended with
+`lo = Math.max(lo, PROJECT_MIN); hi = Math.max(hi, lo)`, which floored the low
+to 1500 and then dragged the high up to meet it, collapsing the range to a
+single repeated figure. Second, the headline summed unrounded line values while
+the lines were rounded at render, so even without the collapse the two would not
+have reconciled.
+
+Both fixed. Each line is rounded to $25 **before** it is summed, so the headline
+is arithmetically the sum of the figures on screen. The flooring logic is gone
+entirely: `lo`/`hi` are never mutated. `EstimateResult` now carries
+`belowMin: boolean` and `minimum: number`, and the presentation layer decides
+what to show. That keeps the money math in one place and the framing in the UI.
+
+### The below-minimum screen, and a second problem found by looking at it
+
+When `belowMin`, the headline shows a single **$1,500** under the label "Where
+our projects start" instead of a range.
+
+The QA script passed on that, but the screenshot did not read right: a $1,500
+headline sat directly above a line item reading "$200 - $500", which a visitor
+would read as a contradiction, a milder version of the very bug being fixed.
+The explainer paragraph now names both figures and reconciles them: "The
+treatments you described come to $200 - $500 on their own, and Studio Elpa
+projects typically begin around $1,500." `qa/estimateqa.py` asserts the
+explainer names the summed figures, so this cannot regress silently.
+
+This is the second time this round that assertions passed while the rendered
+page was wrong. Keep looking at the page.
+
+### Four judgment calls made without an answer
+
+The clarifying questions went unanswered before the instruction to continue, so
+these are defaults, flagged `assumed: true` in code and raised in note 32:
+
+1. "Sheers 250-700" mapped to `drape_sheer` (sheer drapery panels), **not** the
+   existing `sheershade` soft-vane product. Two different things share the word.
+2. `daynight` and `honeycomb` priced in the 300-700 roller band.
+3. `sheershade` priced at the 675-1500 drapery tier, being a premium product.
+4. The motor adder is now inside the shown total, which contradicted the old
+   "motorization is quoted separately" copy. Rather than leave the copy lying,
+   it is reworded to "we'll add an allowance to your range and quote the exact
+   hardware at your consultation", and the per-line note to "*includes a
+   motorization allowance where you selected it".
+
+Aviva's sign-off on the six ranges is **not** confirmed in writing. The old
+"estimate prices are waiting on Aviva" item is narrowed, not closed.
+
+`SHADE_TYPES` gained `roman` and `woven` entries: both were priceable but had
+no way to select them in the wizard.
+
+### The hero scrim
+
+The client said twelve photographic heroes. There are **nineteen** (`.hero`
+carrying `.bgimg`), plus thirteen typographic `.hero.plain` geo pages left
+alone as asked. All nineteen were treated. Not a scope change, a miscount.
+
+The old whole-frame wash (`.page-lp .hero::after`, 0.34-0.62 plus a 0.44
+ellipse) is cut to a 0.12-0.2 floor, kept only so the ghost button's cream
+hairline survives and blown-out sky does not read as paper white at the frame
+edge. The scrim proper is a new `.page-lp .hero .inner::before` at `z-index:-1`
+inside the `z-index:2` copy block, so it sits over the photograph and under the
+text. `content: none` on `.hero.plain`.
+
+Three iterations, all measured:
+
+1. Radial-gradient ellipse at 0.58/0.5. Failed, 1.4-2.9:1 in places. The
+   measurement was also wrong: it averaged the whole bounding box including the
+   empty corners around short centered lines. Rewrote the script to diff
+   text-visible against text-hidden screenshots and score **only** pixels where
+   a glyph actually rendered, worst pixel not mean.
+2. Same ellipse, corrected measurement. Still 1.4-2.9:1. The shape was the real
+   fault: the ends of wide heading lines fell outside the dense middle of the
+   ellipse. Swapped to a blurred solid rounded rect, `inset: -66px -88px -58px`,
+   `border-radius: 140px`, `filter: blur(44px)`. Desktop passed, phone worst
+   3.67:1.
+3. `--scrim` 0.44/0.5 to **0.68 desktop, 0.58 night**, phone inset widened.
+   All pass.
+
+0.68 is **above** the 0.35-0.5 the client suggested. Flat opacity inside their
+band was tried and measurably failed on real photographs. Raised in note 32 as
+a deviation, tunable if they would rather trade contrast for lightness.
+
+New `qa/heroscrimqa.py`: 19 pages x 2 viewports, worst-glyph-pixel contrast
+against the real composited background, paragraph >= 4.5:1, h1 >= 3.0:1, plus
+guards that the scrim exists, still carries a blur, and that the `::after` wash
+has not crept back over 0.26 alpha.
+
+Lesson: do not `page.reload()` between the two measurement states on a
+GSAP-animated hero. It races the entrance animation and times out the selector
+wait. Capture both states inside one page load.
+
+### Suites
+
+`heroscrimqa` PASS both ports, worst paragraph 5.00:1 dev / 4.99:1 preview.
+`estimateqa` PASS both ports, 18 checks. `relayqa` 27/27. `balticqa` 282/282.
+`aeoqa` 2299/2299, `faqqa` 765/765, `geoqa` 144/144, `footerqa` 534/534,
+`herosizeqa` 50/50, `areasqa` 18/18, `zipqa` 4/4, `svcqa` PASS. Lint clean,
+21 files. Clean rebuild 40 routes, sitemap 39. Both results screens looked at
+directly, plus five hero screenshots across bright, dark and night variants and
+one phone.
+
+`bun run typecheck` still fails only on `api/routes/leads.ts:132` under the
+mobile package. Pre-existing, untouched, not from this change.

@@ -2847,38 +2847,86 @@ header.lp .logo img {
 	filter: saturate(0.8) brightness(0.72);
 }
 
+/* V2 SCRIM: the whole-frame wash is gone. It used to lay 0.34-0.62 of dark over
+   every pixel of the photograph, which bought the paragraph its contrast by
+   flattening the image edge to edge. The contrast now comes from a scrim that
+   sits behind the copy block only (see .page-lp .hero .inner::before), so the
+   photograph keeps its own light everywhere the text is not.
+
+   ::after survives as a whisper of a floor, well under the 0.35 the scrim
+   starts at: it keeps the ghost button's cream hairline and the kicker legible
+   where they overhang the scrim's fade, and stops a blown-out sky reading as
+   pure white behind the frame's edges. Nothing here is load-bearing for the
+   4.5:1 on the paragraph; qa/heroscrimqa.py measures that with this layer in
+   place. */
 .page-lp .hero::after {
 	content: "";
 	position: absolute;
 	inset: 0;
-	/* Even left to right. The old 100deg wash was heaviest on the left, which
-	   was fine under left-aligned copy but leaves centred copy sitting over the
-	   thin end of the gradient. Vertical instead, deepest through the band the
-	   text occupies, so both halves of a centred line get the same ground. */
-	/* Two layers. The vertical wash sets the mood over the whole frame; the
-	   ellipse is a soft scrim sitting only under the copy, which buys the
-	   paragraph its contrast without flattening the photograph edge to edge. */
-	background:
-		radial-gradient(
-			ellipse 62% 46% at 50% 44%,
-			rgba(40, 37, 33, 0.44),
-			rgba(40, 37, 33, 0) 72%
-		),
-		linear-gradient(
-			180deg,
-			rgba(40, 37, 33, 0.34),
-			rgba(40, 37, 33, 0.62) 46%,
-			rgba(40, 37, 33, 0.3)
-		);
+	background: linear-gradient(
+		180deg,
+		rgba(40, 37, 33, 0.14),
+		rgba(40, 37, 33, 0.2) 46%,
+		rgba(40, 37, 33, 0.12)
+	);
 }
 
 .page-lp .hero.night::after {
 	background: linear-gradient(
 		180deg,
-		rgba(22, 20, 18, 0.42),
-		rgba(22, 20, 18, 0.7) 46%,
-		rgba(22, 20, 18, 0.38)
+		rgba(22, 20, 18, 0.16),
+		rgba(22, 20, 18, 0.24) 46%,
+		rgba(22, 20, 18, 0.14)
 	);
+}
+
+/* The scrim itself. An ellipse centred on the copy block, densest through the
+   band the heading and paragraph occupy and fully transparent by the time it
+   reaches the photograph, so there is no visible edge anywhere. It bleeds well
+   past .inner on every side because what should land next to the text is the
+   gradient's fade, not its boundary.
+
+   Depth is one number, --scrim: it is what qa/heroscrimqa.py tunes against.
+   z-index -1 keeps it behind the copy but still inside .inner's stacking
+   context, which sits at z-index 2 above .bgimg. */
+.page-lp .hero .inner {
+	--scrim: 0.68;
+}
+
+.page-lp .hero.night .inner {
+	--scrim: 0.58;
+}
+
+/* A soft-edged slab rather than an ellipse. An ellipse sized to the copy leaves
+   the ends of the widest heading line and the corners of the paragraph outside
+   its dense middle, which measured as low as 1.4:1 on a bright photograph. This
+   is the shape of the copy block, generously bled, then blurred: full depth
+   across every glyph, and a falloff soft enough that there is no edge to see. */
+.page-lp .hero .inner::before {
+	content: "";
+	position: absolute;
+	inset: -66px -88px -58px;
+	z-index: -1;
+	pointer-events: none;
+	background: rgba(26, 23, 20, var(--scrim));
+	border-radius: 140px;
+	filter: blur(44px);
+}
+
+/* No photograph behind it, so no scrim. */
+.page-lp .hero.plain .inner::before {
+	content: none;
+}
+
+/* On a phone the copy block is nearly the full width of the frame, so the
+   horizontal bleed has nowhere to go and the ellipse has to run taller than
+   wide to cover a paragraph that wraps to eight or ten lines. */
+@media (max-width: 600px) {
+	.page-lp .hero .inner::before {
+		inset: -48px -40px -42px;
+		border-radius: 90px;
+		filter: blur(34px);
+	}
 }
 
 /* Centred to match the homepage hero. The 660px block was already sitting dead

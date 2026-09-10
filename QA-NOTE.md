@@ -2208,3 +2208,103 @@ relay stores it the way you want.
 - Estimate prices are still waiting on Aviva.
 - Two questions from note 27 remain open: the shared ZIPs on three city pages,
   and whether the "Areas we serve" links should be underlined at rest.
+
+## 32. Your real prices are in, and the text on photographs is now readable
+
+### The estimate tool now quotes your figures
+
+The six ranges you sent are in, as all-in figures for a roughly 40 square foot
+window, covering fabrication, hardware and standard installation:
+
+| Treatment                     | Range for a 40 sq ft window |
+| ----------------------------- | --------------------------- |
+| Custom drapery, incl. track   | $675 - $1,500               |
+| Sheers                        | $250 - $700                 |
+| Solar / light-filtering       | $300 - $700                 |
+| Roller / blackout             | $300 - $700                 |
+| Roman shades                  | $300 - $500                 |
+| Natural woven                 | $300 - $500                 |
+
+Bigger and smaller windows scale off that, but only within reason: nothing is
+priced below 0.7 or above 1.8 times the base, so one enormous slider cannot
+produce a silly number. Motorization adds a flat $300 to $1,500 for each window
+someone ticks, not scaled by size, as you asked. Every figure shown lands on a
+$25 step.
+
+### The bug you spotted is fixed, and it was worse than it looked
+
+You saw the headline read "$1,500 - $1,500" while the single window below it
+read "$254 - $464". Two faults were stacked. The old code forced the bottom of
+the range up to the $1,500 minimum and then dragged the top up to match it,
+which is why both ends read the same. Separately, the headline was adding up
+unrounded numbers while the lines were rounded on screen, so the two could not
+have agreed even without the first fault.
+
+Now the headline is, arithmetically, the sum of the lines printed underneath it.
+We test this: a four window example adds to $2,300 - $6,725 and both the
+headline and the lines say so.
+
+### Small projects are handled honestly instead of being inflated
+
+When someone's windows add up to less than your $1,500 minimum, the tool no
+longer pretends their two shades cost $1,500. It shows $1,500 as a starting
+point, labelled "Where our projects start", and says plainly: "The treatments
+you described come to $200 - $500 on their own, and Studio Elpa projects
+typically begin around $1,500. Let's talk about your whole space." The
+per-window figures stay truthful underneath.
+
+We caught that wording problem by looking at the finished screen rather than
+trusting the tests: the first version showed $1,500 directly above a line
+reading $200 - $500 and said nothing to connect them, which reads as a
+contradiction.
+
+### Text on your photographs now passes the accessibility standard
+
+Every one of your photographic page headers now has a soft dark shadow sitting
+behind the words only, fading out before it reaches the edges of the picture.
+The furniture, the fabrics, the light in the room are all as bright as they
+were. Only the area immediately behind the text is darkened.
+
+This closes the contrast item that has been open on this list for several notes.
+Measured properly this time, against the actual pixels behind each individual
+letter rather than an assumed background: the worst case anywhere on the site is
+now 5.0, where the standard asks for 4.5.
+
+### Four things we need you to confirm
+
+1. **Are these six ranges signed off by Aviva in writing?** We have implemented
+   them as sent, but we would rather have it confirmed than assumed.
+2. **"Sheers" - which product did you mean?** We read it as sheer drapery
+   panels at $250 - $700. You also sell a soft-vane sheer *shade*, which is a
+   different and pricier thing; we have it at the drapery tier for now. If we
+   have those the wrong way round, tell us and it is a one-line change.
+3. **Day-night, honeycomb and the sheer shade have no price from you.** We put
+   day-night and honeycomb in the $300 - $700 band and the sheer shade at
+   $675 - $1,500. These are our estimates, not yours, and they are marked to the
+   visitor as preliminary. Send figures and we will use them.
+4. **We changed a line of your copy.** Motorization used to say "quoted
+   separately at your consultation". Now that its cost is inside the range
+   shown, that sentence would have been untrue, so it reads: "we'll add an
+   allowance to your range and quote the exact hardware at your consultation".
+   Please tell us if you would rather it said something else.
+
+### Two notes, no action needed
+
+- You mentioned twelve photographic headers. There are nineteen. All nineteen
+  are done. The thirteen text-only city page headers were left exactly as they
+  were, as you asked.
+- The shadow behind the text ended up a little stronger than the softness you
+  suggested. We tried it at your level first and measured it: on real
+  photographs, especially the bright ones, it did not reach the standard. If you
+  look at a page and find it heavier than you want, say so and we will trade
+  some contrast back, but we would not go below the standard without you asking.
+
+### Still outstanding
+
+- Speed has not been re-measured since nineteen pages were added.
+- We still need you to confirm the blackout photograph is your own project.
+- Six city pages reuse a photograph from elsewhere on the site.
+- The shared postal codes on three city pages, and whether the "Areas we serve"
+  links should be underlined at rest.
+- Please still send one real submission through each form yourself once this is
+  live.
