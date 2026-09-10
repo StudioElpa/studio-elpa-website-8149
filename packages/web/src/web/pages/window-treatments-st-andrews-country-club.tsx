@@ -26,7 +26,7 @@ const FAQS: FaqEntry[] = [
 				No, and you should not. What holds a house together is a consistent approach to header,
 				length and lining, not one cloth everywhere. The bedrooms can be quiet and the main rooms
 				can carry more weight, and they will still read as one house. Where anything needs
-				motorizing, the power goes through our licensed, insured electrical partner, <BalticLink />.
+				motorizing, the power goes through our licensed and insured electrical partner, <BalticLink />.
 			</>
 		),
 	},
@@ -104,7 +104,7 @@ export default function StAndrewsPage() {
 								so the fabrics, the linings and the headers are chosen alongside each other.
 								Everything is made to order in European fabrics and fitted by our own installers
 								on one schedule rather than five. Where a room calls for motorization, the wiring
-								is handled by our licensed, insured electrical partner, <BalticLink />, scheduled
+								is handled by our licensed and insured electrical partner, <BalticLink />, scheduled
 								and managed by us. If you are working with a designer, we fabricate to their
 								specification and keep to it.
 							</p>

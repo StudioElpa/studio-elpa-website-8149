@@ -40,7 +40,7 @@ const FAQS: FaqEntry[] = [
 		a: (
 			<>
 				Not always. Battery motors handle a surprising number of runs now, and where a hardwired
-				track is genuinely the better answer, our licensed, insured electrical partner,{" "}
+				track is genuinely the better answer, our licensed and insured electrical partner,{" "}
 				<BalticLink />, plans the route with us before anything is cut. Either way you get the
 				answer at specification, not on installation day.
 			</>
@@ -143,7 +143,7 @@ export default function CoralGablesPage() {
 							<p>
 								We specify the track, the motor, the header and the fabric as one decision, then
 								make everything to measure in European fabrics and fit it with our own installers.
-								The power is handled by our licensed, insured electrical partner, <BalticLink />,
+								The power is handled by our licensed and insured electrical partner, <BalticLink />,
 								scheduled and managed by us, so the wiring, the track and the fabrication all
 								answer to one point of contact. If you are working with a designer, we work to
 								their drawings and stay out of the relationship.

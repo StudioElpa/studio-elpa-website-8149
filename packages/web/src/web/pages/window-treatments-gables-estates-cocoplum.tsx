@@ -29,7 +29,7 @@ const FAQS: FaqEntry[] = [
 				motorized shades because the hardware has to be sized to real panel weight and the track
 				has to be set true, or it will be noisy and it will not stack cleanly. We specify to the
 				finished weight of your fabric rather than to a catalog maximum. Power is run by our
-				licensed, insured electrical partner, <BalticLink />, coordinated by us.
+				licensed and insured electrical partner, <BalticLink />, coordinated by us.
 			</>
 		),
 	},
@@ -107,7 +107,7 @@ export default function GablesEstatesCocoplumPage() {
 								Motorized drapery and shading covers the openings that are too tall or too wide
 								to work by hand, sized to the real weight of the panel. Installation is by our
 								own installers rather than a subcontractor, and the wiring is handled by our
-								licensed, insured electrical partner, <BalticLink />, scheduled by us so the trade
+								licensed and insured electrical partner, <BalticLink />, scheduled by us so the trade
 								coordination is not the designer's problem.
 							</p>
 						</div>

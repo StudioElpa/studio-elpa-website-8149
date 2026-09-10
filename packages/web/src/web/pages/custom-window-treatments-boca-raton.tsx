@@ -42,7 +42,7 @@ const FAQS: FaqEntry[] = [
 			<>
 				Yes, and it is usually the better way to buy. Ordering a house together keeps the fabrics,
 				the linings and the headers speaking to one another and it means one installation rather
-				than five. Where a room needs motorization, the wiring goes through our licensed, insured electrical partner, <BalticLink />, scheduled by us.
+				than five. Where a room needs motorization, the wiring goes through our licensed and insured electrical partner, <BalticLink />, scheduled by us.
 			</>
 		),
 	},
@@ -146,7 +146,7 @@ export default function BocaRatonPage() {
 								in person. Everything is made to order in European fabrics, specified with its
 								lining rather than after it, and hung by our own installers, so the making and
 								the fitting are the same responsibility. Where a project calls for motorization,
-								the wiring is handled by our licensed, insured electrical partner,{" "}
+								the wiring is handled by our licensed and insured electrical partner,{" "}
 								<BalticLink />, scheduled and managed by us. You never have to find or coordinate
 								a trade.
 							</p>

@@ -32,7 +32,7 @@ const FAQS: FaqEntry[] = [
 		a: (
 			<>
 				Usually yes. Battery motors have got good enough that a retrofit no longer means opening
-				walls, and where hardwiring is the better answer, the work goes to our licensed, insured
+				walls, and where hardwiring is the better answer, the work goes to our licensed and insured
 				electrical partner, <BalticLink />, scheduled and managed by us. We will tell you which of
 				the two your house actually wants rather than defaulting to the easy one.
 			</>
@@ -144,7 +144,7 @@ export default function DelrayBeachPage() {
 								We look at the house elevation by elevation, decide what each opening is actually
 								being asked to do, and specify the shade, the fabric openness and the motor
 								against that. Everything is made to measure and fitted by our own installers. The
-								power, where a project needs it, is handled by our licensed, insured electrical partner, <BalticLink />, scheduled and managed by us, so nothing stalls waiting on
+								power, where a project needs it, is handled by our licensed and insured electrical partner, <BalticLink />, scheduled and managed by us, so nothing stalls waiting on
 								a trade you had to find yourself.
 							</p>
 						</div>

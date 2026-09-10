@@ -23,7 +23,7 @@ const FAQS: FaqEntry[] = [
 				Yes, and this is most of the work in a house like this. The point of good motorization
 				here is that you cannot see it. Hardware sits above the sightline or inside the pocket,
 				the fabric and the header carry the room, and the modern part stays out of view. Wiring
-				runs through our licensed, insured electrical partner, <BalticLink />, coordinated by us,
+				runs through our licensed and insured electrical partner, <BalticLink />, coordinated by us,
 				which matters more in a renovation where walls and ceilings are only open once.
 			</>
 		),
@@ -106,7 +106,7 @@ export default function ElCidSoSoPage() {
 								Custom drapery does the softening and hides a great deal of hardware. Shades
 								handle the sun where a panel would be wrong. Shaped and arched openings are
 								templated individually. Everything is made to measure in European fabrics and
-								fitted by our own installers, with wiring by our licensed, insured electrical partner, <BalticLink />, scheduled by us so a renovation does not stall waiting
+								fitted by our own installers, with wiring by our licensed and insured electrical partner, <BalticLink />, scheduled by us so a renovation does not stall waiting
 								on a trade.
 							</p>
 						</div>

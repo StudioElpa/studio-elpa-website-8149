@@ -144,7 +144,7 @@ function identityGraph() {
 			priceRange: "$$$",
 			parentOrganization: { "@id": ORG_ID },
 			description:
-				"Made-to-measure drapery, shades and motorized window treatments for luxury homes across South Florida. One point of contact from consultation to installation, with electrical handled by a licensed, insured partner.",
+				"Made-to-measure drapery, shades and motorized window treatments for luxury homes across South Florida. One point of contact from consultation to installation, with electrical handled by a licensed and insured partner.",
 			areaServed: areaServedNodes(),
 			hasOfferCatalog: {
 				"@type": "OfferCatalog",

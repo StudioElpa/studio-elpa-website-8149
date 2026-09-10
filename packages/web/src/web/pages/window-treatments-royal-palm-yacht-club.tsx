@@ -23,7 +23,7 @@ const FAQS: FaqEntry[] = [
 		q: "Who handles the wiring for motorized runs?",
 		a: (
 			<>
-				Our licensed, insured electrical partner, <BalticLink />. They do the power, we schedule
+				Our licensed and insured electrical partner, <BalticLink />. They do the power, we schedule
 				and manage them, and the track, the motor and the fabrication answer to one point of
 				contact.
 			</>
@@ -104,7 +104,7 @@ export default function RoyalPalmYachtClubPage() {
 								against your own walls at the hour you use the room. Everything is made to measure
 								in European fabrics, specified with the lining and interlining rather than after
 								them, and fitted by our own installers. Where the water side is too wide to draw
-								by hand, motorization is planned early and the wiring is handled by our licensed, insured electrical partner, <BalticLink />, scheduled and managed by us.
+								by hand, motorization is planned early and the wiring is handled by our licensed and insured electrical partner, <BalticLink />, scheduled and managed by us.
 							</p>
 						</div>
 						<ul className="clean" data-reveal>

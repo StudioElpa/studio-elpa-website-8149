@@ -45,7 +45,7 @@ const FAQS: FaqEntry[] = [
 		q: "Our drapery needs to be motorized. Who handles the electrical?",
 		a: (
 			<>
-				We do, through our licensed, insured electrical partner, <BalticLink />. They handle the
+				We do, through our licensed and insured electrical partner, <BalticLink />. They handle the
 				power and we schedule and manage them, so the wiring, the track and the fabrication all
 				answer to one point of contact. You never have to find or coordinate a trade.
 			</>
@@ -155,7 +155,7 @@ export default function CustomDraperyPalmBeachPage() {
 								We come to you, measure carefully, and handle the whole project with our own
 								installers, so there is one point of contact from the first question to the last
 								panel hung. If a project calls for motorization, the wiring is handled by our
-								licensed, insured electrical partner, <BalticLink />, scheduled and managed by
+								licensed and insured electrical partner, <BalticLink />, scheduled and managed by
 								us.
 							</p>
 						</div>

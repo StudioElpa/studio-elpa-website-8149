@@ -23,7 +23,7 @@ const FAQS: FaqEntry[] = [
 			<>
 				Motorization, and it is close to essential at this scale. Shades and drapery that glide on
 				a schedule or with a touch are what make a house of tall glass easy to live in. The wiring
-				goes through our licensed, insured electrical partner, <BalticLink />, coordinated by
+				goes through our licensed and insured electrical partner, <BalticLink />, coordinated by
 				us, so nothing stalls waiting on a trade.
 			</>
 		),
@@ -107,7 +107,7 @@ export default function AdmiralsCovePage() {
 								roller shades handle the Florida sun on walls of glass, and motorized shading
 								covers the openings that are too tall or too wide to work by hand. Everything is
 								made to measure in European fabrics and fitted by our own installers. The wiring
-								is handled by our licensed, insured electrical partner, <BalticLink />,
+								is handled by our licensed and insured electrical partner, <BalticLink />,
 								coordinated by us.
 							</p>
 						</div>

@@ -4951,3 +4951,78 @@ Neither tag line was mentioned, so neither was changed. The featured slot keeps
 demoted card keeps "Softening · warmth · framing windows", which now reads oddly
 under a Motorized Shades heading: "framing windows" and "warmth" are drapery
 ideas. One line to change once the client says what they want there.
+
+---
+
+## §31 Phrase standardized to "licensed and insured", and the motorized card retagged (DONE)
+
+Client chose option 1 from §30. Both fixes in one pass.
+
+### 1. "licensed, insured" -> "licensed and insured", sitewide
+
+29 source files touched, 51 replacements. The naive literal sweep found 48 in
+28 files; three more only turned up on a second pass with a whitespace-tolerant
+regex, and they matter:
+
+- **`pages/founder.tsx`** wrapped the phrase across a JSX line break, "licensed,"
+  ending line 71 and "insured" opening line 72. A literal `rg 'licensed, insured'`
+  cannot see that. Patched with `licensed,(\s+)insured -> licensed and\1insured`
+  so the break and indent survive. This is the §27 innerText lesson again in a
+  new place: **grep the source with whitespace tolerance, not a flat string.**
+- **`lib/site-routes.json` lines 185 and 231** read "licensed insured partner"
+  and "licensed insured electrical", with no comma at all. Pre-existing typo in
+  two geo meta descriptions, unrelated to the comma, invisible to both the old
+  and the new literal search. Standardized with the rest.
+
+Also swept, deliberately: the `Organization` schema description in
+`lib/seo-data.ts` ("electrical handled by a licensed and insured partner", 40
+pages) and the code comment in `components/partner.tsx`, so the convention and
+the prose agree.
+
+Audited after the rebuild by counting every `licensed.{0,14}?insured` span in
+all 40 dist files: **107 occurrences, one spelling, zero variants.** Source
+audit for any non-standard variant: 0.
+
+`balticqa`'s `CANON` constant updated to the new phrase, with a note recording
+that the client changed it. Its `unnamed` regex already anticipated the "and"
+spelling, and its old-phrase clause is kept as a regression guard.
+
+**§8 is superseded.** The canonical phrase is now
+`our licensed and insured electrical partner, <BalticLink />`.
+
+### 2. The demoted card retagged
+
+`Softening · warmth · framing windows` -> `Light control · privacy · schedule`.
+The client's note wrote it as "Light control / Privacy /. Schedule"; their three
+terms are used as given, but punctuated to house style (middot separator, lower
+case after the first word, no trailing period) so it matches the other five tag
+lines. Flagged in the client note in case they want the slashes literally.
+
+### Verified
+
+`svcqa` PASS, `aeoqa` 2299/2299, `geoqa` 144/144, `footerqa` 534/534,
+`herosizeqa` 50/50, `areasqa` 18/18, `zipqa` 4/4, `aboutshot` PASS. Lint clean
+on 104 files. Clean rebuild 40 routes, sitemap 39. `balticqa` sitewide linked
+mentions still 49, hrefs/target/rel/embargo all pass.
+
+### One check still fails, and it is real
+
+`balticqa` FAIL `[/smart-home-window-treatments.html] no unnamed partner
+phrasing left 1`.
+
+That page's "Battery or hardwired?" FAQ answer says "handled by our licensed and
+insured electrical partner" **without naming Baltic**. The same page names and
+links them correctly in a spec bullet. Both facts predate this change: the
+answer previously read "licensed, insured", and the checker's unnamed regex only
+matches the "and" spelling, so it had been passing by accident. Standardizing
+the phrase exposed it; it did not create it.
+
+Structural, not cosmetic: FAQ answers in that file are plain strings (`a: "..."`),
+so that sentence cannot carry a `<BalticLink />` the way the JSX bullet does.
+Naming Baltic there means either converting the answer to JSX or dropping an
+unlinked name into the copy, and it would move the sitewide linked total off 49
+and the route's expected count off 1.
+
+Left as is, both copy and checker, and put to the client: name and link them
+there (answer becomes JSX, counts move to 50/2), name them unlinked, reword the
+answer to avoid the partner phrase, or record it as a sanctioned unnamed mention.

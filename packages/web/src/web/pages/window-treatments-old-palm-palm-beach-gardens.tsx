@@ -22,7 +22,7 @@ const FAQS: FaqEntry[] = [
 			<>
 				Shading that you never have to reach. On tall glass the practical answer is a motorized
 				solar or roller shade for the day and drapery for the evening and the scale, both driven
-				rather than pulled. Wiring runs through our licensed, insured electrical partner,{" "}
+				rather than pulled. Wiring runs through our licensed and insured electrical partner,{" "}
 				<BalticLink />, coordinated by us. Decided early it is a simple run. Decided after the
 				ceiling closes it is a much bigger job.
 			</>
@@ -107,7 +107,7 @@ export default function OldPalmPage() {
 								Roman shades suit the smaller and softer rooms, and motorization covers
 								everything too tall to work by hand. It is all made to measure in European
 								fabrics and fitted by our own installers, with the wiring handled by our
-								licensed, insured electrical partner, <BalticLink />, scheduled by us.
+								licensed and insured electrical partner, <BalticLink />, scheduled by us.
 							</p>
 						</div>
 						<ul className="clean" data-reveal>

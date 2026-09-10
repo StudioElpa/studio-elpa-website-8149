@@ -153,7 +153,7 @@ export default function BlackoutPage() {
 								<b>Cord-free and child-safe</b>, the safest choice in a bedroom or nursery.
 							</li>
 							<li>
-								<b>Wiring handled for you</b> through our licensed, insured electrical partner,{" "}
+								<b>Wiring handled for you</b> through our licensed and insured electrical partner,{" "}
 								<BalticLink />.
 							</li>
 						</ul>

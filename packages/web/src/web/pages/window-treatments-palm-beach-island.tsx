@@ -100,7 +100,7 @@ export default function PalmBeachIslandPage() {
 								actually use the space, because a linen that reads warm under showroom light can
 								read gray in an island room at four in the afternoon. Everything is made to
 								measure in European fabrics and hung by our own installers. Where a project calls
-								for motorization, the wiring is handled by our licensed, insured electrical partner, <BalticLink />, scheduled and managed by us.
+								for motorization, the wiring is handled by our licensed and insured electrical partner, <BalticLink />, scheduled and managed by us.
 							</p>
 						</div>
 						<ul className="clean" data-reveal>

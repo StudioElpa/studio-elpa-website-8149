@@ -43,7 +43,7 @@ const FAQS: FaqEntry[] = [
 		q: "Who handles the wiring for motorized drapery?",
 		a: (
 			<>
-				Our licensed, insured electrical partner, <BalticLink />. They handle the power and we
+				Our licensed and insured electrical partner, <BalticLink />. They handle the power and we
 				schedule and manage them, so the wiring, the track and the fabrication answer to one point
 				of contact.
 			</>
@@ -144,7 +144,7 @@ export default function FortLauderdalePage() {
 								specify each opening for the job it is actually doing. Everything is made to order
 								in European fabrics, with the header, lining and length decided together, and hung
 								by our own installers. Where a project calls for motorization, the wiring is
-								handled by our licensed, insured electrical partner, <BalticLink />, scheduled and
+								handled by our licensed and insured electrical partner, <BalticLink />, scheduled and
 								managed by us.
 							</p>
 						</div>

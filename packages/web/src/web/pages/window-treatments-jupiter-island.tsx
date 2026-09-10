@@ -27,7 +27,7 @@ const FAQS: FaqEntry[] = [
 				Close to it, if it is specified for that and installed properly. Noise usually comes from
 				a motor working harder than it should or a track that is out of true, not from
 				motorization itself. We size the hardware to the panel weight and set the track
-				carefully. Power is run by our licensed, insured electrical partner, <BalticLink />,
+				carefully. Power is run by our licensed and insured electrical partner, <BalticLink />,
 				coordinated by us.
 			</>
 		),
@@ -105,7 +105,7 @@ export default function JupiterIslandPage() {
 								the finish, solar and roller shades take the glare and the heat off the big
 								glass, and blackout layers do the bedrooms. Everything is made to measure in
 								European fabrics and fitted by our own installers, never subcontracted out, with
-								wiring handled by our licensed, insured electrical partner, <BalticLink />,
+								wiring handled by our licensed and insured electrical partner, <BalticLink />,
 								scheduled by us.
 							</p>
 						</div>

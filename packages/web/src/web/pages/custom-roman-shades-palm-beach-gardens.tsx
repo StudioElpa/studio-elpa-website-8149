@@ -40,7 +40,7 @@ const FAQS: FaqEntry[] = [
 		a: (
 			<>
 				They can, and in a stairwell or above a run of cabinets it is often the only sensible way
-				to reach them. The power goes through our licensed, insured electrical partner,{" "}
+				to reach them. The power goes through our licensed and insured electrical partner,{" "}
 				<BalticLink />, scheduled and managed by us.
 			</>
 		),
@@ -143,7 +143,7 @@ export default function PalmBeachGardensPage() {
 								We measure every opening ourselves, decide the fold style, the lining and the
 								mounting per window, and make everything to order in European fabrics. Our own
 								installers fit them, so the making and the hanging are one responsibility. Where a
-								shade needs to be motorized, the wiring is handled by our licensed, insured electrical partner, <BalticLink />, scheduled and managed by us.
+								shade needs to be motorized, the wiring is handled by our licensed and insured electrical partner, <BalticLink />, scheduled and managed by us.
 							</p>
 						</div>
 						<ul className="clean" data-reveal>

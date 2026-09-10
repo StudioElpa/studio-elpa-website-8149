@@ -20,7 +20,7 @@ const FAQS: FaqEntry[] = [
 		a: (
 			<>
 				Close to it. The track goes above the sightline or into a recess, the panels return to the
-				wall, and what you see is cloth moving. The power is handled by our licensed, insured electrical partner, <BalticLink />, planned before anything is cut so no ceiling is opened
+				wall, and what you see is cloth moving. The power is handled by our licensed and insured electrical partner, <BalticLink />, planned before anything is cut so no ceiling is opened
 				as a surprise.
 			</>
 		),
@@ -100,7 +100,7 @@ export default function GulfStreamPage() {
 								and only then talk about fabric. Everything is made to order in European fabrics,
 								specified with the lining and interlining rather than after them, and fitted by
 								our own installers. Where an opening is too wide or too tall to draw by hand, the
-								motorization is planned early and the wiring is handled by our licensed, insured electrical partner, <BalticLink />, scheduled and managed by us.
+								motorization is planned early and the wiring is handled by our licensed and insured electrical partner, <BalticLink />, scheduled and managed by us.
 							</p>
 						</div>
 						<ul className="clean" data-reveal>

@@ -27,7 +27,7 @@ const FAQS: FaqEntry[] = [
 				With the two or three rooms that are genuinely uncomfortable, not with the whole house.
 				We would rather solve the west-facing living room and the primary bedroom properly and
 				let you live with them for a while than specify twenty openings on day one. Where an
-				opening is too wide to work by hand we motorize it, with power run by our licensed, insured electrical partner, <BalticLink />, coordinated by us.
+				opening is too wide to work by hand we motorize it, with power run by our licensed and insured electrical partner, <BalticLink />, coordinated by us.
 			</>
 		),
 	},
@@ -106,7 +106,7 @@ export default function LasOlasIslesPage() {
 								off the water, custom drapery closes the room in the evening and softens a lot of
 								hard glass, and blackout layers do the bedrooms. Everything is made to measure in
 								European fabrics and fitted by our own installers, with wiring handled by our
-								licensed, insured electrical partner, <BalticLink />, scheduled by us.
+								licensed and insured electrical partner, <BalticLink />, scheduled by us.
 							</p>
 						</div>
 						<ul className="clean" data-reveal>

@@ -163,7 +163,7 @@ export default function HospitalityWindowTreatmentsPage() {
 								inspector.
 							</li>
 							<li>
-								<b>Motorization wired by</b> our licensed, insured electrical partner,{" "}
+								<b>Motorization wired by</b> our licensed and insured electrical partner,{" "}
 								<BalticLink />, on the same schedule.
 							</li>
 						</ul>

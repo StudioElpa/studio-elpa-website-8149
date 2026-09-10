@@ -1,7 +1,7 @@
 /**
  * Named trade partners.
  *
- * Baltic Electrical is the licensed, insured South Florida electrical contractor
+ * Baltic Electrical is the licensed and insured South Florida electrical contractor
  * that handles the electrical on motorized projects. It is CLEARED to be named
  * and linked on the site.
  *

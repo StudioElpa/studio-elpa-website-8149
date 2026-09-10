@@ -2054,3 +2054,74 @@ so we changed nothing. Tell us what it should say and it is a one line change.
 - Estimate prices are still waiting on Aviva.
 - The two questions from note 27 are still open: the shared ZIPs on three city
   pages, and whether the "Areas we serve" links should be underlined at rest.
+
+---
+## 30. The partner phrase standardized, and the card label fixed
+
+Both of your fixes are in. Still preview only, nothing published.
+
+### "licensed and insured" everywhere
+
+Every mention now reads "our licensed and insured electrical partner". We
+changed 51 places across 29 files and then counted the phrase in the finished
+pages rather than trusting the search: 107 occurrences, all identical, no
+stragglers. This is now the house phrase, and our consistency check was updated
+to enforce the new wording rather than the old.
+
+Three of those were only found on a second, more careful pass, and two were
+outright typos worth knowing about:
+
+- On the founder page the sentence was split across two lines in the code, so a
+  plain search for the phrase could not see it. Caught and fixed.
+- Two of the city page search descriptions read "licensed insured", with no
+  comma or "and" at all. That was a pre-existing typo, not something this change
+  introduced. Both are now correct.
+
+We also updated the phrase in the machine readable business description that
+every page carries, so the structured data and the visible copy agree.
+
+### The card label
+
+The Motorized Shades card now reads "Light control · privacy · schedule". Your
+note wrote it with slashes and capitals; we used your three terms exactly but
+punctuated them like the five other labels on the page, which use a middot and
+lower case after the first word. If you meant the slashes literally, say so and
+we will switch it.
+
+### Everything re-checked
+
+All suites green: the services section, structured data, the geographic pages,
+the footer, hero sizing, the areas row, postal codes. Around 3600 assertions.
+Rebuilds clean at 40 pages.
+
+### One thing needs your decision
+
+Standardizing the phrase uncovered an inconsistency on the smart home page. Its
+"Battery or hardwired?" answer says the wiring is "handled by our licensed and
+insured electrical partner" but does not name Baltic Electrical, even though the
+same page names and links them a little further up. That was already true before
+today; the old wording happened to slip past our check, and the new wording does
+not.
+
+We have not touched it, because naming them there changes your copy and it is
+your call. Four options:
+
+1. Name and link them in that answer, so it matches every other mention.
+2. Name them there without a link.
+3. Reword the answer so it does not describe the partner at all.
+4. Leave it and we record it as a deliberate exception.
+
+Worth knowing: option 1 is slightly more than a wording change, because that
+answer is stored as plain text and would need to become linked markup first. Not
+difficult, just not a one word edit.
+
+### Still outstanding, unchanged
+
+- Speed has not been re-measured since nineteen pages were added.
+- Text over the photographic page headers is still under the formal contrast
+  target. Needs a darker crop or your acceptance.
+- We still need you to confirm the blackout photograph is your own project.
+- Six city pages reuse a photograph from elsewhere on the site.
+- Estimate prices are still waiting on Aviva.
+- Two questions from note 27 remain open: the shared ZIPs on three city pages,
+  and whether the "Areas we serve" links should be underlined at rest.

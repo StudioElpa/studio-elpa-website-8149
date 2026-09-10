@@ -29,7 +29,7 @@ const FAQS: FaqEntry[] = [
 				and will not darken a room at night. For real rest we pair it with a blackout layer and
 				close the light gaps at the sides and the top, which is where the light actually gets in.
 				Where an opening is too wide to work comfortably by hand we motorize it, with the wiring
-				handled by our licensed, insured electrical partner, <BalticLink />, coordinated by us.
+				handled by our licensed and insured electrical partner, <BalticLink />, coordinated by us.
 			</>
 		),
 	},
@@ -107,7 +107,7 @@ export default function ManalapanPage() {
 								Blackout layers do the bedrooms. Custom drapery softens the scale and holds the
 								whole thing together. Everything is made to measure in European fabrics and
 								fitted by our own installers, and the wiring for anything motorized goes through
-								our licensed, insured electrical partner, <BalticLink />, scheduled by us.
+								our licensed and insured electrical partner, <BalticLink />, scheduled by us.
 							</p>
 						</div>
 						<ul className="clean" data-reveal>

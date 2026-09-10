@@ -43,7 +43,7 @@ const FAQS: FaqEntry[] = [
 		q: "Who does the electrical for motorized runs?",
 		a: (
 			<>
-				Our licensed, insured electrical partner, <BalticLink />. They handle the power, we
+				Our licensed and insured electrical partner, <BalticLink />. They handle the power, we
 				schedule and manage them, and the track, the motor and the fabrication all answer to one
 				point of contact. You never have to find or coordinate a trade.
 			</>
@@ -144,7 +144,7 @@ export default function JupiterPage() {
 								at the hour you actually use the room. Everything is made to order in European
 								fabrics, with the lining and interlining specified alongside the face cloth rather
 								than after it, and hung by our own installers. Where a project calls for
-								motorization, the wiring is handled by our licensed, insured electrical partner,{" "}
+								motorization, the wiring is handled by our licensed and insured electrical partner,{" "}
 								<BalticLink />, scheduled and managed by us.
 							</p>
 						</div>

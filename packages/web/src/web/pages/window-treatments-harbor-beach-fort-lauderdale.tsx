@@ -28,7 +28,7 @@ const FAQS: FaqEntry[] = [
 				Before the ceilings close. A drapery pocket, a recessed shade or a power run is
 				straightforward while the framing is open and awkward afterwards. We are glad to look at
 				drawings and tell you what to leave room for even if the treatments are months out.
-				Power is run by our licensed, insured electrical partner, <BalticLink />, coordinated by
+				Power is run by our licensed and insured electrical partner, <BalticLink />, coordinated by
 				us, which keeps that step off your general contractor's critical path.
 			</>
 		),
@@ -106,7 +106,7 @@ export default function HarborBeachPage() {
 								roller shades take the glare and the heat off the big glass, custom drapery
 								carries the scale of the room and the finish, and blackout layers do the
 								bedrooms. Everything is made to measure in European fabrics and fitted by our own
-								installers, with wiring handled by our licensed, insured electrical partner,{" "}
+								installers, with wiring handled by our licensed and insured electrical partner,{" "}
 								<BalticLink />, scheduled by us.
 							</p>
 						</div>

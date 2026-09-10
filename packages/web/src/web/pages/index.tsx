@@ -97,7 +97,13 @@ const SERVICES_PRIMARY = [
 		alt: "Motorized shades lowered evenly across a wide wall of glass",
 		title: "Motorized Shades",
 		body: "Whether you are softening the afternoon sun, creating complete blackout for a better night's sleep, or simply adding privacy, motorized shades make it effortless. With a touch, a tap, or a schedule, your home adjusts to the way you want to live.",
-		tags: "Softening · warmth · framing windows",
+		/* Retagged with the client's own three terms when this card became
+		   Motorized Shades. The old line ("Softening · warmth · framing
+		   windows") was written for drapery and moved up with that copy. House
+		   style for these labels is a middot separator and lower case after the
+		   first word, so it follows the other three rather than the slashes and
+		   capitals of the note it came from. */
+		tags: "Light control · privacy · schedule",
 		href: "/motorized.html",
 	},
 	{
@@ -215,7 +221,7 @@ const FAQS: FaqEntry[] = [
 		q: "For motorized shades, do I need to hire my own electrician?",
 		a: (
 			<>
-				No. We coordinate it through our licensed, insured electrical partner, <BalticLink />, on
+				No. We coordinate it through our licensed and insured electrical partner, <BalticLink />, on
 				the same schedule as the rest of your project. You never have to find or schedule an
 				electrician yourself.
 			</>
@@ -626,7 +632,7 @@ export default function HomePage() {
 							</p>
 							<p>
 								We keep it all coordinated under one roof. Our own installers hang every treatment,
-								and the electrical that motorization needs is handled by our licensed, insured
+								and the electrical that motorization needs is handled by our licensed and insured
 								electrical partner, <BalticLink />, scheduled and managed by us. No chasing a
 								third party,
 								no <em>"that's not our department,"</em> and no gap between the person who designed
@@ -713,7 +719,7 @@ export default function HomePage() {
 									<li>
 										<b>Electrical, handled for you.</b>
 										<span className="spec-detail">
-											The electrical is handled by our licensed, insured electrical partner,{" "}
+											The electrical is handled by our licensed and insured electrical partner,{" "}
 											<BalticLink />, so motorized projects don't stall while a client hunts for
 											an electrician; we coordinate it for you.
 										</span>

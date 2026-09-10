@@ -24,7 +24,7 @@ const FAQS: FaqEntry[] = [
 		a: (
 			<>
 				By specifying the track for the finished weight and motorizing anything too wide to draw
-				evenly by hand. The power is handled by our licensed, insured electrical partner,{" "}
+				evenly by hand. The power is handled by our licensed and insured electrical partner,{" "}
 				<BalticLink />, scheduled and managed by us, so the wiring and the fabrication answer to
 				one point of contact.
 			</>
@@ -103,7 +103,7 @@ export default function SanctuaryPage() {
 								problems, because they are. Solar fabrics are chosen by openness against each
 								elevation, drapery is specified with its lining rather than after it, and
 								everything is made to order in European fabrics and fitted by our own installers.
-								Motorized runs are planned early and the wiring is handled by our licensed, insured electrical partner, <BalticLink />, scheduled and managed by us.
+								Motorized runs are planned early and the wiring is handled by our licensed and insured electrical partner, <BalticLink />, scheduled and managed by us.
 							</p>
 						</div>
 						<ul className="clean" data-reveal>
