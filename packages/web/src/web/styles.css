@@ -2934,6 +2934,58 @@ header.lp .logo img {
 	}
 }
 
+/* Typographic hero, no photograph. The neighbourhood pages in the geo layer use
+   this: there is no honest photograph of most of these enclaves, and inventing
+   or borrowing one would break the no-stock rule. So the header carries itself
+   on type against the cream ground. Shorter than the photographic hero because
+   there is no image to give height to, but the same vertical rhythm and the
+   same centred measure, so the two hero kinds feel like one family. */
+.page-lp .hero.plain {
+	min-height: 0;
+	padding: 92px 0 64px;
+	background: var(--surface);
+	border-bottom: 1px solid var(--hairline);
+}
+
+.page-lp .hero.plain::after {
+	content: none;
+}
+
+.page-lp .hero.plain .inner {
+	color: var(--ink);
+}
+
+.page-lp .hero.plain .kicker {
+	color: var(--accent);
+}
+
+.page-lp .hero.plain h1 {
+	color: var(--ink);
+	font-weight: 500;
+	font-size: clamp(36px, 5.1vw, 58px);
+}
+
+.page-lp .hero.plain p {
+	color: var(--ink-soft);
+}
+
+/* The ghost button is drawn cream on cream for a photographic hero, which makes
+   it invisible against this one. Same button, inverted for a light ground. */
+.page-lp .hero.plain .btn-ghost {
+	border-color: var(--ink);
+	color: var(--ink);
+}
+
+.page-lp .hero.plain .btn-ghost:hover {
+	background: rgba(57, 41, 27, 0.08);
+}
+
+@media (max-width: 700px) {
+	.page-lp .hero.plain {
+		padding: 64px 0 48px;
+	}
+}
+
 .page-lp .block {
 	padding: 76px 0;
 }
