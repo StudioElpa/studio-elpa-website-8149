@@ -1861,3 +1861,91 @@ that from the file itself.
 The paragraph under the heading on the photographic heroes is still short of the contrast target.
 That is the photographs being bright behind the text rather than anything in the code, and it needs
 either a darker crop or your acceptance. The thirteen typographic pages are comfortably clear.
+
+## 27. The areas row, and a postal code fix in the structured data
+
+Two things you approved after the twenty geographic pages went live. Both are
+done and checked. The site is still preview only, nothing has been published.
+
+### The "Areas we serve" row on the homepage
+
+There is now a quiet row of seven city links as the last thing before the
+footer: Palm Beach, Boca Raton, Delray Beach, Jupiter, Fort Lauderdale, Coral
+Gables and Palm Beach Gardens. Each one goes to that city's page.
+
+It is deliberately understated. Small uppercase label, a hairline rule above it,
+no box or colored band, and the links sit in the soft brown until you hover
+them. On a laptop it sits on one line. On a phone it wraps to three lines and
+nothing runs off the edge. We looked at it on both, not just measured it.
+
+The thirteen neighborhood pages are **not** in this row, on purpose. Those are
+reached from their city page, the way someone actually browses. Twenty links
+stacked above the footer starts to look like a list built for search engines
+rather than for a reader, which is the opposite of what those pages are for.
+
+One thing you may want to change: because the links have no underline until you
+hover, the row reads as plain text at first glance. That is what keeps it quiet,
+but it also makes the links less obvious. If you would rather they always look
+clickable, we add a light underline. Your call, it is a small change.
+
+### A real defect fixed in the structured data
+
+This one was worth catching. In the machine readable data every search engine
+and AI assistant reads, we list the areas you serve, each with its postal code.
+For any city with more than one ZIP, we were putting all of them into the single
+postal code field at once, so Boca Raton was described as being in
+"33432, 33431, 33496, 33487". That is not a postal code. It matches nothing.
+
+That field is meant to hold one code. So each postal area is now its own entry.
+Boca Raton appears four times, once per ZIP, each entry naming a real area. It
+looks repetitive when you read the raw data, and that is correct: those are four
+genuinely different postal areas you work in.
+
+Worth being clear that this was an old fault, not something the new pages broke.
+It simply could not be seen before, because every city on the site until now had
+just one ZIP. Building the city pages is what exposed it.
+
+We then checked the actual published output rather than trusting the build:
+2326 postal codes across all 40 pages, every one a single valid five digit code,
+and every city page claiming exactly the areas it is supposed to claim and
+nothing more. The extra detail adds about 2 kB per page, which is negligible.
+
+### One small question for you
+
+Three of the city pages now name the same ZIP twice under two different towns,
+because those towns genuinely share a postal code: Delray Beach and Gulf Stream
+both sit in 33483, Jupiter and Tequesta in 33469, Coral Gables and Pinecrest in
+33156. This is true and harmless, and it is only noticeable now that each code
+is listed separately. We have left it exactly as is. If you would prefer one
+town per code, tell us which town should own each of the three and we will
+change it.
+
+### Everything re-checked
+
+You asked us to run the full set of checks again afterwards, so we did. All
+green: the geographic pages, the structured data, the electrical partner
+wording, the footer, the services section, and the hero sizing. Just under 3600
+individual assertions. The site also rebuilds clean at 40 pages.
+
+Three of our own test scripts had to be corrected, because they were wrong and
+the site was right. One assumed a page's breadcrumb trail is always two steps
+deep, but a neighborhood page correctly has three, Home then its city then the
+neighborhood. Another flagged Royal Palm Yacht & Country Club as a mismatch
+because of how an ampersand has to be written in HTML. We fixed the tests and
+made the breadcrumb one stricter while we were there, so it now also confirms
+every step in a trail points at a page that really exists.
+
+### Still outstanding, unchanged
+
+- Speed has not been re-measured since nineteen pages were added. It needs a
+  proper pass before anything is published.
+- The text over the photographic page headers is still slightly under the formal
+  contrast target. That is bright photography behind white text, not something
+  styling fixes. It needs either a darker crop or your acceptance.
+- We still need you to confirm the blackout photograph is a genuine photograph
+  of your own project.
+- The six new city pages all reuse a photograph from elsewhere on the site,
+  because every image was already in use. More project photography would help
+  the neighborhood pages most.
+- Estimate prices are still waiting on Aviva.
+- The duplicate founder link on the homepage is left alone while Aviva reviews it.

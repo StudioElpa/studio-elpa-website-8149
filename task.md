@@ -4695,3 +4695,104 @@ The multi-ZIP postalCode shape in areaServedNodes() (seo-data.ts ~line 80) and t
 geography block are BOTH questions for the user, written up in QA-NOTE §26 with options. Not
 decided unilaterally. Lighthouse, footer statement scope, hydration blanking, estimate prices,
 founder link, blackout photo provenance: all as previously recorded.
+
+## §28 The areas row, the multi-ZIP schema fix, and three more lying assertions (DONE)
+
+Two follow-ups the client approved after the geo layer landed. Both are now
+committed: `6b50082` for the schema fix, `4373dff` for the areas row.
+
+### 1. `areaServed` is now one City node per postal code
+
+`areaServedNodes()` in `lib/seo-data.ts` emitted `postalCode: a.zips.join(", ")`.
+`postalCode` is a single code in schema.org, not a list, so a four-ZIP city
+handed parsers `"33432, 33431, 33496, 33487"`, a value matching no real postal
+area anywhere. Pre-existing defect. It stayed invisible because every page
+before Phase 3 carried single-ZIP cities; the geo layer shipped Boca Raton,
+Fort Lauderdale and Coral Gables and exposed it.
+
+Now a `flatMap`, one node per ZIP. A multi-ZIP city yields several City nodes
+sharing a name, each naming one real postal area. Chosen over dropping
+`postalCode` entirely, which would have thrown away the ZIP signal the brief
+asked for. Reasoning is in the doc comment above the function so nobody
+"tidies" it back into a joined string.
+
+Verified against the emitted JSON-LD, not the build log (`/tmp/zipqa.py`):
+
+- 2326 `postalCode` values across 40 pages, every one a single 5-digit code
+- no comma-joined string survives anywhere
+- the `LocalBusiness` node claims the full 44-ZIP / 30-city footprint on all 40 pages
+- all 20 geo `Service` nodes match their declared city/ZIP list from
+  `site-routes.json` exactly, in order
+- cost: the sitewide `areaServed` grows 30 nodes -> 44, `+2294 bytes/page`,
+  about `+92 kB` across the site. Mean page is now 108.3 kB, JSON-LD 16.9% of it.
+
+**Open, flagged to the client, not silently resolved.** Three geo pages now
+carry the same ZIP twice under two different city names, because the registry
+says two municipalities share it: Delray Beach / Gulf Stream on 33483, Jupiter /
+Tequesta on 33469, Coral Gables / Pinecrest on 33156. This is factually true, a
+ZIP can span municipalities, and it is only visible now that nodes are split
+per ZIP. Left as is pending the client's call.
+
+### 2. The "Areas we serve" row
+
+Seven city links in `pages/index.tsx`, last block before the footer, with a
+`.areas` block in `styles.css`. The thirteen neighborhood pages are deliberately
+NOT listed: they hang off their city parent, and twenty links above the footer
+would read as keyword stuffing, which is the opposite of what those pages are
+for. Keep it that way.
+
+Styled as a footnote, not navigation: hairline above, no card or band, heading
+at 13px uppercase rather than a display h2, links in `--ink-soft` until hovered.
+Separation is the flex gap alone with no bullet glyph, so a screen reader reads
+seven place names and not seven separator characters.
+
+Checked by eye as well as by number (`/tmp/areasqa.py`, 18/18), because the
+invisible ghost button of §26 passed every numeric assertion too:
+
+- 1440: one line, reads as a quiet footnote
+- 360: wraps to three sane lines, no sideways scroll
+- link contrast 10.10 against the cream, well clear of 4.5
+- exactly 7 links, text/href/order matching spec, section last inside `main`
+
+One judgement call worth knowing: at rest the links carry no underline, so the
+row reads as plain text until hovered. That is what "quiet, not keyword
+stuffing" asks for, but it does mean the links are not obviously links. Say the
+word and they get a resting underline.
+
+### 3. Three more assertions that were wrong, not the site
+
+Consistent with the pattern: most failures on this project are bad assertions.
+
+- `geoqa.py` was predicted to fail and **did not**. It accumulates city -> set
+  of ZIPs, so splitting a now-single ZIP still rebuilds the registry set. Only
+  its comment was stale, describing the joined string as an unfixed modeling
+  choice. Comment corrected, 144/144.
+- `aeoqa.py` hardcoded `breadcrumb positions == [1, 2]` and read `items[1]` as
+  the leaf. The 13 neighborhood pages correctly emit a **three** level trail
+  (Home > city parent > neighborhood). Generalized to sequential positions of
+  any depth with `items[-1]` as the leaf, and it now also asserts every
+  intermediate crumb is a real prerendered file, so a trail cannot point a
+  crawler at a URL that does not exist. Stricter, not looser.
+- `aeoqa.py` also compared `<title>` and `content="..."` raw against the
+  registry, so Royal Palm Yacht & Country Club failed on `&amp;`, which is the
+  correct serialization. Same root cause already fixed in `prerender.py`. Now
+  decodes entities before comparing, via `html.unescape`.
+
+### Suite after the changes
+
+`geoqa 144/144`, `aeoqa 2299/2299`, `balticqa 282/282`, `footerqa 534/534`,
+`svcqa PASS`, `herosizeqa 50/50`, `areasqa 18/18`, `zipqa 4/4`.
+Lint clean on 104 files. Clean rebuild: 40 routes, sitemap 39 urls.
+
+`heroalign` still reports `NO HERO H1` on `/estimate.html` and
+`/drapery-headers.html`. **Not a regression**, confirmed again: neither page has
+a `.hero` element at all and neither file was touched. Pre-existing scoping gap
+in that script, left alone rather than "fixed" by loosening it.
+
+Still open from before, unchanged by this work: `herostaticqa.py`,
+`herofreezeqa.py` and `heroglyph.py` all assume a photographic hero with a
+`.bgimg` and do not cover the 13 `.hero.plain` pages. None of the `/tmp/*.py`
+scripts are version controlled; they should move into the repo.
+
+Per the client, the duplicate founder link in the homepage About section is
+**left alone** while Aviva reviews it.
