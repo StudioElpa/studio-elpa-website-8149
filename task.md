@@ -4506,3 +4506,192 @@ Suite green after both changes: build 21 routes / sitemap 20 urls, lint clean, a
 footerqa 534/534, respqa 840/0, herosizeqa 50/0, herostaticqa 65/0, herofreezeqa 48/0, balticqa
 63/0, svcqa PASS, menuqa 5/5, stubqa PASS, qa/qa2/qa_copy/qa_a11y clean, 18 homepage images 0
 broken, CLS 0.0015 at 360px.
+
+## §26 The geo layer completed: 20 pages, routing, and the guard fix (DONE)
+
+Closing the user's four-part request. Steps 1 to 3 (demote the exemplar's double-duty H2, soften
+the designer-referral volume claim, leave the FAQs alone) were done earlier in the session. This
+section covers step 4: the remaining pages, the routing, and the verification.
+
+### Pages
+
+All 20 geo routes now have a component. 7 city pages on Template A (photographic hero), 13
+neighbourhood pages on Template B (`.hero.plain`, typographic, no photograph). Written this pass:
+Manalapan, Palm Beach Island, El Cid and SoSo, Old Palm, Jupiter Island, Harbor Beach, Las Olas
+Isles, Gables Estates and Cocoplum.
+
+The handover claimed 9 remained. Listing the directory against the registry showed 8. Counting from
+the filesystem rather than from the note is why that did not turn into a phantom page.
+
+Each page is written from the brief's per-area angle, with its own lede, pull quote, `ul.clean`
+bullets and three FAQs. No two pages share body copy. Every page names and links Baltic Electrical,
+and no page claims a project, a client, a referral share or any volume.
+
+### The organising idea per page, so future edits do not flatten them
+
+- Manalapan: ocean-to-lake, two exposures in one house, specified elevation by elevation.
+- Palm Beach Island: one page for the whole island, ceremony where warranted and restraint elsewhere.
+- El Cid and SoSo: historic fabric, openings that are no longer square, motorization kept invisible.
+- Old Palm: scope, a whole house specified in one pass so it agrees with itself.
+- Jupiter Island: discretion as part of the specification, plus salt-air honesty about fabric.
+- Harbor Beach: water on one side and hard sun on the other, schedules that run while the house is empty.
+- Las Olas Isles: privacy is a day-versus-night problem, since a solar weave reverses after dark.
+- Gables Estates and Cocoplum: written to be read by the designer, weight and tolerance over taste.
+
+### Routing
+
+`app.tsx` now carries all 19 new lazy imports and routes, ordered to mirror `site-routes.json`.
+The four previously written but unreachable pages (Royal Palm, St. Andrews, The Sanctuary, Gulf
+Stream) are wired. `GeoAdmiralsCove` moved to its registry position.
+
+### The prerender guard was comparing raw markup (FIXED)
+
+With every page present, one route still failed: Royal Palm Yacht & Country Club. The rendered
+title was `Royal Palm Yacht &amp; Country Club`, the registry says `&`, and `head_defects()`
+compared the two as raw strings.
+
+The site was right. `&amp;` is the correct serialization of `&` inside `<title>` and a `content`
+attribute, and every crawler decodes it. The assertion was wrong. `prerender.py` now decodes
+entities with `html.unescape` before comparing, aliased as `html_unescape` because the local
+parameter is already named `html`. The description check was also upgraded from a substring test to
+a real extract-and-compare, so it now reports what it got instead of just failing.
+
+This is a stricter guard, not a weaker one: it still catches a genuinely wrong title, and it now
+reports the actual mismatch. The alternative, renaming the club to avoid an ampersand, would have
+damaged a proper noun to satisfy a bug.
+
+### Internal links
+
+Each city page links down to its neighbourhood children; each neighbourhood page links up to its
+parent city, out to service pages, and into a Journal guide. Added this pass: outbound links from
+`/drapery.html`, `/motorized.html` and `/roman-shades.html` into the relevant city pages, so the
+geo layer is no longer an island reachable only from the sitemap.
+
+Still open and deliberately not decided: whether the homepage or `LandingFooter` should carry a
+geography block. 20 links in the footer would be heavy. Put to the user with options.
+
+### US spelling sweep, round two
+
+The earlier sweep missed `recognis-`. Fixed in rendered copy: `neighbours` in the Las Olas Isles
+registry description (which renders as a meta description), `minimise` on `/specialty-shaped-windows`,
+two `grey` on `/european-fabrics`, one `grey` on the Palm Beach exemplar, and `recognised` on
+`/flame-retardant-drapery` and `/hospitality-window-treatments`. Code comments still say
+"neighbourhood" and that stays fine.
+
+One false positive worth recording: a greedy `realis\w*` pattern flagged "realistic", which is
+correct US English. The pattern now matches only British verb endings, `-is(e|ed|es|ing|ation)`.
+The copy was right and the check was wrong, which is now five times on this project.
+
+### Verification
+
+`/tmp/geoqa.py`, new, runs against the prerendered dist HTML rather than source. 144/144.
+
+- **BreadcrumbList is Home > City > Neighbourhood on all 13 child pages**, Home > City on the 7
+  city pages, positions sequential. This is the first time the registry's `parent` field has been
+  exercised end to end, and it works.
+- `Service.areaServed` matches the registry exactly on all 20, region FL throughout.
+- The four sitewide service pages still carry the full 30-city list.
+- One `<h1>` per page across all 40 routes, no em dashes, no British spellings in rendered text.
+
+Baltic coverage checked directly across all 40 dist pages instead of trusting `/tmp/balticqa.py`,
+whose hardcoded page list does not include a single geo route. All 20 geo pages name Baltic and
+link it. **`balticqa.py`, `footerqa.py` and `svcqa.py` still have hardcoded lists and are blind to
+the geo layer. They report green while checking nothing there.** Widen them before trusting a pass.
+
+Looked at three new plain-hero pages at 1440 and 360, not just measured them. Both hero buttons
+render with real contrast, `.btn-row` wraps so the buttons stack on a phone, `scrollWidth` equals
+`clientWidth` so there is no sideways scroll, and there is one logo lockup rather than two.
+
+Build 40 routes / sitemap 39 urls, lint clean on 104 files.
+
+### Known defect, NOT fixed, needs a decision
+
+`areaServedNodes()` in `seo-data.ts` emits a city's ZIPs as one comma-joined string:
+`postalCode: "33432, 33431, 33496, 33487"`. Schema.org `postalCode` is a single postal code, so a
+consumer parsing that field gets a value matching no real ZIP.
+
+This is pre-existing, not introduced here. It was invisible until now because every earlier page
+happened to carry one ZIP per city; the 6 new multi-ZIP pages are the first to exercise it. Fixing
+it means reshaping ranking-relevant markup on all 40 pages, and there are two defensible shapes
+(one City node per ZIP, or drop `postalCode` and rely on the city name, which loses the ZIP signal
+the brief asked for). Out of scope to change unilaterally. Raised with the user. `geoqa.py` splits
+the string and asserts the ZIP set, so the data is still verified even though the shape is not.
+
+## §27 The partner-phrase sweep, and two QA scripts that were lying (DONE)
+
+Closing out Phase 3. Build green throughout: 40 routes, 39-url sitemap, lint clean on 104 files.
+
+### The canonical Baltic phrase had drifted across the geo layer
+
+§8 set a standing user instruction: every electrical reference reads "our licensed, insured
+electrical partner, <BalticLink />", identical everywhere, no unnamed references. Writing twenty
+pages, I drifted into three variants:
+  - "licensed and insured electrical partner <BalticLink />"   (11 pages, FAQ answers)
+  - "licensed and insured partner <BalticLink />"              (st-andrews: dropped "electrical",
+    which is the exact unnamed-style variant §8 killed sitewide)
+  - "licensed, insured electrical partner <BalticLink />"      (7 pages: no comma before the name)
+
+The closing paragraph on all 20 was already canonical; the drift was confined to the FAQ mention.
+Checked task.md §8 and the 1768 standing-fact entry BEFORE editing: the record is explicit that the
+user asked for one wording everywhere, so the SITE was wrong and the assertion was right. Fixed the
+copy. 39 mentions across the geo layer now canonical.
+
+### My fix script over-reached. Caught it, reverted it.
+
+/tmp/canonfix.py rewrote 34 matches when only ~20 were drift. Its "already canonical, skip" guard
+compared against a replacement string carrying HARDCODED tab indentation, so canonical mentions at
+a different indent were "rewritten" to my indentation. It touched four APPROVED V1 files
+(index.tsx, founder.tsx, blackout.tsx, hospitality-window-treatments.tsx), mangling their wrapping.
+
+Rendered text was unaffected (JSX collapses whitespace) but the churn was unacceptable in approved
+files. Reverted all four with git checkout, then re-applied by hand the one legitimate change that
+revert threw away: hospitality "recognised" -> "recognized".
+
+Then repaired the collateral damage in the geo pages: 6 BalticLink lines re-indented to match the
+preceding line, and 2 real GRAMMAR defects my regex introduced, where an appositive gained its
+opening comma but not its closing one:
+  - coral-gables: "partner, Baltic Electrical plans the route"  -> added the closing comma, plus a
+    comma after "the better answer" which the appositive now requires to parse.
+  - delray-beach: "partner, Baltic Electrical handles it, scheduled and managed by us" -> recast to
+    "the work goes to our licensed, insured electrical partner, <BalticLink />, scheduled and
+    managed by us" to avoid a four-comma pile-up.
+
+LESSON: a regex that rewrites approved copy needs its no-op guard to compare NORMALISED text, not a
+string built with assumed indentation. Better still, restrict the file set up front.
+
+### Two QA scripts were passing while checking nothing
+
+/tmp/balticqa.py had a hardcoded 6-route list and still printed a "SITEWIDE" total. It reported
+"10 (want 10) OVERALL PASS" while 20 pages went unchecked. Widened to all 26 routes. New total 49 =
+10 sitewide + 19 geo pages x 2 + Palm Beach Island x 1.
+
+Palm Beach Island carries ONE mention, not two, and that is correct, not a gap: its three FAQs are
+about drapery, layering and designers, none about motorization, so there is no electrical claim to
+attribute. Forcing a second mention would mean inventing an electrical reference. Asserted as 1.
+
+Then it failed 3 of 282 on "every mention uses the canonical phrase" for jupiter, fort-lauderdale
+and royal-palm. Those three FAQ answers OPEN with the phrase, so the wording correctly begins with
+a capital "Our", and the check was a case-sensitive split. THE ASSERTION WAS WRONG, again. Made the
+canonical match case-insensitive; wording and punctuation are still matched exactly. 282/282.
+
+That is the sixth time on this project that a QA failure was the check, not the site. Decide which
+is wrong before touching copy, every time.
+
+### Suites re-run
+
+geoqa 144/144, balticqa 282/282, footerqa 534/534, svcqa PASS, herosizeqa 50/50.
+
+heroalign reports NO HERO H1 on /estimate.html and /drapery-headers.html. NOT a regression: neither
+page has a .hero element at all (verified in source and in dist), and neither file was touched this
+session. Pre-existing scoping gap in that script. Left alone rather than "fixed" by loosening it.
+
+footerqa and svcqa are homepage-scoped BY DESIGN, so their hardcoded lists are correct, not blind.
+The hero scripts still assume a photographic hero with a .bgimg and do not cover the 13 plain
+heroes. STILL OPEN: either teach them to skip .hero.plain or give the plain hero its own contract.
+
+### Still open, unchanged
+
+The multi-ZIP postalCode shape in areaServedNodes() (seo-data.ts ~line 80) and the homepage/footer
+geography block are BOTH questions for the user, written up in QA-NOTE §26 with options. Not
+decided unilaterally. Lighthouse, footer statement scope, hydration blanking, estimate prices,
+founder link, blackout photo provenance: all as previously recorded.

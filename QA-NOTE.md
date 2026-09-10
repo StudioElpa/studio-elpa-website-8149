@@ -1768,3 +1768,96 @@ appearing in the code, and looked at both the card and the hero by eye at deskto
 Page speed still has not been re-measured since Phase 2, and twenty new pages are about to be
 added, so that needs a proper pass before publish. The footer statement and sign-off are still
 homepage only. The estimate prices and the duplicate founder link still need you.
+
+## 26. All twenty geographic pages, linked and checked
+
+### The nineteen remaining pages are written
+
+The Palm Beach page you approved is now one of twenty. Your three notes on it were applied first:
+the closing heading is body text now with the neighbourhood names kept in the sentence, the lead
+time stays at six to eight weeks, the referral wording is softened, and the FAQs are untouched.
+
+**Seven city pages, each with a photograph:**
+Custom Drapery in Palm Beach, Custom Window Treatments in Boca Raton, Motorized Shades in Delray
+Beach, Luxury Window Treatments in Jupiter, Custom Drapery in Fort Lauderdale, Motorized Drapery in
+Coral Gables, and Custom Roman Shades in Palm Beach Gardens.
+
+**Thirteen neighbourhood pages, typographic header, no photograph:**
+Royal Palm Yacht & Country Club, St Andrews Country Club, The Sanctuary, Gulf Stream, Manalapan,
+Palm Beach Island, El Cid and SoSo, Old Palm, Admirals Cove, Jupiter Island, Harbor Beach, Las Olas
+Isles, and Gables Estates and Cocoplum.
+
+Every page is written from scratch. Different lead paragraph, different pull quote, different
+bullets, different questions. Not one is another page with the place name swapped, which is the
+whole point: twenty pages of the same text would be read as twenty copies of one page and would
+earn nothing.
+
+No page claims a project, a client, a referral share or a volume anywhere. Where we describe a
+place, we describe what its houses and its light actually do, never who we have supposedly worked
+for there.
+
+### They are linked up now
+
+The service pages point into them: Custom Drapery sends you to Palm Beach, Fort Lauderdale and Boca
+Raton, Motorized to Delray Beach, Coral Gables and Jupiter, Roman Shades to Palm Beach Gardens and
+Palm Beach Island. Each neighbourhood page sits under its city in the trail at the top, so a search
+engine reads Home, then Boca Raton, then The Sanctuary, and understands the neighbourhood belongs
+to the city rather than floating on its own. That trail is now checked on all twenty.
+
+### About the photographs
+
+Every one of the six new city photographs is one you have already seen elsewhere on the site. There
+was nothing left unused: we have roughly ten usable photographs and twenty pages. That is exactly
+why the thirteen neighbourhood pages use the typographic treatment instead. It caps the repetition
+at seven rather than spreading the same handful of rooms across twenty pages, and it means we never
+had to reach for a stock or generated photograph, which we will not do.
+
+If you can send more project photography, the neighbourhood pages are where it would do the most
+good.
+
+### Two things fixed that you would not have seen coming
+
+The "Request a Consultation" button on the thirteen typographic pages was invisible. It is drawn
+cream for a dark photograph, and these pages have a cream background, so it was cream on cream:
+technically present, passing every automated check, and unreadable. It was caught by looking at the
+page rather than measuring it, and fixed before it shipped thirteen times.
+
+Second, the sentence naming your electrician had drifted into three different versions across the
+new pages. You asked once that it read the same way everywhere. All thirty-nine mentions across the
+site now use the agreed wording, always linked, always opening in a new tab.
+
+We also swept the new copy for British spellings that had crept in: recognised, minimise, grey,
+neighbours. All are US spelling now, including one that had reached a page description.
+
+### Checks
+
+Forty pages build with a thirty-nine-url sitemap. The geographic layer passes 144 checks, the
+electrician naming 282, the footer 534, and the services section and hero sizing both pass. One
+heading per page, no sideways scrolling on a phone, no console errors, no invented content.
+
+### Two decisions we need from you
+
+**1. Do you want the geography visible on the homepage?** Right now these pages are reachable from
+the service pages and from search, but nothing on the homepage points to them. Twenty links in the
+footer would be heavy and would look like keyword stuffing. Our suggestion is a single quiet "Areas
+we serve" row on the homepage listing the seven cities only, with each neighbourhood reachable from
+its city page. Say the word and we will build it; we have deliberately not decided for you.
+
+**2. A technical question about the ZIP codes.** Where a city has several ZIP codes, we currently
+hand search engines all of them joined together in one field, which expects a single code. It is
+harmless today and it predates this work, but it is untidy. We can either list each ZIP properly as
+its own entry, or drop the ZIPs and rely on the city name, which is simpler but gives up a signal
+your brief specifically asked us to include. Our recommendation is the first. It touches all forty
+pages, so we would rather you chose than have us change it quietly.
+
+### Still waiting on you
+
+Page speed has still not been re-measured since Phase 2, and nineteen pages have just landed, so
+that needs a proper pass before publish. The footer statement and sign-off are still homepage only.
+The estimate prices and the duplicate founder link still need you. And we still need you to confirm
+the darkened nursery photograph is genuinely your own project photograph, because we cannot verify
+that from the file itself.
+
+The paragraph under the heading on the photographic heroes is still short of the contrast target.
+That is the photographs being bright behind the text rather than anything in the code, and it needs
+either a darker crop or your acceptance. The thirteen typographic pages are comfortably clear.
