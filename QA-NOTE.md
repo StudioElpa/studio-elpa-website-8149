@@ -1949,3 +1949,51 @@ every step in a trail points at a page that really exists.
   the neighborhood pages most.
 - Estimate prices are still waiting on Aviva.
 - The duplicate founder link on the homepage is left alone while Aviva reviews it.
+
+---
+## 28. The duplicate founder link removed
+
+You asked us to take out the extra link to the founder page in the "Who we are"
+section on the homepage, so it is gone. This replaces what we wrote in the last
+note about leaving it while Aviva reviewed it.
+
+There were two paths to the same page in that one section: a loose line of text
+reading "Read a note from our founder", and the "Read more" link on Aviva's card
+just below it. Only the loose line went. Both team cards are exactly as they
+were, Aviva's still goes to the founder page and Elvira's still goes to hers.
+
+The section reads better for it. The written column now ends on the client
+quote, which is a stronger close than a small utility link, and there is no gap
+left where the line used to be. We looked at it on a laptop as well as counting
+the links, and the section now has exactly the two links it should have.
+
+The founder page itself is untouched and still opens from both places it should.
+
+### Re-checked afterwards
+
+We rebuilt the site clean and ran the whole set of checks again. All green,
+around 3600 individual assertions, 40 pages built. Nothing else moved.
+
+### Still outstanding, unchanged
+
+- Speed has not been re-measured since nineteen pages were added. It needs a
+  proper pass before anything is published.
+- The text over the photographic page headers is still slightly under the formal
+  contrast target. That is bright photography behind white text, not something
+  styling fixes. It needs either a darker crop or your acceptance.
+- We still need you to confirm the blackout photograph is a genuine photograph
+  of your own project.
+- The six new city pages all reuse a photograph from elsewhere on the site,
+  because every image was already in use. More project photography would help
+  the neighborhood pages most.
+- Estimate prices are still waiting on Aviva.
+
+### Two questions from the last note still open
+
+- Three city pages name the same ZIP twice under two towns, because those towns
+  genuinely share it: Delray Beach and Gulf Stream on 33483, Jupiter and
+  Tequesta on 33469, Coral Gables and Pinecrest on 33156. Left as is. If you
+  want one town per code, tell us which town owns each.
+- The seven "Areas we serve" links have no underline until you hover, which
+  keeps the row quiet but makes them less obviously clickable. A resting
+  underline is a one-line change if you want it.

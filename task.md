@@ -4796,3 +4796,62 @@ scripts are version controlled; they should move into the repo.
 
 Per the client, the duplicate founder link in the homepage About section is
 **left alone** while Aviva reviews it.
+
+---
+
+## §29 The duplicate founder link removed from "Who we are" (DONE)
+
+Committed as `046527e`. This **supersedes** the earlier hold recorded in the
+client note ("left alone while Aviva reviews it"). The client gave the
+instruction directly, so the hold is dead. Do not reinstate the link on the
+strength of that older line.
+
+### What went
+
+In `pages/index.tsx`, inside the `#about` "Who we are" section, one `<p>` existed
+only to carry `<Link to="/founder.html">Read a note from our founder →</Link>`.
+That `<p>` is gone, replaced by a comment explaining why, so the next person does
+not read the gap as an oversight and put it back. `Link` is still used 10 times
+in the file, so no dead import.
+
+### What stayed, and must stay
+
+Both team-card links are untouched:
+
+- Aviva: `<Link to="/founder.html">Read more →</Link>`
+- Elvira: `<Link to="/meet-elvira.html">Read more →</Link>`
+
+The section was never short of a route to the founder page. It had two, one of
+them a loose utility line above the cards. Only the duplicate went.
+
+### The layout after
+
+Verified by eye at 1440 (`/tmp/about-1440.png`) and by count
+(`/tmp/aboutshot.py`, PASS): `#about` now contains exactly two links, one to
+`/founder.html` and one to `/meet-elvira.html`. The body column closes on the
+`client-quote` element ("You really listened," / instead of "You sold me
+something."), which reads better as a closing beat than a trailing utility link
+did, and leaves no orphaned gap above the team cards.
+
+`"note from our founder"` still appears in exactly one dist file,
+`founder.html`, as that page's own kicker above its h1. That is legitimate and
+was not in scope.
+
+### Suite after the change
+
+Full run after a clean rebuild, not before: `geoqa` 144/144, `zipqa` 4/4,
+`aeoqa` 2299/2299, `balticqa` 282/282, `footerqa` 534/534, `svcqa` PASS,
+`herosizeqa` 50/50, `areasqa` 18/18, `aboutshot` PASS. `bun run lint` clean on
+104 files. Clean rebuild: 40 routes, sitemap 39 urls.
+
+`heroalign.py` still reports `NO HERO H1` on `/estimate.html` and
+`/drapery-headers.html`. Re-confirmed a third time as **not a regression**:
+neither page has a `.hero` element at all, in source or in dist, and neither
+file was touched. It is a scoping gap in that script. Left alone rather than
+"fixed" by loosening the assertion.
+
+Still open on the QA side, unchanged: `herostaticqa.py`, `herofreezeqa.py` and
+`heroglyph.py` all assume a photographic hero with a `.bgimg` and do not cover
+the 13 `.hero.plain` pages. Either teach them to skip `.hero.plain` or give the
+plain hero its own contract. None of the `/tmp/*.py` scripts are
+version-controlled; they should move into the repo.
