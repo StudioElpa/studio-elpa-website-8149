@@ -35,6 +35,7 @@ import re
 import socketserver
 import sys
 import threading
+from html import unescape as html_unescape
 
 # Scratch only, and deliberately not 4200 (dev server), 4300 (the template's
 # mobile port) or 4310 (kept free for serving dist while measuring).
@@ -170,6 +171,15 @@ def write_sitemap(dist: str) -> int:
 TITLE_RE = re.compile(r"<title>(.*?)</title>", re.S)
 CANONICAL_RE = re.compile(r'<link[^>]+rel="canonical"[^>]*>')
 HREF_RE = re.compile(r'href="([^"]+)"')
+DESC_RE = re.compile(r'<meta[^>]+name="description"[^>]*>')
+CONTENT_RE = re.compile(r'content="([^"]*)"')
+
+# Registry strings hold real punctuation ("Royal Palm Yacht & Country Club"),
+# and the DOM correctly serializes that as &amp; in a title or a content
+# attribute. Comparing raw markup against the registry would flag a page that
+# is in fact perfectly encoded, so decode the extracted value before comparing.
+# This still catches a genuinely wrong title, it just stops punctuation from
+# reading as a defect.
 
 
 def head_defects(route: str, html: str) -> list[str]:
@@ -185,12 +195,20 @@ def head_defects(route: str, html: str) -> list[str]:
 
     problems: list[str] = []
     title = TITLE_RE.search(html)
-    if not title or title.group(1).strip() != meta["title"]:
-        got = title.group(1).strip() if title else "(none)"
-        problems.append(f"{route}: title is {got!r}, expected {meta['title']!r}")
+    got_title = html_unescape(title.group(1).strip()) if title else None
+    if got_title != meta["title"]:
+        problems.append(
+            f"{route}: title is {got_title or '(none)'!r}, expected {meta['title']!r}"
+        )
 
-    if f'content="{meta["description"]}"' not in html:
-        problems.append(f"{route}: meta description does not match the registry")
+    desc = DESC_RE.search(html)
+    desc_content = CONTENT_RE.search(desc.group(0)) if desc else None
+    got_desc = html_unescape(desc_content.group(1)) if desc_content else None
+    if got_desc != meta["description"]:
+        problems.append(
+            f"{route}: meta description is {got_desc or '(none)'!r}, "
+            f"expected {meta['description']!r}"
+        )
 
     link = CANONICAL_RE.search(html)
     href = HREF_RE.search(link.group(0)) if link else None
