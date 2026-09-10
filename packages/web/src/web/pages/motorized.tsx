@@ -281,7 +281,11 @@ export default function MotorizedPage() {
 							Arched and angled openings follow their own rules on{" "}
 							<Link to="/specialty-shaped-windows.html">specialty-shaped windows</Link>, and the
 							concealed track a motorized panel rides on is covered under{" "}
-							<Link to="/drapery-hardware.html">drapery hardware</Link>.
+							<Link to="/drapery-hardware.html">drapery hardware</Link>. For the work where you
+							live, see{" "}
+							<Link to="/motorized-shades-delray-beach.html">motorized shades in Delray Beach</Link>,{" "}
+							<Link to="/motorized-drapery-coral-gables.html">motorized drapery in Coral Gables</Link>{" "}
+							and <Link to="/luxury-window-treatments-jupiter.html">Jupiter</Link>.
 						</p>
 					</div>
 				</section>

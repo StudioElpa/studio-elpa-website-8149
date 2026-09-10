@@ -199,7 +199,10 @@ export default function DraperyPage() {
 							layers well over a solar or dimout shade or a{" "}
 							<Link to="/roman-shades.html">Roman shade</Link>, and when the panels should draw
 							themselves, <Link to="/motorized.html">motorized drapery and shades</Link> is the next
-							step.
+							step. If you would rather read about the work where you live, we have pages on{" "}
+							<Link to="/custom-drapery-palm-beach.html">custom drapery in Palm Beach</Link>,{" "}
+							<Link to="/custom-drapery-fort-lauderdale.html">Fort Lauderdale</Link> and{" "}
+							<Link to="/custom-window-treatments-boca-raton.html">Boca Raton</Link>.
 						</p>
 					</div>
 				</section>

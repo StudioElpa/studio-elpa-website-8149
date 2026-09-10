@@ -168,7 +168,12 @@ export default function RomanShadesPage() {
 							<Link to="/motorized.html">motorization</Link> makes them usable every day rather
 							than once a week. If you are still weighing how the top of a window should look, our
 							guide to <a href="/drapery-headers.html">drapery headers</a> is a useful companion
-							read.
+							read. Closer to home, we have a page on{" "}
+							<Link to="/custom-roman-shades-palm-beach-gardens.html">
+								custom Roman shades in Palm Beach Gardens
+							</Link>{" "}
+							and one on{" "}
+							<Link to="/window-treatments-palm-beach-island.html">Palm Beach Island</Link>.
 						</p>
 					</div>
 				</section>
