@@ -18,29 +18,34 @@ import { usePageMotion, useHomeMotion } from "../hooks/use-motion";
    two as actions, with wider columns, larger labels and a chevron. The client
    asked for one uniform set instead, so there is no per-tile variant any more:
    every entry renders identically and the order is the only ordering signal. */
+/* The `alt` on each tile used to repeat its own `<h3>` verbatim ("White glove
+   service" then "White Glove Service"), so a screen reader announced every
+   tile twice. Lighthouse flags it as image-redundant-alt. The illustrations
+   carry no information the title does not, so they are marked decorative with
+   an empty alt and the heading is left to speak. */
 const PILLARS = [
 	{
 		href: "#process",
 		img: "tile-glove.jpg",
-		alt: "White glove service",
+		alt: "",
 		title: "White Glove Service",
 	},
 	{
 		href: "#services",
 		img: "tile-custom.jpg",
-		alt: "Fully customized solutions",
+		alt: "",
 		title: "Fully Customized Solutions",
 	},
 	{
 		href: "/estimate.html",
 		img: "tile-estimate.jpg",
-		alt: "Quick estimate",
+		alt: "",
 		title: "Quick Estimate",
 	},
 	{
 		href: "#contact",
 		img: "tile-appt.jpg",
-		alt: "Schedule a private appointment",
+		alt: "",
 		title: "Schedule a Private Appointment",
 	},
 ];
