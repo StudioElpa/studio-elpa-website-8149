@@ -3,3 +3,6 @@ dist/
 .turbo/
 .env
 *.log
+
+# python bytecode from the qa scripts
+__pycache__/
