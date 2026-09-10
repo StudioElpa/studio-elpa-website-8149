@@ -902,6 +902,44 @@ export default function HomePage() {
 					</div>
 				</section>
 
+				{/* ---------------- AREAS WE SERVE ----------------
+				    Client instruction: a quiet row naming the SEVEN CITIES only, each
+				    linking to its city page. The thirteen neighborhood pages are reached
+				    from their city parent, not from here: twenty links in the footer would
+				    read as keyword stuffing, which is the opposite of what these pages are
+				    for. Deliberately small, low-contrast and last before the footer, so it
+				    reads as a footnote rather than a navigation block. */}
+				<section className="block areas" aria-labelledby="areas-heading">
+					<div className="wrap narrow">
+						<h2 id="areas-heading" className="areas-h">
+							Areas we serve
+						</h2>
+						<ul className="areas-row">
+							<li>
+								<a href="/custom-drapery-palm-beach.html">Palm Beach</a>
+							</li>
+							<li>
+								<a href="/custom-window-treatments-boca-raton.html">Boca Raton</a>
+							</li>
+							<li>
+								<a href="/motorized-shades-delray-beach.html">Delray Beach</a>
+							</li>
+							<li>
+								<a href="/luxury-window-treatments-jupiter.html">Jupiter</a>
+							</li>
+							<li>
+								<a href="/custom-drapery-fort-lauderdale.html">Fort Lauderdale</a>
+							</li>
+							<li>
+								<a href="/motorized-drapery-coral-gables.html">Coral Gables</a>
+							</li>
+							<li>
+								<a href="/custom-roman-shades-palm-beach-gardens.html">Palm Beach Gardens</a>
+							</li>
+						</ul>
+					</div>
+				</section>
+
 				{/* V1.2 section 14: the final "Tell us about the room." callout is removed.
 				    Its heading was identical to the contact section's own h2 higher up the
 				    same page and its button only scrolled back to that section, so it

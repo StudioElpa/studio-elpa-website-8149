@@ -2986,6 +2986,75 @@ header.lp .logo img {
 	}
 }
 
+/* ---------------------------------------------------------------------------
+   AREAS WE SERVE (homepage, last block before the footer)
+
+   Client instruction: quiet, small, near the footer, reading as a natural row
+   rather than a keyword-stuffed link farm. So: no card, no band, a hairline
+   above it, a heading set at body size rather than as a display h2, and the
+   links in the soft ink instead of the accent until hovered.
+
+   Seven cities only. The thirteen neighborhood pages are reached from their
+   city parent. The row wraps to as many lines as it needs; the items are
+   separated by the flex gap alone, with no bullet or text glyph between them,
+   so a screen reader reads seven place names and not seven separator
+   characters.
+--------------------------------------------------------------------------- */
+.areas {
+	padding: 44px 0 52px;
+	border-top: 1px solid var(--hairline);
+}
+
+.areas-h {
+	margin: 0 0 14px;
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: var(--ink-soft);
+	opacity: 0.75;
+}
+
+.areas-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 18px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.areas-row li {
+	margin: 0;
+	padding: 0;
+	font-size: 15px;
+	line-height: 1.5;
+}
+
+.areas-row a {
+	color: var(--ink-soft);
+	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	padding-bottom: 1px;
+}
+
+.areas-row a:hover,
+.areas-row a:focus-visible {
+	color: var(--accent);
+	border-bottom-color: currentColor;
+}
+
+@media (max-width: 640px) {
+	.areas {
+		padding: 34px 0 40px;
+	}
+
+	.areas-row {
+		gap: 6px 14px;
+	}
+}
+
 .page-lp .block {
 	padding: 76px 0;
 }
