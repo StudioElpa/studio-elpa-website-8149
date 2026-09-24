@@ -63,6 +63,11 @@ const JournalBlackout = lazy(() => import("./pages/journal-blackout"));
 const DraperyHeaders = lazy(() => import("./pages/drapery-headers"));
 const MeetElvira = lazy(() => import("./pages/meet-elvira"));
 const Privacy = lazy(() => import("./pages/privacy"));
+/* Direct-mail landing pages (noindex, not in nav). The bare paths are what the
+   mailer QR codes and printed URLs use. */
+const MailWelcome = lazy(() => import("./pages/welcome"));
+const MailSmartLiving = lazy(() => import("./pages/smart-living"));
+const MailRenew = lazy(() => import("./pages/renew"));
 
 /* Chunks are small and same-origin, so this is on screen for a moment at most.
    It holds the page background so the swap never flashes white. */
@@ -158,6 +163,12 @@ function App() {
           <Route path="/drapery-headers.html" component={DraperyHeaders} />
           <Route path="/meet-elvira.html" component={MeetElvira} />
           <Route path="/privacy.html" component={Privacy} />
+          <Route path="/welcome.html" component={MailWelcome} />
+          <Route path="/welcome" component={MailWelcome} />
+          <Route path="/smart-living.html" component={MailSmartLiving} />
+          <Route path="/smart-living" component={MailSmartLiving} />
+          <Route path="/renew.html" component={MailRenew} />
+          <Route path="/renew" component={MailRenew} />
           <Route component={Index} />
         </Switch>
       </Suspense>
