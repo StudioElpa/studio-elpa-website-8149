@@ -278,7 +278,7 @@ export function SiteFooter() {
 }
 
 /** Slim header used by the drapery / motorized / blackout landing pages. */
-export function LandingHeader() {
+export function LandingHeader({ ctaLabel = "Book a 30-minute call" }: { ctaLabel?: string } = {}) {
 	const condensed = useCondensedHeader();
 	return (
 		<header className={condensed ? "lp condensed" : "lp"}>
@@ -287,7 +287,7 @@ export function LandingHeader() {
 					<Logo variant="header" height={44} className="" />
 				</Link>
 				<a className="nav-cta" href={CONTACT.booking} target="_blank" rel="noopener">
-					Book a 30-minute call
+					{ctaLabel}
 				</a>
 			</div>
 		</header>

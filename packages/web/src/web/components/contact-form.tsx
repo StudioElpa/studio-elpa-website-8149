@@ -34,7 +34,16 @@ interface Errors {
 	email?: string;
 }
 
-export function ContactForm({ sourcePage }: { sourcePage: string }) {
+export function ContactForm({
+	sourcePage,
+	relaySource = RELAY_SOURCE.homepage,
+	submitLabel = "Send it over",
+}: {
+	sourcePage: string;
+	/** Label written to the Sheet's source column. Defaults to the homepage form. */
+	relaySource?: string;
+	submitLabel?: string;
+}) {
 	const [values, setValues] = useState({
 		name: "",
 		email: "",
@@ -120,7 +129,7 @@ export function ContactForm({ sourcePage }: { sourcePage: string }) {
 			email: values.email.trim(),
 			phone: values.phone.trim(),
 			message: relayMessage(),
-			source: RELAY_SOURCE.homepage,
+			source: relaySource,
 			companyWebsite: values.trap,
 		}).catch(fallbackToServer);
 	}
@@ -238,7 +247,7 @@ export function ContactForm({ sourcePage }: { sourcePage: string }) {
 			</div>
 
 			<button type="submit" className="btn btn-dark" style={{ width: "100%" }}>
-				Send it over
+				{submitLabel}
 			</button>
 
 			<p className="reassure" role={failed ? "alert" : undefined}>
