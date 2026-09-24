@@ -31,6 +31,11 @@ const FORM_SECRET = "elpa_9f3k2";
 export const RELAY_SOURCE = {
 	homepage: "Homepage - Begin a conversation",
 	estimate: "Estimate page",
+	/* Direct-mail landing pages. The QR code on each mailer points at one of
+	   these, with utm_campaign carrying the mail code (e.g. M1-NEW). */
+	mailWelcome: "Mail landing - Welcome Home (recent buyers)",
+	mailSmart: "Mail landing - Smart Living (smart-home communities)",
+	mailRenew: "Mail landing - Renew (established homes)",
 } as const;
 
 export interface RelayLead {
@@ -44,17 +49,51 @@ export interface RelayLead {
 	companyWebsite: string;
 }
 
-/** page + utm_*, read off the current URL at submit time. */
+/**
+ * First-touch UTM memory. A mailer QR lands someone on /welcome with
+ * utm_campaign=M1-NEW; if they wander to the homepage and submit the form
+ * there, the lead should still carry the mail code. The landing URL's params
+ * are kept in sessionStorage for the visit. Storage can be unavailable
+ * (private mode, blocked), so every access is guarded and the live URL wins.
+ */
+const UTM_KEY = "elpa_utm";
+const UTM_FIELDS = ["utm_source", "utm_medium", "utm_campaign"] as const;
+type Utm = Record<(typeof UTM_FIELDS)[number], string>;
+
+export function rememberUtm() {
+	if (typeof window === "undefined") return;
+	const q = new URLSearchParams(window.location.search);
+	if (!q.get("utm_campaign") && !q.get("utm_source")) return;
+	const utm = Object.fromEntries(UTM_FIELDS.map((k) => [k, q.get(k) ?? ""])) as Utm;
+	try {
+		window.sessionStorage.setItem(UTM_KEY, JSON.stringify(utm));
+	} catch {
+		/* storage blocked: the live URL is still read at submit time */
+	}
+}
+
+function storedUtm(): Utm | null {
+	try {
+		const raw = window.sessionStorage.getItem(UTM_KEY);
+		return raw ? (JSON.parse(raw) as Utm) : null;
+	} catch {
+		return null;
+	}
+}
+
+/** page + utm_*, read off the current URL at submit time (or the visit's landing URL). */
 function context() {
 	if (typeof window === "undefined") {
 		return { page: "", utm_source: "", utm_medium: "", utm_campaign: "" };
 	}
 	const q = new URLSearchParams(window.location.search);
+	const live = q.get("utm_campaign") || q.get("utm_source");
+	const kept = live ? null : storedUtm();
 	return {
 		page: window.location.pathname,
-		utm_source: q.get("utm_source") ?? "",
-		utm_medium: q.get("utm_medium") ?? "",
-		utm_campaign: q.get("utm_campaign") ?? "",
+		utm_source: q.get("utm_source") ?? kept?.utm_source ?? "",
+		utm_medium: q.get("utm_medium") ?? kept?.utm_medium ?? "",
+		utm_campaign: q.get("utm_campaign") ?? kept?.utm_campaign ?? "",
 	};
 }
 
