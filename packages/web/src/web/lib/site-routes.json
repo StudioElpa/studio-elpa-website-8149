@@ -478,6 +478,36 @@
 			"priority": "0.6"
 		},
 		{
+			"path": "/welcome.html",
+			"aliases": ["/welcome"],
+			"title": "Welcome Home · Custom Window Treatments · Studio Elpa",
+			"description": "For new homeowners in South Florida: custom drapery, shades, motorization and smart-home integration, measured, made and installed by one team. Schedule a consultation.",
+			"schema": "page",
+			"noindex": true,
+			"changefreq": "yearly",
+			"priority": "0.1"
+		},
+		{
+			"path": "/smart-living.html",
+			"aliases": ["/smart-living"],
+			"title": "Motorized Shades and Smart-Home Integration · Studio Elpa",
+			"description": "Custom drapery and shades, motorized and connected to your smart-home system, with the electrical handled for you. Schedule a consultation with Studio Elpa.",
+			"schema": "page",
+			"noindex": true,
+			"changefreq": "yearly",
+			"priority": "0.1"
+		},
+		{
+			"path": "/renew.html",
+			"aliases": ["/renew"],
+			"title": "Refresh Your Window Treatments · Studio Elpa",
+			"description": "Beautiful European textiles, made to measure. We update existing window treatments and handle everything from design to installation. Schedule a consultation.",
+			"schema": "page",
+			"noindex": true,
+			"changefreq": "yearly",
+			"priority": "0.1"
+		},
+		{
 			"path": "/privacy.html",
 			"aliases": [],
 			"title": "Privacy Policy · Studio Elpa",
